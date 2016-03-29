@@ -1,0 +1,5 @@
+node_modules/
+public/*
+.sass-cache
+app/config.js
+logs/*

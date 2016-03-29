@@ -1,0 +1,32 @@
+{
+  "name": "website",
+  "version": "0.0.1",
+  "description": "Base framework for building a React-client, Express-server web application",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/peter_xu/wrapapi.git"
+  },
+  "author": "Peter Xu, Harry Yu",
+  "license": "ISC",
+  "dependencies": {
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.2.0",
+    "browserify": "^13.0.0",
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-nodemon": "^2.0.6",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.5",
+    "minifyify": "^7.3.2",
+    "path": "^0.12.7",
+    "resolve": "^1.1.7",
+    "run-sequence": "^1.1.5",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  }
+}

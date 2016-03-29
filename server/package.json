@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "bluebird": "^3.3.4",
+    "body-parser": "^1.15.0",
+    "bootstrap-sass": "^3.3.6",
+    "cookie-parser": "^1.4.1",
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "express-mysql-session": "^0.4.4",
+    "express-session": "^1.13.0",
+    "lodash": "^4.6.1",
+    "morgan": "^1.7.0",
+    "mysql": "^2.10.2",
+    "nodemailer": "^2.3.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "randomstring": "^1.1.4",
+    "sequelize": "^3.20.0",
+    "serve-favicon": "^2.3.0",
+    "winston": "^2.2.0"
+  }
+}

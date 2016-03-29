@@ -1,0 +1,9 @@
+Hello <%= username %>, 
+
+Thank you for registering for <%= config.siteName %>!
+
+To activate your account so that you can start creating and publishing APIs, please follow the link below:
+<%- config.host -%>/#/activate/<%- username %>/<%- activationKey %>
+
+Cheers,
+<%= config.siteName %> team

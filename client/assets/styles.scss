@@ -1,0 +1,19 @@
+@import "../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+$fa-font-path: '../assets';  // Fonts are moved by the gulpfile for font-awesome
+@import "../node_modules/font-awesome/scss/font-awesome";
+
+@import "./sticky-footer.css";
+
+.navbar-offset {
+  margin-top: 50px;
+  margin-bottom: 70px;
+}
+
+.bottom20 {
+  margin-bottom: 20px;
+}
+
+.top20 {
+  margin-top: 20px;
+}
