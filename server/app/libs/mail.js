@@ -3,6 +3,8 @@ var fs = require('fs');
 var ejs = require('ejs');
 var path = require('path');
 var _ = require('lodash');
+var Promise = require('bluebird');
+
 var config = require('../config');
 var logger = require('./logger');
 
@@ -14,6 +16,7 @@ var defaultSendParams = {
 };
 
 var transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
+var sendMail = Promise.promisify(transporter.sendMail.bind(transporter));
 
 var cachedTemplates = {};
 
@@ -21,7 +24,13 @@ var compileTemplate = function(file) {
   return ejs.compile(fs.readFileSync(file, 'utf-8'));
 };
 
-// Send an email based on a template
+/**
+ * Send an email based on an email template
+ * @param to        email address to send to (array, or comma-separated list)
+ * @param template  name of the email template to use (in app/templates)
+ * @param data      data to be passed to the template
+ * @return Promise.<info> from nodemailer.sendMail
+ */
 var send = function(to, template, data, callback) {
   if (!(template in cachedTemplates)) {
     logger.debug('Loading template "' + template + '"');
@@ -45,12 +54,12 @@ var send = function(to, template, data, callback) {
   var text = tpl.text(tplData);
   var subject = tpl.subject(tplData);
   
-  transporter.sendMail({
+  return sendMail({
     to: to,
     subject: subject,
     text: text,
     html: html
-  }, callback);
+  });
 };
 
 module.exports = {

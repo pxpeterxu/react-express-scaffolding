@@ -99,11 +99,28 @@ var logout = function() {
 var register = function(user) {
   return rp({
     uri: Config.host + '/user/register',
-    data: user,
+    body: user,
     method: 'POST',
     json: true
   });
 };
+
+
+/**
+ * Begin a password reset process
+ * @param username    username of user to reset password for
+ * @param email       email of user to reset password for
+ * @return Promise.<object>
+ */
+var startResetPassword = function(username, email) {
+  return rp({    
+    uri: Config.host + '/user/startResetPassword',
+    body: { username: username, email: email },
+    method: 'POST',
+    json: true
+  });
+};
+
 
 module.exports = {
   login: login,
@@ -111,6 +128,7 @@ module.exports = {
   isLoggedInSync: isLoggedInSync,
   logout: logout,
   register: register,
+  startResetPassword: startResetPassword,
   
   onLogin: {}  // Can be overridden
 };

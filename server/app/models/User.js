@@ -1,8 +1,18 @@
 var Sequelize = require('sequelize');
 var db = require('../db');
 
+// For password generation
+var Promise = require('bluebird');
+var bcrypt = require('bcryptjs');
+var hash = Promise.promisify(bcrypt.hash.bind(bcrypt));
+var compare = Promise.promisify(bcrypt.compare.bind(bcrypt));
+
 var User = db.define('User', {
-  // id: implied
+  id: {
+    type: Sequelize.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true
+  },
   email: {
     type: Sequelize.STRING(128),
     allowNull: false,
@@ -39,6 +49,20 @@ var User = db.define('User', {
   activationKey: { type: Sequelize.STRING(8), allowNull: false },
   activated: { type: Sequelize.BOOLEAN, defaultValue: 0, allowNull: false },
   apiElementModifyTime: { type: Sequelize.INTEGER, defaultValue: 0, allowNull: false }
+}, {
+  instanceMethods: {
+    comparePassword: function(password) {
+      return compare(password, this.password);
+    }
+  },
+  classMethods: {
+    hashPassword: function(password) {
+      return hash(password, 10);
+    },
+    comparePassword: function(password, hash) {
+      return compare(password, hash);
+    }
+  }
 });
 
 module.exports = User;

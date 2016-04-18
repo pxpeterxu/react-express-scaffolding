@@ -94,6 +94,7 @@ var MainPage = React.createClass({
             {loggedIn ? (  
               <Nav pullRight>
                 <Navbar.Text><strong>{username}</strong></Navbar.Text>
+                <NavItem href="#/changePassword">Change password</NavItem>
                 <NavItem href="#" onClick={this.logout}
                     disabled={logoutLoading}>
                   {logoutLoading ? 'Signing out...' : 'Sign out'}

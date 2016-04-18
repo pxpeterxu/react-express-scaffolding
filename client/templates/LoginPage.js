@@ -5,9 +5,14 @@ var _ = require('lodash');
 var ReactRouter = require('react-router');
 
 var ReactUtils = require('./ReactUtils');
+var Config = require('../js/Config');
 var Auth = require('../js/Auth');
 
 var LoginPage = React.createClass({
+  propTypes: {
+    success: React.PropTypes.func
+  },
+  
   contextTypes: {
     history: React.PropTypes.object
   },
@@ -17,11 +22,14 @@ var LoginPage = React.createClass({
       form: {
         email: '',
         username: '',
-        password: ''
+        password: '',
+        password2: ''
       },
       loading: false,
       response: null,
-      activeTab: 'login'
+      activeTab: 'login',
+      blurredPassword2: false
+        // Hide password2 error messages until user has edited it
     };
   },
   
@@ -42,37 +50,62 @@ var LoginPage = React.createClass({
     this.setDefaultTab(props);
   },
   
+  login: function() {
+    Auth.login(this.state.form.email, this.state.form.password).then(function(data) {
+      ReactUtils.defaultDone.call(this, data, null);
+      
+      if (data.success) {
+        if (this.props.success) {
+          this.props.success(data);
+        }
+        
+        var redirect = _.get(this.props, 'location.query.redirect');
+        if (redirect) {
+          this.context.history.replaceState(null, redirect);
+        }
+      }
+    }.bind(this)); 
+  },
+  
+  register: function() {
+    Auth.register(this.state.form)
+      .then(ReactUtils.defaultDone.bind(this))
+      .catch(ReactUtils.defaultFail.bind(this));
+  },
+  
+  resetPassword: function() {
+    Auth.startResetPassword(this.state.form.username, this.state.form.email)
+      .then(ReactUtils.defaultDone.bind(this))
+      .catch(ReactUtils.defaultFail.bind(this));
+  },
+  
   submit: function(e) {
     if (e) e.preventDefault();
     
     this.setState({ loading: true, response: null });
     
-    if (this.state.activeTab === 'login') {
-      Auth.login(this.state.form.email, this.state.form.password).then(function(data) {
-        ReactUtils.defaultDone.call(this, data, null);
-        
-        if (data.success) {
-          if (this.props.success) {
-            this.props.success(data);
-          }
-          
-          var redirect = _.get(this.props, 'location.query.redirect');
-          if (redirect) {
-            this.context.history.replaceState(null, redirect);
-          }
-        }
-      }.bind(this)); 
-    } else {
-      Auth.register(this.state.form)
-        .then(ReactUtils.defaultDone.bind(this))
-        .catch(ReactUtils.defaultFail.bind(this));
+    var url = this.state.activeTab === 'login' ?
+      Config.host + '/user/login' : 
+      Config.host + '/user/register';
+    
+    var activeTab = this.state.activeTab;
+    if (activeTab === 'login') {
+      this.login();
+    } else if (activeTab === 'register') {
+      this.register();
+    } else if (activeTab === 'resetPassword') {
+      this.resetPassword();
     }
   },
   
   setActiveTab: function(tab, e) {
     if (e) e.preventDefault();
     
-    this.setState({ activeTab: tab, response: null });
+    this.setState({
+      activeTab: tab,
+      response: null,
+      blurredPassword2: false
+    });
   },
   
   render: function() {
@@ -80,12 +113,27 @@ var LoginPage = React.createClass({
     var form = this.state.form;
     var activeTab = this.state.activeTab;
     
-    var activeVerb = activeTab === 'login' ? 'Sign in' : 'Register';
+    var activeVerb = null;
+    switch (activeTab) {
+      case 'login': activeVerb = 'Sign in'; break;
+      case 'register': activeVerb = 'Register'; break;
+      case 'resetPassword': activeVerb = 'Reset password'; break;
+    }
+    
+    // Extra registration-only validation
+    var registerDisabled = activeTab === 'register' &&
+      (form.password2 === '' || form.password !== form.password2);
+    var showPassword2Error = form.password !== form.password2 &&
+      (this.state.blurredPassword2 || form.password2 !== '');
     
     return (
       <div className="container">
         <div className="row">
           <div className="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            {this.props.showLogo && (<div className="text-center top20">
+              <img src="assets/logo-large.png" alt="WrapAPI logo" style={{ maxWidth: '100%', maxHeight: '75px' }} />
+            </div>)}
+            
             <h1>{activeVerb}</h1>
             <ul className="nav nav-tabs bottom20">
               <li className={activeTab === 'login' ? 'active' : null}>
@@ -96,8 +144,8 @@ var LoginPage = React.createClass({
               </li>
             </ul>
             
-            {ReactUtils.defaultRenderMessages(this.state.response)}
-
+            {ReactUtils.defaultRenderMessages(response)}
+            
             <form onSubmit={this.submit}>
               <div className="form-group">
                 <label htmlFor="email">Email{activeTab === 'login' && ' or username'}</label>
@@ -113,7 +161,7 @@ var LoginPage = React.createClass({
                 )}
               </div>
               
-              {activeTab === 'register' && (
+              {(activeTab === 'register' || activeTab === 'resetPassword') && (
                 <div className="form-group">
                   <label htmlFor="username">Username</label>
                   <input type="username" id="username" className="form-control"
@@ -123,22 +171,48 @@ var LoginPage = React.createClass({
                 </div>
               )}
               
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input type="password" id="password" className="form-control"
-                  value={form.password}
-                  onChange={ReactUtils.updateFormField(this, 'form.password')}
-                  />
-                {activeTab === 'register' && (
+              {(activeTab === 'register' || activeTab === 'login') && (
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input type="password" id="password" className="form-control"
+                    value={form.password}
+                    onChange={ReactUtils.updateFormField(this, 'form.password')}
+                    />
+                  {activeTab === 'register' && (
+                    <p className="help-block">
+                      Choose a long, hard-to-guess password that you don't use anywhere else.
+                    </p>
+                  )}
+                </div>
+              )}
+              
+              {activeTab === 'register' && (
+                <div className={'form-group ' +
+                    (showPassword2Error ? 'has-error' : '')}>
+                  <label htmlFor="password2">Password again</label>
+                  <input type="password" id="password2" className="form-control"
+                    value={form.password2}
+                    onChange={ReactUtils.updateFormField(this, 'form.password2')}
+                    onBlur={ReactUtils.setState.bind(this, 'blurredPassword2', true)}
+                    />
                   <p className="help-block">
-                    Choose a good, unique password!
+                    {showPassword2Error ?
+                      'The two passwords you entered do not match; please try again.' :
+                      'Enter your password again to ensure that you entered it correctly and won\'t be locked out of your account.'}
                   </p>
-                )}
-              </div>
+                </div>
+              )}
+              
               <button className="btn btn-primary" type="submit"
-                  disabled={this.state.loading}>
+                  disabled={this.state.loading || registerDisabled}>
                 {activeVerb}
               </button>
+              {activeTab === 'login' && (
+                <a href="#" className="pull-right"
+                    onClick={ReactUtils.setState.bind(this, 'activeTab', 'resetPassword')}>
+                  Forgot password
+                </a>
+              )}
             </form>
           </div>
         </div>

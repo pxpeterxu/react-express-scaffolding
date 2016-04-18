@@ -9,6 +9,7 @@ var MainPage = require('./MainPage');
 var HomePage = require('./HomePage');
 var LoginPage = require('./LoginPage');
 var ActivatePage = require('./ActivatePage');
+var ResetPasswordPage = require('./ResetPasswordPage');
 
 var Router = router.Router;
 var Route = router.Route;
@@ -58,7 +59,10 @@ var MainRouter = React.createClass({
           <Route path="/index" component={HomePage} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={LoginPage} />
+          <Route path="/startResetPassword" component={LoginPage} />
+          <Route path="/resetPassword/:username/:token" component={ResetPasswordPage} />
           <Route path="/activate/:username/:activationKey" component={ActivatePage} />
+          <Route path="/changePassword" component={ResetPasswordPage} onEnter={this.requireLoggedIn} />
         </Route>
       </Router>
     );

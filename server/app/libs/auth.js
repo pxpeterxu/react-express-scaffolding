@@ -1,4 +1,3 @@
-var bcrypt = require('bcryptjs');
 var randomstring = require('randomstring');
 var passport = require('passport');
 var Promise = require('bluebird');
@@ -7,10 +6,14 @@ var LocalStrategy = require('passport-local').Strategy;
 var User = require('../models/User');
 var logger = require('./logger');
 
+var serializedAttributes = ['id', 'username', 'email', 'password', 'activated'];
+
 var localStrategy = new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password'
 }, function(username, password, done) {
+  var user = null;
+  var token = null;
   User.findOne({
     where: {
       $or: [
@@ -18,35 +21,32 @@ var localStrategy = new LocalStrategy({
         { username: username }
       ]
     },
-    attributes: ['id', 'username', 'email', 'password', 'activated']
-  }).then(function(user) {
+    attributes: serializedAttributes
+  }).then(function(dbUser) {
+    user = dbUser;
     if (user === null) {
       return done(null, false, {
         errType: 'username',
         message: 'We could not find a user with the given username or email'
       });
-    } else {
-      bcrypt.compare(password, user.password, function(err, res) {
-        if (!res) {
-          return done(null, false, {
-            errType: 'password',
-            message: 'The password is incorrect'
-          });
-        }
-        
-        if (!user.activated) {
-          return done(null, false, {
-            errType: 'activation',
-            message: 'Your account has not yet been activated; please check your email'
-          });
-        }
-        
-        return done(null, user, {
-          message: 'You have successfully signed in!'
-        });
+    }
+    
+    return user.comparePassword(password);
+  }).then(function(matched) {      
+    if (!matched) {
+      return done(null, false, {
+        errType: 'password',
+        message: 'The password is incorrect'
       });
     }
+  }).then(function() {
+    return done(null, user, {
+      message: 'You have successfully signed in!',
+      token: token,
+      tutorialStep: user.tutorialStep
+    });
   }).catch(function(err) {
+    logger.warn('Error while logging in', err.stack);
     return done(err);
   });
 });
@@ -58,7 +58,7 @@ var serializeUser = function(user, done) {
 var deserializeUser = function(id, done) {
   User.findOne({
     where: { id: id },
-    attributes: ['id', 'username', 'apiElementModifyTime']
+    attributes: serializedAttributes
   }).then(function(user) {
     done(null, user);
   }).catch(function(err) {
