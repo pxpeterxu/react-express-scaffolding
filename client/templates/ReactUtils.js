@@ -163,6 +163,9 @@ var defaultDoneToVariable = function(variable, data, status) {
    * @example $.post(...).done(ReactUtils.defaultDone.bind(this, 'response2'))
    */
    
+  if (data.status && data.statusText) data = data.data;
+  // Unwrap Axios response object
+   
   var stateObj = {
     loading: false,
     response: null
@@ -211,6 +214,9 @@ var defaultFailToVariable = function(data, status) {
    * @param status
    * @example $.post(...).fail(ReactUtils.defaultFail.bind(this, 'response2'))
    */
+  if (data.status && data.statusText) data = data.data;
+  // Unwrap Axios response object
+  
   var defaultError = getDefaultError(data);
   
   this.setState({

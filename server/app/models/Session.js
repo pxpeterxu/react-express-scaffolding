@@ -15,7 +15,7 @@ var Session = db.define('Session', {
     allowNull: false
   }
 }, {
-  charset: 'utf8_bin'
+  charset: 'ascii_bin'
 });
 
 module.exports = Session;

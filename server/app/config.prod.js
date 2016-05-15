@@ -2,8 +2,10 @@
 
 var config = {
   siteName: 'SITE NAME GOES HERE',
-
+  
+  port: 60543,
   host: 'http://example.com',
+  
   db: 'mysql://user:password@db.example.com:3306/database',
   dbDetails: {
     host: 'db.example.com',

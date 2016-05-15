@@ -1,9 +1,10 @@
 'use strict';
 
-var rp = require('request-promise');
+var axios = require('axios');
 var _ = require('lodash');
 
 var Config = require('./Config');
+var Utility = require('./Utility');
 
 var loggedInCache = null;
 
@@ -15,15 +16,14 @@ var loggedInCache = null;
  * @return Promise.<object>
  */
 var login = function(email, password) {
-  return rp({
-    uri: Config.host + '/user/login',
+  return axios({
+    url: Config.host + '/user/login',
     method: 'POST',
-    body: {
+    data: {
       email: email,
       password: password
-    },
-    json: true
-  }).then(function(data) {
+    }
+  }).then(Utility.getAxiosData).then(function(data) {
     if (data.success) {
       loggedInCache = {
         success: true,
@@ -52,10 +52,9 @@ var isLoggedIn = function() {
     return Promise.resolve(ret);
   }
   
-  return rp({
-    uri: Config.host + '/user/isLoggedin',
-    json: true
-  }).then(function(data) {
+  return axios({
+    url: Config.host + '/user/isLoggedin'
+  }).then(Utility.getAxiosData).then(function(data) {
     if (data.success) {
       loggedInCache = data;
       // Call all the registered callbacks
@@ -77,11 +76,11 @@ var isLoggedInSync = function() {
 };
 
 var logout = function() {
-  return rp({
-    uri: Config.host + '/user/logout',
-    method: 'POST',
-    json: true
-  }).then(function(data) {
+  return axios({
+    url: Config.host + '/user/logout',
+    method: 'POST'
+  }).then(Utility.getAxiosData).then(function(response) {
+    var data = response.data;
     loggedInCache = {
       success: true,
       loggedIn: false,
@@ -97,12 +96,11 @@ var logout = function() {
  * @return Promise.<object>
  */
 var register = function(user) {
-  return rp({
-    uri: Config.host + '/user/register',
-    body: user,
-    method: 'POST',
-    json: true
-  });
+  return axios({
+    url: Config.host + '/user/register',
+    data: user,
+    method: 'POST'
+  }).then(Utility.getAxiosData);
 };
 
 
@@ -113,12 +111,11 @@ var register = function(user) {
  * @return Promise.<object>
  */
 var startResetPassword = function(username, email) {
-  return rp({    
-    uri: Config.host + '/user/startResetPassword',
-    body: { username: username, email: email },
-    method: 'POST',
-    json: true
-  });
+  return axios({    
+    url: Config.host + '/user/startResetPassword',
+    data: { username: username, email: email },
+    method: 'POST'
+  }).then(Utility.getAxiosData);
 };
 
 

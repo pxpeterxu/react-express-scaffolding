@@ -3,7 +3,9 @@
 var config = {
   siteName: 'SITE NAME GOES HERE',
   
+  port: 60543,
   host: 'http://localhost:60543',
+  
   db: 'mysql://user:password@localhost:3306/database',
   dbDetails: {
     host: 'localhost',

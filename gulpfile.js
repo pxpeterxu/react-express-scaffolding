@@ -120,7 +120,7 @@ var buildJavascript = function(sourceFile, destFile) {
       b.plugin(watchify);
     }
     
-    b.transform(babelify, { presets: ['react'] });
+    b.transform(babelify, { presets: ['react', 'es2015'] });
     if (production) {
       b.plugin('minifyify', {map: !production});
     }

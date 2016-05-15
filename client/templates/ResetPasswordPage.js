@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react');
-var rp = require('request-promise');
+var axios = require('axios');
 var Link = require('react-router').Link;
 
 var Auth = require('../js/Auth');
@@ -35,13 +35,14 @@ var ResetPasswordPage = React.createClass({
     });
     
     if (token) {    
-      rp({
-        uri: Config.host + '/user/isValidPasswordResetToken',
+      axios({
+        url: Config.host + '/user/isValidPasswordResetToken',
         method: 'GET',
-        qs: { token: token },
-        json: true
+        params: { token: token }
       })
-        .then(function(data) {
+        .then(function(response) {
+          var data = response.data;
+          
           this.state.loading = false;
           this.state.isValid = data.isValid;
           if (!data.isValid) {
@@ -88,16 +89,14 @@ var ResetPasswordPage = React.createClass({
     
     var req = token ?    
       rp({
-        uri: Config.host + '/user/resetPassword',
+        url: Config.host + '/user/resetPassword',
         method: 'POST',
-        body: { token: props.token, password: this.state.password },
-        json: true
+        body: { token: props.token, password: this.state.password }
       }) : 
       rp({
-        uri: Config.host + '/user/changePassword',
+        url: Config.host + '/user/changePassword',
         method: 'POST',
-        body: { curPassword: this.state.curPassword, password: this.state.password },
-        json: true
+        body: { curPassword: this.state.curPassword, password: this.state.password }
       });
       
     req.then(function(data) {

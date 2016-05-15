@@ -1,7 +1,9 @@
 'use strict';
 
 var React = require('react');
-var rp = require('request-promise');
+var axios = require('axios');
+
+var Utility = require('../js/Utility');
 var Config = require('../js/Config');
 
 var ReactUtils = require('./ReactUtils');
@@ -24,14 +26,13 @@ var ActivatePage = React.createClass({
     
     this.setState({ loading: true, response: null });
     
-    rp({
-      uri: Config.host + '/user/activate/' + username + '/' + activationKey,
+    axios({
+      url: Config.host + '/user/activate/' + username + '/' + activationKey,
       method: 'POST',
-      body: {
+      data: {
         activationKey: activationKey,
         username: username
-      },
-      json: true
+      }
     })
       .then(ReactUtils.defaultDone.bind(this))
       .catch(ReactUtils.defaultFail.bind(this));
