@@ -6,51 +6,49 @@ import { withRouter } from 'react-router';
 import NewUtils from './NewUtils';
 import LoginForm from './LoginForm';
 
-const LoginPage = React.createClass({
-  propTypes: {
+class LoginPage extends React.PureComponent {
+  static propTypes = {
     showLogo: PropTypes.bool,
 
     // Injected
     location: PropTypes.object,
     router: PropTypes.object,
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      tab: 'login',
-      registrationResponse: null
-    };
-  },
+  state = {
+    tab: 'login',
+    registrationResponse: null
+  };
 
-  setTabFromUrl: function(props) {
+  setTabFromUrl = (props) => {
     const pathname = _.get(props, 'location.pathname');
     if (pathname === '/register') {
       this.setState({ tab: 'register' });
     } else {
       this.setState({ tab: 'login' });
     }
-  },
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     this.setTabFromUrl(this.props);
-  },
+  }
 
-  componentWillReceiveProps: function(props) {
+  componentWillReceiveProps(props) {
     this.setTabFromUrl(props);
-  },
+  }
 
-  onLogin: function() {
+  onLogin = () => {
     const redirect = _.get(this.props, 'location.query.redirect');
     if (redirect) {
       this.props.router.push(redirect);
     }
-  },
+  };
 
-  onRegister: function(data) {
+  onRegister = (data) => {
     this.setState({ registrationResponse: data });
-  },
+  };
 
-  render: function() {
+  render() {
     const showLogo = this.props.showLogo;
     const registrationResponse = this.state.registrationResponse;
     const tab = this.state.tab;
@@ -74,6 +72,6 @@ const LoginPage = React.createClass({
       </div></div>
     </div>);
   }
-});
+}
 
 export default withRouter(LoginPage);

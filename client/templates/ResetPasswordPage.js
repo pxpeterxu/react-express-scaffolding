@@ -1,36 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { Link } from 'react-router';
 
 import Auth from '../js/Auth';
 import NewUtils from './NewUtils';
 
-const ResetPasswordPage = React.createClass({
-  mixins: [PureRenderMixin],
-
-  propTypes: {
+class ResetPasswordPage extends React.PureComponent {
+  static propTypes = {
     params: PropTypes.shape({
       token: PropTypes.string
     }),
     token: PropTypes.string
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      loading: true,
-      isValid: null,
-      response: null,
+  state = {
+    loading: true,
+    isValid: null,
+    response: null,
 
-      password: '',
-      password2: '',
-      blurredPassword2: false,
+    password: '',
+    password2: '',
+    blurredPassword2: false,
 
-      passwordChanged: false
-    };
-  },
+    passwordChanged: false
+  };
 
-  checkToken: function(props) {
+  checkToken = (props) => {
     props = props.params || props;
     const token = props.token;
 
@@ -48,19 +43,19 @@ const ResetPasswordPage = React.createClass({
         });
       })
       .catch(NewUtils.getCatch(this));
-  },
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     this.checkToken(this.props);
-  },
+  }
 
-  componentWillReceiveProps: function(props) {
+  componentWillReceiveProps(props) {
     if (props.token !== this.props.token) {
       this.checkToken(props);
     }
-  },
+  }
 
-  resetPassword: function(e) {
+  resetPassword = (e) => {
     e.preventDefault();
     this.setState({ loading: true, response: null });
 
@@ -79,9 +74,9 @@ const ResetPasswordPage = React.createClass({
         NewUtils.getThen(this)(data);
       })
       .catch(NewUtils.getCatch(this));
-  },
+  };
 
-  render: function() {
+  render() {
     const password = this.state.password;
     const password2 = this.state.password2;
     const blurredPassword2 = this.state.blurredPassword2;
@@ -150,6 +145,6 @@ const ResetPasswordPage = React.createClass({
       </div></div>
     );
   }
-});
+}
 
 export default ResetPasswordPage;

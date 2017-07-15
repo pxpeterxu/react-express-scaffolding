@@ -1,10 +1,7 @@
 import React from 'react';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-const HomePage = React.createClass({
-  mixins: [PureRenderMixin],
-
-  render: function() {
+class HomePage extends React.PureComponent {
+  render() {
     return (<div>
       <div className="jumbotron">
         <div className="container">
@@ -14,6 +11,6 @@ const HomePage = React.createClass({
       </div>
     </div>);
   }
-});
+}
 
 export default HomePage;

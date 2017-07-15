@@ -1,23 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 
 import NavbarUser from './NavbarUser';
 
-const MainPage = React.createClass({
-  mixins: [PureRenderMixin],
-
-  propTypes: {
+class MainPage extends React.PureComponent {
+  static propTypes = {
     children: PropTypes.node,
     router: PropTypes.object.isRequired,
 
     // Redux injected
     isLoggedIn: PropTypes.bool,
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <div>
         <Navbar fixedTop>
@@ -51,6 +48,6 @@ const MainPage = React.createClass({
       </div>
     );
   }
-});
+}
 
 export default MainPage;

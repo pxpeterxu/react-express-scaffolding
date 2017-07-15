@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 import _ from 'lodash';
 
 /**
@@ -30,10 +29,8 @@ function normalizeOptions(options) {
   return options;
 }
 
-const Tabs = React.createClass({
-  mixins: [PureRenderMixin],
-
-  propTypes: {
+class Tabs extends React.PureComponent {
+  static propTypes = {
     tabs: PropTypes.oneOfType([
       PropTypes.object,
       PropTypes.array
@@ -49,19 +46,19 @@ const Tabs = React.createClass({
       PropTypes.object
     ]),
     className: PropTypes.string
-  },
+  };
 
-  onChange: function(tab, e) {
+  onChange = (tab, e) => {
     e.preventDefault();
     this.props.onChange(tab);
-  },
+  };
 
-  doNothingCallback: function(e) {
+  doNothingCallback = (e) => {
     e.preventDefault();
     e.stopPropagation();
-  },
+  };
 
-  render: function() {
+  render() {
     const tabs = normalizeOptions(this.props.tabs);
     const activeTab = this.props.value;
     const className = this.props.className || 'nav nav-tabs';
@@ -96,6 +93,6 @@ const Tabs = React.createClass({
       </ul>
     );
   }
-});
+}
 
 export default Tabs;

@@ -14,7 +14,7 @@ import routes from './Routes';
 const preloadedState = window.__REDUX_STATE__;
 const store = createStore(MainReducer, preloadedState);
 
-export default class MainRouter extends React.Component {
+export default class MainRouter extends React.PureComponent {
   componentWillMount() {
     Auth.getLoginState(store.dispatch, store.getState());
     ga.initialize(Constants.googleAnalyticsId);

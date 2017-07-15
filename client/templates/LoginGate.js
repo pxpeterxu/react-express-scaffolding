@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import Auth from '../js/redux/Auth';
 import LoginPage from './LoginPage';
 
 // This component will do a login
-const LoginGate = React.createClass({
-  mixins: [PureRenderMixin],
-
-  propTypes: {
+class LoginGate extends React.PureComponent {
+  static propTypes = {
     updateLocalTutorialStep: PropTypes.func.isRequired,
     componentOnceLoggedIn: PropTypes.any.isRequired,
     showLogo: PropTypes.bool,
@@ -19,14 +16,14 @@ const LoginGate = React.createClass({
     username: PropTypes.string,
     authStateLoaded: PropTypes.bool.isRequired,
     isLoggedIn: PropTypes.bool.isRequired
-  },
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     // Fetch current logged-in user
     Auth.getOrFetchLoginState(this.props);
-  },
+  }
 
-  render: function() {
+  render() {
     const component = this.props.componentOnceLoggedIn;
     const logout = this.props.logout;
     const username = this.props.username;
@@ -47,6 +44,6 @@ const LoginGate = React.createClass({
       });
     }
   }
-});
+}
 
 export default Auth.connect()(LoginGate);

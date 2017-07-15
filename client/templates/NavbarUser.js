@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { LinkContainer } from 'react-router-bootstrap';
 import { withRouter } from 'react-router';
 
@@ -14,10 +13,8 @@ import Auth from '../js/redux/Auth';
  * This component is the user display (e.g., "Username | Sign out" or
  * "Sign in" that can be slotted into any display
  */
-const NavbarUser = React.createClass({
-  mixins: [PureRenderMixin],
-
-  propTypes: {
+class NavbarUser extends React.PureComponent {
+  static propTypes = {
     // withRouter injected
     router: PropTypes.object,
 
@@ -26,15 +23,15 @@ const NavbarUser = React.createClass({
     username: PropTypes.string,
     authLoading: PropTypes.bool.isRequired,
     logout: PropTypes.func
-  },
+  };
 
-  logout: function() {
+  logout = () => {
     this.props.logout().then(() => {
       this.props.router.push('/');
     });
-  },
+  };
 
-  render: function() {
+  render() {
     const isLoggedIn = this.props.isLoggedIn;
     const username = this.props.username;
     const logoutLoading = this.props.authLoading;
@@ -60,6 +57,6 @@ const NavbarUser = React.createClass({
       );
     }
   }
-});
+}
 
 export default Auth.connect()(withRouter(NavbarUser));

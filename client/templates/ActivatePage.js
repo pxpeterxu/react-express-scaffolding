@@ -1,23 +1,18 @@
 import React from 'react';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import Auth from '../js/Auth';
 import NewUtils from './NewUtils';
 
-const ActivatePage = React.createClass({
-  mixins: [PureRenderMixin],
+class ActivatePage extends React.PureComponent {
+  state = {
+    activated: false,
+    loading: true,
 
-  getInitialState: function() {
-    return {
-      activated: false,
-      loading: true,
+    pluginInstalled: false,
+    isChrome: true
+  };
 
-      pluginInstalled: false,
-      isChrome: true
-    };
-  },
-
-  componentWillMount: function() {
+  componentWillMount() {
     const activationKey = this.props.params ?
       this.props.params.activationKey : this.props.activationKey;
     const username = this.props.params ? this.props.params.username : this.props.username;
@@ -27,9 +22,9 @@ const ActivatePage = React.createClass({
     Auth.activate(username, activationKey)
       .then(NewUtils.getThen(this))
       .catch(NewUtils.getCatch(this));
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <div className="container">
         <h1>Activating your account</h1>
@@ -45,6 +40,6 @@ const ActivatePage = React.createClass({
       </div>
     );
   }
-});
+}
 
 export default ActivatePage;

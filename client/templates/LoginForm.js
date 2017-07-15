@@ -13,8 +13,8 @@ const tabOptions = {
   register: 'Register'
 };
 
-const LoginForm = React.createClass({
-  propTypes: {
+class LoginForm extends React.PureComponent {
+  static propTypes = {
     onLogin: PropTypes.func,
     onRegister: PropTypes.func,
 
@@ -27,40 +27,38 @@ const LoginForm = React.createClass({
     registerUser: PropTypes.func.isRequired,
     authLoading: PropTypes.bool.isRequired,
     authError: PropTypes.object
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      form: {
-        email: '',
-        username: '',
-        password: '',
-        name: '',
-        title: '',
-        company: '',
-        intendedUse: '',
-        shouldContact: null
-      },
+  state = {
+    form: {
+      email: '',
+      username: '',
+      password: '',
+      name: '',
+      title: '',
+      company: '',
+      intendedUse: '',
+      shouldContact: null
+    },
 
-      // These determine which errors to show
-      blurred: {},
-      hasSubmitErrors: false,
+    // These determine which errors to show
+    blurred: {},
+    hasSubmitErrors: false,
 
-      loading: false,
-      response: null
-    };
-  },
+    loading: false,
+    response: null
+  };
 
-  login: function() {
+  login = () => {
     this.setState({ loading: false, response: null });
     this.props.login(this.state.form.email, this.state.form.password).then((data) => {
       if (data.isLoggedIn) {
         this.props.onLogin();
       }
     });
-  },
+  };
 
-  register: function() {
+  register = () => {
     const errors = Validate.user(this.state.form);
     if (!_.isEmpty(errors)) {
       this.setState({ hasSubmitErrors: true, loading: false });
@@ -73,15 +71,15 @@ const LoginForm = React.createClass({
         this.props.onRegister();
       }
     });
-  },
+  };
 
-  resetPassword: function() {
+  resetPassword = () => {
     Auth.startResetPassword(this.state.form.username, this.state.form.email)
       .then(NewUtils.getThen(this))
       .catch(NewUtils.getCatch(this));
-  },
+  };
 
-  submit: function(e) {
+  submit = (e) => {
     if (e) e.preventDefault();
 
     this.setState({ loading: true, response: null });
@@ -94,9 +92,9 @@ const LoginForm = React.createClass({
     } else if (activeTab === 'resetPassword') {
       this.resetPassword();
     }
-  },
+  };
 
-  render: function() {
+  render() {
     const activeTab = this.props.tab;
     const loading = this.state.loading || this.props.authLoading;
 
@@ -213,6 +211,6 @@ const LoginForm = React.createClass({
       </div>
     </div>);
   }
-});
+}
 
 export default AuthRedux.connect()(LoginForm);
