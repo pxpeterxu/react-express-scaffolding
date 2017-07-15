@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import NewUtils from './NewUtils';
@@ -14,18 +15,18 @@ const tabOptions = {
 
 const LoginForm = React.createClass({
   propTypes: {
-    onLogin: React.PropTypes.func,
-    onRegister: React.PropTypes.func,
+    onLogin: PropTypes.func,
+    onRegister: PropTypes.func,
 
     // Tab is controlled to allow LoginModal to adjust its size
-    tab: React.PropTypes.oneOf(['login', 'register']),
-    onTabChange: React.PropTypes.func.isRequired,
+    tab: PropTypes.oneOf(['login', 'register']),
+    onTabChange: PropTypes.func.isRequired,
 
     // Injected
-    login: React.PropTypes.func.isRequired,
-    registerUser: React.PropTypes.func.isRequired,
-    authLoading: React.PropTypes.bool.isRequired,
-    authError: React.PropTypes.object
+    login: PropTypes.func.isRequired,
+    registerUser: PropTypes.func.isRequired,
+    authLoading: PropTypes.bool.isRequired,
+    authError: PropTypes.object
   },
 
   getInitialState: function() {

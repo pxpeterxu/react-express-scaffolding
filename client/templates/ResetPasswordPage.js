@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { Link } from 'react-router';
 
@@ -9,10 +10,10 @@ const ResetPasswordPage = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
-    params: React.PropTypes.shape({
-      token: React.PropTypes.string
+    params: PropTypes.shape({
+      token: PropTypes.string
     }),
-    token: React.PropTypes.string
+    token: PropTypes.string
   },
 
   getInitialState: function() {

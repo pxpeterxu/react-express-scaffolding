@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import _ from 'lodash';
 
@@ -33,21 +34,21 @@ const Tabs = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
-    tabs: React.PropTypes.oneOfType([
-      React.PropTypes.object,
-      React.PropTypes.array
+    tabs: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.array
     ]).isRequired,
-    value: React.PropTypes.oneOfType([
-      React.PropTypes.string,
-      React.PropTypes.number,
-      React.PropTypes.bool
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.bool
     ]),
-    onChange: React.PropTypes.func.isRequired,
-    disabledTabs: React.PropTypes.oneOfType([
-      React.PropTypes.array,
-      React.PropTypes.object
+    onChange: PropTypes.func.isRequired,
+    disabledTabs: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.object
     ]),
-    className: React.PropTypes.string
+    className: PropTypes.string
   },
 
   onChange: function(tab, e) {

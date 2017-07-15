@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
@@ -9,11 +10,11 @@ const MainPage = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
-    children: React.PropTypes.node,
-    router: React.PropTypes.object.isRequired,
+    children: PropTypes.node,
+    router: PropTypes.object.isRequired,
 
     // Redux injected
-    isLoggedIn: React.PropTypes.bool,
+    isLoggedIn: PropTypes.bool,
   },
 
   render: function() {

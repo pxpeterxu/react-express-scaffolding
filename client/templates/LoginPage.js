@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { withRouter } from 'react-router';
 
@@ -7,11 +8,11 @@ import LoginForm from './LoginForm';
 
 const LoginPage = React.createClass({
   propTypes: {
-    showLogo: React.PropTypes.bool,
+    showLogo: PropTypes.bool,
 
     // Injected
-    location: React.PropTypes.object,
-    router: React.PropTypes.object,
+    location: PropTypes.object,
+    router: PropTypes.object,
   },
 
   getInitialState: function() {

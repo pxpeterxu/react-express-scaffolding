@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { LinkContainer } from 'react-router-bootstrap';
 import { withRouter } from 'react-router';
@@ -18,13 +19,13 @@ const NavbarUser = React.createClass({
 
   propTypes: {
     // withRouter injected
-    router: React.PropTypes.object,
+    router: PropTypes.object,
 
     // Redux injected
-    isLoggedIn: React.PropTypes.bool,
-    username: React.PropTypes.string,
-    authLoading: React.PropTypes.bool.isRequired,
-    logout: React.PropTypes.func
+    isLoggedIn: PropTypes.bool,
+    username: PropTypes.string,
+    authLoading: PropTypes.bool.isRequired,
+    logout: PropTypes.func
   },
 
   logout: function() {

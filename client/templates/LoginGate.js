@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import Auth from '../js/redux/Auth';
@@ -9,15 +10,15 @@ const LoginGate = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
-    updateLocalTutorialStep: React.PropTypes.func.isRequired,
-    componentOnceLoggedIn: React.PropTypes.any.isRequired,
-    showLogo: React.PropTypes.bool,
+    updateLocalTutorialStep: PropTypes.func.isRequired,
+    componentOnceLoggedIn: PropTypes.any.isRequired,
+    showLogo: PropTypes.bool,
 
     // Injected
-    logout: React.PropTypes.func.isRequired,
-    username: React.PropTypes.string,
-    authStateLoaded: React.PropTypes.bool.isRequired,
-    isLoggedIn: React.PropTypes.bool.isRequired
+    logout: PropTypes.func.isRequired,
+    username: PropTypes.string,
+    authStateLoaded: PropTypes.bool.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired
   },
 
   componentWillMount: function() {
