@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Auth from '../js/Auth';
 import NewUtils from './NewUtils';
@@ -11,6 +12,15 @@ class ActivatePage extends React.PureComponent {
     pluginInstalled: false,
     isChrome: true
   };
+
+  static propTypes = {
+    params: PropTypes.shape({
+      activationKey: PropTypes.string,
+      username: PropTypes.string
+    }),
+    activationKey: PropTypes.string,
+    username: PropTypes.string,
+  }
 
   componentWillMount() {
     const activationKey = this.props.params ?

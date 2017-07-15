@@ -22,15 +22,10 @@
   ],
 
   "rules": {
-// Error in airbnb style
     "react/require-extension": 0,
-
-    // airbnb style overrides
     "eqeqeq": ["error", "allow-null"],
     "no-trailing-spaces": 2,
     "space-before-function-paren": [2, "never"],
-
-    // We"re significantly more permissive
     "func-names": 0,
     "max-len": 0,
     "no-nested-ternary": 0,
@@ -83,6 +78,8 @@
     "react/self-closing-comp": 0,
     "react/jsx-filename-extension": 0,
     "react/forbid-prop-types": 0,
-    "react/no-unused-prop-types": 0
+    "react/require-default-props": 0,
+    "react/no-unused-prop-types": 0,
+    "react/no-unescaped-entities": 0
   }
 }
