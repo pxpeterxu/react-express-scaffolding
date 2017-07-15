@@ -1,0 +1,19 @@
+[
+  "axios",
+  "es6-promise",
+  "es6-object-assign",
+  "immutable",
+  "lodash",
+  "react",
+  "react-addons-pure-render-mixin",
+  "react-bootstrap/lib/Nav",
+  "react-bootstrap/lib/Navbar",
+  "react-bootstrap/lib/NavItem",
+  "react-dom",
+  "react-ga",
+  "react-redux",
+  "react-router",
+  "react-router-bootstrap",
+  "react-router-scroll",
+  "redux"
+]

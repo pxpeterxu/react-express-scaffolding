@@ -1,8 +1,11 @@
 'use strict';
 
-var React = require('react');
+import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 var HomePage = React.createClass({
+  mixins: [PureRenderMixin],
+
   render: function() {
     return (<div>
       <div className="jumbotron">

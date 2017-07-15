@@ -1,53 +1,83 @@
-var randomstring = require('randomstring');
-var passport = require('passport');
-var Promise = require('bluebird');
+'use strict';
 
-var LocalStrategy = require('passport-local').Strategy;
-var User = require('../models/User');
-var logger = require('./logger');
+import PassportLocal from 'passport-local';
+import User from '../models/User';
+import misc from './misc';
+
+const LocalStrategy = PassportLocal.Strategy;
+
+var AuthError = function(error) {
+  misc.WAError.call(this, [error]);
+  this.errorObject = error;
+};
+AuthError.prototype = misc.WAError.prototype;
+AuthError.prototype.constructor = AuthError;
 
 var serializedAttributes = ['id', 'username', 'email', 'password', 'activated'];
+
+/**
+ * Get output based on a user's data, used for a response for logins
+ * or isLoggedIn
+ * @param {Object} user     (optional) sequelize User object
+ * @param {Object} session  (optional) session variables for use in yukataTutorialCompleted
+ * @return {Object} response to send
+ */
+function getUserOutput(user, session) {
+  return {
+    success: true,
+    isLoggedIn: !!user,
+    username: user ? user.username : null,
+    email: user ? user.email : null,
+    activated: user ? user.activated : null,
+  };
+}
 
 var localStrategy = new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password'
 }, function(username, password, done) {
   var user = null;
-  var token = null;
-  User.findOne({
-    where: {
-      $or: [
-        { email: username },
-        { username: username }
-      ]
-    },
-    attributes: serializedAttributes
-  }).then(function(dbUser) {
-    user = dbUser;
+
+  Promise.all([
+    User.findOne({
+      where: {
+        $or: [
+          { email: username },
+          { username: username }
+        ]
+      },
+      attributes: serializedUserColumns.concat(['password'])
+    })
+  ]).then(function(results) {
+    user = results[0];
+    var adminUser = results[1];
+
     if (user === null) {
-      return done(null, false, {
+      throw new AuthError({
         errType: 'username',
         message: 'We could not find a user with the given username or email'
       });
     }
-    
+
     return user.comparePassword(password);
-  }).then(function(matched) {      
+  }).then(function(matched) {
     if (!matched) {
-      return done(null, false, {
+      throw new AuthError({
         errType: 'password',
         message: 'The password is incorrect'
       });
     }
-  }).then(function() {
-    return done(null, user, {
+
+    done(null, user, Object.assign({
       message: 'You have successfully signed in!',
-      token: token,
-      tutorialStep: user.tutorialStep
-    });
+      token: token
+    }, getUserOutput(user)));
   }).catch(function(err) {
-    logger.warn('Error while logging in', err.stack);
-    return done(err);
+    if (err instanceof AuthError) {
+      return done(null, false, err.errorObject);
+    } else {
+      return done(err, false, err);
+    }
   });
 });
 
@@ -58,14 +88,19 @@ var serializeUser = function(user, done) {
 var deserializeUser = function(id, done) {
   User.findOne({
     where: { id: id },
-    attributes: serializedAttributes
+    attributes: serializedUserColumns
   }).then(function(user) {
     done(null, user);
+    return null;
   }).catch(function(err) {
     done(err);
   });
 };
 
+/**
+ * Node.js middleware that ensures user is logged in,
+ * and if not, return a default message
+ */
 var loginCheck = function(req, res, next) {
   if (!req.user) {
     res.json({
@@ -75,9 +110,26 @@ var loginCheck = function(req, res, next) {
     });
     return;
   }
-  
+
   next();
 };
+
+/**
+ * Node.js middleware that ensures user is logged in AND is an admin
+ */
+function adminCheck(req, res, next) {
+  loginCheck(req, res, function() {
+    if (req.user.role !== 'Administrator') {
+      res.json({
+        success: false,
+        message: ['You are not authorized to see this page'],
+        errType: 'notAuthorized'
+      });
+    } else {
+      next();
+    }
+  });
+}
 
 var loadAuth = function(passport) {
   passport.serializeUser(serializeUser);
@@ -88,7 +140,9 @@ var loadAuth = function(passport) {
 module.exports = {
   serializeUser: serializeUser,
   deserializeUser: deserializeUser,
+  getUserOutput: getUserOutput,
   localStrategy: localStrategy,
   loadAuth: loadAuth,
-  loginCheck: loginCheck
+  loginCheck: loginCheck,
+  adminCheck: adminCheck,
 };

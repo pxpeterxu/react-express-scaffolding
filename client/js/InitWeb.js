@@ -1,10 +1,14 @@
 'use strict';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var MainRouter = require('../templates/MainRouter');
+import React from 'react';
+import ReactDOM from 'react-dom';
+require('es6-promise').polyfill();
+require('es6-object-assign').polyfill();
+import MainRouter from '../templates/MainRouter';
 
-ReactDOM.render(
-  React.createElement(MainRouter),
-  document.getElementById('react-main')
-);
+document.addEventListener('DOMContentLoaded', function() {
+  ReactDOM.render(
+    React.createElement(MainRouter),
+    document.getElementById('react-main')
+  );
+});

@@ -1,82 +1,27 @@
 'use strict';
 
-var React = require('react');
-var router = require('react-router');
-var ReactBootstrap = require('react-bootstrap');
+import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
+import { Link } from 'react-router';
+import Navbar from 'react-bootstrap/lib/Navbar';
+import Nav from 'react-bootstrap/lib/Nav';
 
-var Auth = require('../js/Auth');
-var ReactUtils = require('./ReactUtils');
-
-var Navbar = ReactBootstrap.Navbar;
-var Nav = ReactBootstrap.Nav;
-var NavItem = ReactBootstrap.NavItem;
-
-var OverlayTrigger = ReactBootstrap.OverlayTrigger;
-var Tooltip = ReactBootstrap.Tooltip;
-
-var Link = router.Link;
+import Auth from '../js/Auth';
+import NavbarUser from './NavbarUser';
+import NewUtils from './NewUtils';
 
 var MainPage = React.createClass({
-  contextTypes: {
-    history: React.PropTypes.object.isRequired
+  mixins: [PureRenderMixin],
+
+  propTypes: {
+    children: React.PropTypes.node,
+    router: React.PropTypes.object.isRequired,
+
+    // Redux injected
+    isLoggedIn: React.PropTypes.bool,
   },
-  
-  getInitialState: function() {
-    return {
-      loggedIn: false,
-      search: '',
-      
-      isChrome: false,
-      pluginInstalled: false
-    };
-  },
-  
-  componentWillMount: function() {
-    Auth.onLogin['MainPage'] = this.onLogin;
-    
-    Auth.isLoggedIn().then(function(data) {
-      if (data.success) {
-        this.setState({
-          loggedIn: data.loggedIn,
-          username: data.username
-        });
-      }
-    }.bind(this)).catch(function(data) {
-      this.setState({ loggedIn: false });
-    }.bind(this));
-  },
-  
-  onLogin: function(data) {
-    this.setState({
-      loggedIn: true,
-      username: data.username
-    });
-  },
-  
-  logout: function(e) {
-    if (e) e.preventDefault();
-    
-    this.setState({ logoutLoading: true });
-    
-    Auth.logout().then(function(data) {
-      if (data.success) {
-        this.setState({
-          logoutLoading: false,
-          loggedIn: false,
-          username: null
-        });
-        this.context.history.replaceState(null, '/');
-      }
-    }.bind(this)).catch(function(data) {
-      this.setState({ logoutLoading: false });
-    }.bind(this));
-  },
-  
+
   render: function() {
-    var loggedIn = this.state.loggedIn;
-    var username = this.state.username;
-    var logoutLoading = this.state.logoutLoading;
-    
     return (
       <div>
         <Navbar fixedTop>
@@ -91,27 +36,14 @@ var MainPage = React.createClass({
           <Navbar.Collapse>
             <Nav pullLeft>
             </Nav>
-            {loggedIn ? (  
-              <Nav pullRight>
-                <Navbar.Text><strong>{username}</strong></Navbar.Text>
-                <NavItem href="#/changePassword">Change password</NavItem>
-                <NavItem href="#" onClick={this.logout}
-                    disabled={logoutLoading}>
-                  {logoutLoading ? 'Signing out...' : 'Sign out'}
-                </NavItem>
-              </Nav>
-            ) : (
-              <Nav pullRight>
-                <NavItem href="#/login?redirect=/">Register or sign in</NavItem>
-              </Nav>
-            )}
+            <NavbarUser />
           </Navbar.Collapse>
         </Navbar>
-        
+
         <div className="navbar-offset">
           {this.props.children}
         </div>
-        
+
         <footer className="footer">
           <div className="container">
             <p>

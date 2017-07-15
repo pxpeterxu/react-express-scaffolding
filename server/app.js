@@ -1,19 +1,19 @@
 'use strict';
 
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var morgan = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var passport = require('passport');
-var session = require('express-session');
-var MySQLSessionStore = require('express-mysql-session');
-var routes = require('./app/main');
-var config = require('./app/config');
-var logger = require('./app/libs/logger');
-var auth = require('./app/libs/auth');
-var cors = require('./app/libs/cors');
+import express from 'express';
+import path from 'path';
+import favicon from 'serve-favicon';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import passport from 'passport';
+import session from 'express-session';
+import MySQLSessionStore from 'express-mysql-session';
+import routes from './app/main';
+import config from './app/config';
+import logger from './app/libs/logger';
+import auth from './app/libs/auth';
+import cors from './app/libs/cors';
 
 var app = express();
 
@@ -40,7 +40,7 @@ var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
     res.header('Access-Control-Allow-Credentials', 'true');
   }
-  
+
   next();
 };
 
@@ -87,7 +87,7 @@ if (app.get('env') === 'development') {
       error: err,
       title: 'error'
     });
-    
+
     res.render('error', {
       message: err.message,
       error: err,

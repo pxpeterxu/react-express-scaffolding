@@ -1,69 +1,54 @@
 'use strict';
 
-var React = require('react');
+import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-var LoginPage = require('./LoginPage');
-var Auth = require('../js/Auth');
+import Auth from '../js/redux/Auth';
+import NewUtils from './NewUtils';
+import LoginPage from './LoginPage';
 
 // This component will do a login
 var LoginGate = React.createClass({
-  getInitialState: function() {
-    return {
-      loggedIn: null
-    };
+  mixins: [PureRenderMixin],
+
+  propTypes: {
+    updateLocalTutorialStep: React.PropTypes.func.isRequired,
+    componentOnceLoggedIn: React.PropTypes.any.isRequired,
+    showLogo: React.PropTypes.bool,
+
+    // Injected
+    logout: React.PropTypes.func.isRequired,
+    username: React.PropTypes.string,
+    authStateLoaded: React.PropTypes.bool.isRequired,
+    isLoggedIn: React.PropTypes.bool.isRequired
   },
-    
+
   componentWillMount: function() {
-    Auth.isLoggedIn().then(function(data) {
-      if (data.success) {
-        this.setState({
-          loggedIn: data.loggedIn,
-          username: data.username
-        });
-      }
-    }.bind(this)).catch(function(err) {
-      console.log(err);
-      this.setState({ loggedIn: false });
-    }.bind(this));
+    // Fetch current logged-in user
+    Auth.getOrFetchLoginState(this.props);
   },
-  
-  loginSuccess: function(data) {
-    this.setState({
-      loggedIn: true,
-      username: data.username
-    });
-  },
-  
-  logout: function() {
-    Auth.logout().then(function(data) {
-      if (data.success) {
-        this.setState({ loggedIn: false });
-      } else {
-        throw data;
-      }
-      
-      return data;
-    }.bind(this));
-  },
-  
+
   render: function() {
     var component = this.props.componentOnceLoggedIn;
-    
-    if (this.state.loggedIn === null) {
+    var logout = this.props.logout;
+    var username = this.props.username;
+    var authStateLoaded = this.props.authStateLoaded;
+    var isLoggedIn = this.props.isLoggedIn;
+
+    if (!authStateLoaded) {
       return <div>Please wait... loading your account</div>;
-    } else if (!this.state.loggedIn) {
+    } else if (!isLoggedIn) {
       return (
         <LoginPage
-          success={this.loginSuccess}
-          showLogo={this.props.showLogo} />
+            showLogo={this.props.showLogo} />
       );
     } else {
       return React.createElement(component, {
-        username: this.state.username,
-        logout: this.logout
+        username: username,
+        logout: logout
       });
-    };
+    }
   }
 });
 
-module.exports = LoginGate;
+module.exports = Auth.connect()(LoginGate);

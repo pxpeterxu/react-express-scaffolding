@@ -1,72 +1,56 @@
-'use strict';
+import React from 'react';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { Router, browserHistory, applyRouterMiddleware } from 'react-router';
+import { useScroll } from 'react-router-scroll';
 
-var React = require('react');
-var router = require('react-router');
-var createHashHistory = require('history').createHashHistory;
-var ga = require('react-ga');
+import ga from 'react-ga';
 
-var MainPage = require('./MainPage');
-var HomePage = require('./HomePage');
-var LoginPage = require('./LoginPage');
-var ActivatePage = require('./ActivatePage');
-var ResetPasswordPage = require('./ResetPasswordPage');
+import Auth from '../js/redux/Auth';
+import MainReducer from '../js/redux/MainReducer';
+import Constants from '../js/Constants';
+import routes from './Routes';
 
-var Router = router.Router;
-var Route = router.Route;
-var IndexRoute = router.IndexRoute;
-var Redirect = router.Redirect;
+const preloadedState = window.__REDUX_STATE__;
+const store = createStore(MainReducer, preloadedState);
 
-var history = createHashHistory();
+export default class MainRouter extends React.Component {
+  componentWillMount() {
+    Auth.getLoginState(store.dispatch, store.getState());
+    ga.initialize(Constants.googleAnalyticsId);
+    browserHistory.listen((location) => {
+      ga.pageview(location.pathname);
+    });
+  }
 
-var MainRouter = React.createClass({
-  requireLoggedIn: function(nextState, replaceState, callback) {
-    var redirectToLogin = function() {
-      replaceState({}, '/login', {
-        redirect: nextState.location.pathname
+  requireLoggedIn(nextState, replace, callback) {
+    const redirectToLogin = () => {
+      replace({
+        pathname: '/login',
+        query: { redirect: nextState.location.pathname }
       });
       callback();
     };
-    
-    // Get the token if we have one
-    Auth.isLoggedIn().then(function(data) {
-      console.log(data);
+
+    return Auth.getLoginState(store.dispatch, store.getState()).then(function(data) {
       // Get the login status, and redirect to callback
-      if (data.loggedIn) {
+      if (data.isLoggedIn) {
         callback();
       } else {
         redirectToLogin();
       }
-    }).catch(function(data) {
+    }).catch(() => {
       redirectToLogin();
     });
-  },
-  
-  componentDidMount: function() {
-    /*
-    ga.initialize('ENTER-YOUR-GA-TOKEN');
-  
-    history.listen(function(location) {
-      ga.pageview(location.pathname);
-    });
-    */
-  },
-  
-  render: function() {
+  }
+
+  render() {
     return (
-      <Router history={history}>
-        <Route path="/" component={MainPage}>
-          <IndexRoute component={HomePage} />
-          <Route path="/index" component={HomePage} />
-          <Route path="/login" component={LoginPage} />
-          <Route path="/register" component={LoginPage} />
-          <Route path="/startResetPassword" component={LoginPage} />
-          <Route path="/resetPassword/:username/:token" component={ResetPasswordPage} />
-          <Route path="/activate/:username/:activationKey" component={ActivatePage} />
-          <Route path="/changePassword" component={ResetPasswordPage} onEnter={this.requireLoggedIn} />
-        </Route>
-      </Router>
+      <Provider store={store}>
+        <Router history={browserHistory} render={applyRouterMiddleware(useScroll())}>
+          {routes(this.requireLoggedIn)}
+        </Router>
+      </Provider>
     );
   }
-});
-
-module.exports = MainRouter;
+}

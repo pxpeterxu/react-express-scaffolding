@@ -1,11 +1,11 @@
-var Sequelize = require('sequelize');
-var db = require('../db');
+import Sequelize from 'sequelize';
+import promisify from 'es6-promisify';
+import db from '../db';
 
 // For password generation
-var Promise = require('bluebird');
-var bcrypt = require('bcryptjs');
-var hash = Promise.promisify(bcrypt.hash.bind(bcrypt));
-var compare = Promise.promisify(bcrypt.compare.bind(bcrypt));
+import bcrypt from 'bcryptjs';
+var hash = promisify(bcrypt.hash.bind(bcrypt));
+var compare = promisify(bcrypt.compare.bind(bcrypt));
 
 var User = db.define('User', {
   id: {

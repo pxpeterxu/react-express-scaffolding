@@ -1,11 +1,13 @@
-var passport = require('passport');
-var user = require('./user');
-var index = require('./index');
+'use strict';
+
+import passport from 'passport';
+import user from './user';
+import index from './index';
 
 var loadRoutes = function(app) {
   app.use('/user', user);
   app.use('/', index);
-  
+
   return app;
 };
 

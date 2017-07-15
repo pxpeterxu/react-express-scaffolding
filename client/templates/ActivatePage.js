@@ -1,56 +1,52 @@
 'use strict';
 
-var React = require('react');
-var axios = require('axios');
+import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-var Utility = require('../js/Utility');
-var Config = require('../js/Config');
+import Auth from '../js/Auth';
+import Utility from '../js/Utility';
+import Config from '../js/Config';
 
-var ReactUtils = require('./ReactUtils');
+import NewUtils from './NewUtils';
 
 var ActivatePage = React.createClass({
+  mixins: [PureRenderMixin],
+
   getInitialState: function() {
     return {
       activated: false,
       loading: true,
-      
+
       pluginInstalled: false,
       isChrome: true
     };
   },
-  
+
   componentWillMount: function() {
     var activationKey = this.props.params ?
       this.props.params.activationKey : this.props.activationKey;
     var username = this.props.params ? this.props.params.username : this.props.username;
-    
+
     this.setState({ loading: true, response: null });
-    
-    axios({
-      url: Config.host + '/user/activate/' + username + '/' + activationKey,
-      method: 'POST',
-      data: {
-        activationKey: activationKey,
-        username: username
-      }
-    })
-      .then(ReactUtils.defaultDone.bind(this))
-      .catch(ReactUtils.defaultFail.bind(this));
+
+    Auth.activate(username, activationKey)
+      .then(NewUtils.getThen(this))
+      .catch(NewUtils.getCatch(this));
   },
-  
+
   render: function() {
     return (
       <div className="container">
         <h1>Activating your account</h1>
-        
-        {this.state.loading && (        
+
+        {this.state.loading && (
           <div className="text-center">
             <p>Please wait while we try to activate your account:</p>
-            <img src="assets/loading.gif" alt="Loading..." />
+            <i className="fa fa-circle-o-notch fa-spin fa-3x"></i>
           </div>
         )}
-        
-        {ReactUtils.defaultRenderMessages(this.state.response)}
+
+        {NewUtils.renderResponse(this.state.response)}
       </div>
     );
   }

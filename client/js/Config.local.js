@@ -1,5 +1,6 @@
 var Config = {
-  host: 'http://localhost:60543'
+  environment: 'development',
+  host: 'http://localhost:61543'
 };
 
 module.exports = Config;

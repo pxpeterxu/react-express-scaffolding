@@ -1,5 +1,5 @@
-var Sequelize = require('sequelize');
-var db = require('../db');
+import Sequelize from 'sequelize';
+import db from '../db';
 
 var PasswordResetToken = db.define('PasswordResetToken', {
   id: {
@@ -17,9 +17,9 @@ var PasswordResetToken = db.define('PasswordResetToken', {
     unique: true
   }
 });
-  
+
 module.exports = PasswordResetToken;
 
 // At bottom of file due to circular requires
-var User = require('./User');
+import User from './User';
 PasswordResetToken.belongsTo(User, { foreignKey: 'userId', targetKey: 'id' });

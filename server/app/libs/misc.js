@@ -1,5 +1,7 @@
-var _ = require('lodash');
-var logger = require('./logger');
+'use strict';
+
+import _ from 'lodash';
+import logger from './logger';
 
 /**
  * Process Sequelize validation messages so that we only display
@@ -10,7 +12,7 @@ var logger = require('./logger');
 var oneMessagePerField = function(errors) {
   var hasError = {};
   var messages = [];
-  
+
   for (var i = 0; i !== errors.length; i++) {
     var error = errors[i];
     if (!hasError[error.path]) {
@@ -18,7 +20,7 @@ var oneMessagePerField = function(errors) {
       messages.push(error.message);
     }
   }
-  
+
   return messages;
 };
 
@@ -27,15 +29,15 @@ var oneMessagePerField = function(errors) {
  * and errTypes in catch() statements
  * @param errors  array of [{ message: '...', type: '...'}, ...]
  */
-var ApplicationError = function(errors) {
+var WAError = function(errors) {
   var messages = errors.map(function(err) {
     return err.message;
   });
   var errTypes = errors.map(function(err) {
     return err.type;
   });
-  
-  this.name = 'ApplicationError';
+
+  this.name = 'WAError';
   this.messages = messages;
   this.message = messages.join('\n');
   this.errTypes = errTypes;
@@ -54,8 +56,8 @@ var ResponseError = function(response) {
   this.stack = (new Error()).stack;
 };
 
-var buildApplicationError = function(message, type) {
-  return new ApplicationError([{ message: message, type: type }]);
+var buildWAError = function(message, type) {
+  return new WAError([{ message: message, type: type }]);
 };
 
 var defaultCatch = function(res) {
@@ -70,7 +72,7 @@ var defaultCatch = function(res) {
       });
     } else if (err instanceof ResponseError) {
       res.json(err.response);
-    } else if (err instanceof ApplicationError) {
+    } else if (err instanceof WAError) {
       // This is also an internally-generated error similar
       // to the above, except with details and futureproofing
       res.json({
@@ -91,10 +93,30 @@ var defaultCatch = function(res) {
   };
 };
 
+/**
+ * Middleware for disabling a feature
+ */
+function disabledMiddleware(req, res) {
+  res.json({
+    success: false,
+    messages: ['This feature is disabled'],
+    errTypes: ['disabled']
+  });
+}
+
+/**
+ * Middleware that automatically calls next()
+ */
+function doNothingMiddleware(req, res, next) {
+  next();
+}
+
 module.exports = {
   defaultCatch: defaultCatch,
-  ApplicationError: ApplicationError,
+  WAError: WAError,
   ResponseError: ResponseError,
-  buildApplicationError: buildApplicationError,
-  oneMessagePerField: oneMessagePerField
+  buildWAError: buildWAError,
+  oneMessagePerField: oneMessagePerField,
+  disabledMiddleware: disabledMiddleware,
+  doNothingMiddleware: doNothingMiddleware
 };

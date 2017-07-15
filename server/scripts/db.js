@@ -1,5 +1,5 @@
-var requireDir = require('require-dir');
-var db = require('../app/db');
+import requireDir from 'require-dir';
+import db from '../app/db';
 
 requireDir('../app/models');
 db.sync({ logging: console.log });

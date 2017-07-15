@@ -1,9 +1,9 @@
-@import "../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+$line-height-base: 1.4;  // Off-by-one errors result from default 1.42857
+@import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
 $fa-font-path: '../assets';  // Fonts are moved by the gulpfile for font-awesome
-@import "../node_modules/font-awesome/scss/font-awesome";
-
-@import "./sticky-footer.css";
+@import "../../node_modules/font-awesome/scss/font-awesome";
+@import "./sticky-footer";
 
 .navbar-offset {
   margin-top: 50px;

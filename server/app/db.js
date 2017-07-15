@@ -1,6 +1,8 @@
-var config = require('./config');
-var Sequelize = require('sequelize');
-var logger = require('./libs/logger');
+'use strict';
+
+import config from './config';
+import Sequelize from 'sequelize';
+import logger from './libs/logger';
 
 var options = {
   logging: false

@@ -1,4 +1,5 @@
 var Config = {
+  environment: 'production',
   host: 'http://example.com'
 };
 

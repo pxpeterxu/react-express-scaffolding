@@ -1,5 +1,5 @@
-var Sequelize = require('sequelize');
-var db = require('../db');
+import Sequelize from 'sequelize';
+import db from '../db';
 
 var Session = db.define('Session', {
   id: {
