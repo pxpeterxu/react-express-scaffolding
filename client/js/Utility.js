@@ -1,7 +1,8 @@
-'use strict';
+function getAxiosData(response) { return response.data; }
 
-var getAxiosData = function(response) { return response.data; };
-
-module.exports = {
+const exported = {
   getAxiosData: getAxiosData
 };
+
+export default exported;
+export { getAxiosData };

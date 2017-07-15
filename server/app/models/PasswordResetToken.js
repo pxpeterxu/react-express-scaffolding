@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import db from '../db';
 
-var PasswordResetToken = db.define('PasswordResetToken', {
+let PasswordResetToken = db.define('PasswordResetToken', {
   id: {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -18,7 +18,7 @@ var PasswordResetToken = db.define('PasswordResetToken', {
   }
 });
 
-module.exports = PasswordResetToken;
+export default PasswordResetToken;
 
 // At bottom of file due to circular requires
 import User from './User';

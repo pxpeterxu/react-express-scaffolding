@@ -1,7 +1,5 @@
-'use strict';
-
-var usernameRegex = /^\w[\w-]*\w$/;
-var emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+let usernameRegex = /^\w[\w-]*\w$/;
+let emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 /**
  * Validate a newly-created user account, putting errors in each
@@ -10,7 +8,7 @@ var emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0
  * @return null if valid, object with { [field]: [errorMessage1, errorMessage2] } if not
  */
 function validateUser(user) {
-  var errors = {};
+  let errors = {};
   if (!user.username) {
     errors.username = 'Please enter a username.';
   } else if (!usernameRegex.test(user.username)) {
@@ -29,6 +27,9 @@ function validateUser(user) {
   return errors;
 }
 
-module.exports = {
-  user: validateUser,
+const exported = {
+  user: validateUser
 };
+
+export default exported;
+export { validateUser as user };

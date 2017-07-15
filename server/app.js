@@ -1,5 +1,3 @@
-'use strict';
-
 import express from 'express';
 import path from 'path';
 import favicon from 'serve-favicon';
@@ -15,7 +13,7 @@ import logger from './app/libs/logger';
 import auth from './app/libs/auth';
 import cors from './app/libs/cors';
 
-var app = express();
+let app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -34,7 +32,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Allow cross domain from Chrome plugins
-var allowCrossDomain = function(req, res, next) {
+function allowCrossDomain(req, res, next) {
   if (req.headers.origin &&
       req.headers.origin.indexOf('chrome-extension://') === 0) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -45,8 +43,8 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 // Authentication
-var dbDetails = config.dbDetails;
-var sessionStore = new MySQLSessionStore({
+let dbDetails = config.dbDetails;
+let sessionStore = new MySQLSessionStore({
   host: dbDetails.host,
   port: dbDetails.port,
   user: dbDetails.user,
@@ -69,7 +67,7 @@ routes(app);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  let err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
@@ -108,4 +106,4 @@ app.use(function(err, req, res, next) {
 });
 
 
-module.exports = app;
+export default app;

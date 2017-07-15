@@ -1,19 +1,17 @@
-'use strict';
-
 import PassportLocal from 'passport-local';
 import User from '../models/User';
 import misc from './misc';
 
 const LocalStrategy = PassportLocal.Strategy;
 
-var AuthError = function(error) {
+function AuthError(error) {
   misc.WAError.call(this, [error]);
   this.errorObject = error;
-};
+}
 AuthError.prototype = misc.WAError.prototype;
 AuthError.prototype.constructor = AuthError;
 
-var serializedAttributes = ['id', 'username', 'email', 'password', 'activated'];
+let serializedAttributes = ['id', 'username', 'email', 'password', 'activated'];
 
 /**
  * Get output based on a user's data, used for a response for logins
@@ -32,11 +30,11 @@ function getUserOutput(user, session) {
   };
 }
 
-var localStrategy = new LocalStrategy({
+let localStrategy = new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password'
 }, function(username, password, done) {
-  var user = null;
+  let user = null;
 
   Promise.all([
     User.findOne({
@@ -50,7 +48,7 @@ var localStrategy = new LocalStrategy({
     })
   ]).then(function(results) {
     user = results[0];
-    var adminUser = results[1];
+    let adminUser = results[1];
 
     if (user === null) {
       throw new AuthError({
@@ -81,11 +79,11 @@ var localStrategy = new LocalStrategy({
   });
 });
 
-var serializeUser = function(user, done) {
+function serializeUser(user, done) {
   done(null, user.id);
-};
+}
 
-var deserializeUser = function(id, done) {
+function deserializeUser(id, done) {
   User.findOne({
     where: { id: id },
     attributes: serializedUserColumns
@@ -95,13 +93,13 @@ var deserializeUser = function(id, done) {
   }).catch(function(err) {
     done(err);
   });
-};
+}
 
 /**
  * Node.js middleware that ensures user is logged in,
  * and if not, return a default message
  */
-var loginCheck = function(req, res, next) {
+function loginCheck(req, res, next) {
   if (!req.user) {
     res.json({
       success: false,
@@ -112,7 +110,7 @@ var loginCheck = function(req, res, next) {
   }
 
   next();
-};
+}
 
 /**
  * Node.js middleware that ensures user is logged in AND is an admin
@@ -131,18 +129,21 @@ function adminCheck(req, res, next) {
   });
 }
 
-var loadAuth = function(passport) {
+function loadAuth(passport) {
   passport.serializeUser(serializeUser);
   passport.deserializeUser(deserializeUser);
   passport.use(localStrategy);
-};
+}
 
-module.exports = {
+const exported = {
   serializeUser: serializeUser,
   deserializeUser: deserializeUser,
   getUserOutput: getUserOutput,
   localStrategy: localStrategy,
   loadAuth: loadAuth,
   loginCheck: loginCheck,
-  adminCheck: adminCheck,
+  adminCheck: adminCheck
 };
+
+export default exported;
+export { serializeUser, deserializeUser, getUserOutput, localStrategy, loadAuth, loginCheck, adminCheck };

@@ -4,10 +4,10 @@ import db from '../db';
 
 // For password generation
 import bcrypt from 'bcryptjs';
-var hash = promisify(bcrypt.hash.bind(bcrypt));
-var compare = promisify(bcrypt.compare.bind(bcrypt));
+let hash = promisify(bcrypt.hash.bind(bcrypt));
+let compare = promisify(bcrypt.compare.bind(bcrypt));
 
-var User = db.define('User', {
+let User = db.define('User', {
   id: {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -65,4 +65,4 @@ var User = db.define('User', {
   }
 });
 
-module.exports = User;
+export default User;

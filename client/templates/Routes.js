@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
@@ -9,7 +7,7 @@ import LoginPage from './LoginPage';
 import ActivatePage from './ActivatePage';
 import ResetPasswordPage from './ResetPasswordPage';
 
-module.exports = (requireLoggedIn) => (
+export default (requireLoggedIn) => (
   <Route path="/" component={MainPage}>
     <IndexRoute component={HomePage} />
     <Route path="/index" component={HomePage} />

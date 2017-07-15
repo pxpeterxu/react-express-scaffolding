@@ -1,6 +1,4 @@
-'use strict';
-
-var React = require('react');
+import React from 'react';
 
 /**
  * Normalize an options array for a <select> to be the format
@@ -29,7 +27,7 @@ function normalizeOptions(options) {
   return options;
 }
 
-var Tabs = React.createClass({
+let Tabs = React.createClass({
   propTypes: {
     tabs: React.PropTypes.oneOfType([
       React.PropTypes.object,
@@ -59,19 +57,19 @@ var Tabs = React.createClass({
   },
 
   render: function() {
-    var tabs = normalizeOptions(this.props.tabs);
-    var activeTab = this.props.value;
-    var className = this.props.className || 'nav nav-tabs';
-    var disabledTabs = this.props.disabledTabs;
+    let tabs = normalizeOptions(this.props.tabs);
+    let activeTab = this.props.value;
+    let className = this.props.className || 'nav nav-tabs';
+    let disabledTabs = this.props.disabledTabs;
 
     return (
       <ul className={className} role="navigation">
         {tabs.map(function renderTab(option) {
-          var tab = option.value;
-          var label = option.label;
+          let tab = option.value;
+          let label = option.label;
 
-          var tabClassName = null;
-          var onClick = this.onChange.bindMemoized(this, tab);
+          let tabClassName = null;
+          let onClick = this.onChange.bindMemoized(this, tab);
 
           if (activeTab === tab) {
             tabClassName = 'active';
@@ -94,4 +92,4 @@ var Tabs = React.createClass({
   }
 });
 
-module.exports = Tabs;
+export default Tabs;

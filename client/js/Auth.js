@@ -1,5 +1,3 @@
-'use strict';
-
 import axios from './Axios';
 
 import Config from './Config';
@@ -11,7 +9,7 @@ import Config from './Config';
  * @param password
  * @return Promise.<object>
  */
-var login = function(email, password) {
+function login(email, password) {
   return axios({
     url: Config.host + '/user/login',
     method: 'post',
@@ -21,41 +19,41 @@ var login = function(email, password) {
     },
     withCredentials: true
   });
-};
+}
 
 /**
  * Check whether we are already logged in
  * @return Promise.{loggedIn, username}
  */
-var isLoggedIn = function() {
+function isLoggedIn() {
   return axios({
     url: Config.host + '/user/isLoggedin'
   });
-};
+}
 
 /**
  * Sign out of a user
  * @return {Promise.<Object>} response data
  */
-var logout = function() {
+function logout() {
   return axios({
     url: Config.host + '/user/logout',
     method: 'post'
   });
-};
+}
 
 /**
  * Register a user with given info
  * @param user  user with email, username, password
  * @return Promise.<object>
  */
-var register = function(user) {
+function register(user) {
   return axios({
     url: Config.host + '/user/register',
     data: user,
     method: 'post'
   });
-};
+}
 
 /**
  * Set the tutorial state that a user is at
@@ -63,13 +61,13 @@ var register = function(user) {
  * @example Auth.thenTutorialStep('pressToRecord').then...
  * @return Promise.<object>
  */
-var setTutorialStep = function(step) {
+function setTutorialStep(step) {
   return axios({
     url: Config.host + '/user/tutorialStep',
     data: { step: step },
     method: 'post'
   });
-};
+}
 
 /**
  * Sets whether we've completed the Yukata interface tutorial
@@ -90,13 +88,13 @@ function setYukataTutorialCompleted(completed) {
  * @param email       email of user to reset password for
  * @return Promise.<object>
  */
-var startResetPassword = function(username, email) {
+function startResetPassword(username, email) {
   return axios({
     url: Config.host + '/user/startResetPassword',
     data: { username: username, email: email },
     method: 'post'
   });
-};
+}
 
 /**
  * Activate a user's account so that they can use the
@@ -105,25 +103,25 @@ var startResetPassword = function(username, email) {
  * @param activationkey  secret activation key
  * @return Promise.<data>
  */
-var activate = function(username, activationKey) {
+function activate(username, activationKey) {
   return axios({
     url: Config.host + '/user/activate/' + username + '/' + activationKey,
     method: 'post'
   });
-};
+}
 
 /**
  * Check if a password reset token is valid
  * @param token       password reset token to use
  * @return Promise.<data>
  */
-var isValidPasswordResetToken = function(token) {
+function isValidPasswordResetToken(token) {
   return axios({
     url: Config.host + '/user/isValidPasswordResetToken',
     method: 'get',
     params: { token: token }
   });
-};
+}
 
 /**
  * Reset the password using a password reset token
@@ -131,15 +129,15 @@ var isValidPasswordResetToken = function(token) {
  * @param password    new password to use
  * @return Promise.<data>
  */
-var resetPassword = function(token, password) {
+function resetPassword(token, password) {
   return axios({
     url: Config.host + '/user/resetPassword',
     method: 'post',
     data: { token: token, password: password }
   });
-};
+}
 
-module.exports = {
+const exported = {
   login: login,
   isLoggedIn: isLoggedIn,
   logout: logout,
@@ -149,5 +147,8 @@ module.exports = {
   setYukataTutorialCompleted: setYukataTutorialCompleted,
   startResetPassword: startResetPassword,
   isValidPasswordResetToken: isValidPasswordResetToken,
-  resetPassword: resetPassword,
+  resetPassword: resetPassword
 };
+
+export default exported;
+export { login, isLoggedIn, logout, register, activate, setTutorialStep, setYukataTutorialCompleted, startResetPassword, isValidPasswordResetToken, resetPassword };

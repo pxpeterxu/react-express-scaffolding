@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import _ from 'lodash';
 import { withRouter } from 'react-router';
@@ -7,7 +5,7 @@ import { withRouter } from 'react-router';
 import NewUtils from './NewUtils';
 import LoginForm from './LoginForm';
 
-var LoginPage = React.createClass({
+let LoginPage = React.createClass({
   propTypes: {
     showLogo: React.PropTypes.bool,
 
@@ -24,7 +22,7 @@ var LoginPage = React.createClass({
   },
 
   setTabFromUrl: function(props) {
-    var pathname = _.get(props, 'location.pathname');
+    let pathname = _.get(props, 'location.pathname');
     if (pathname === '/register') {
       this.setState({ tab: 'register' });
     } else {
@@ -41,7 +39,7 @@ var LoginPage = React.createClass({
   },
 
   onLogin: function() {
-    var redirect = _.get(this.props, 'location.query.redirect');
+    let redirect = _.get(this.props, 'location.query.redirect');
     if (redirect) {
       this.props.router.push(redirect);
     }
@@ -52,9 +50,9 @@ var LoginPage = React.createClass({
   },
 
   render: function() {
-    var showLogo = this.props.showLogo;
-    var registrationResponse = this.state.registrationResponse;
-    var tab = this.state.tab;
+    let showLogo = this.props.showLogo;
+    let registrationResponse = this.state.registrationResponse;
+    let tab = this.state.tab;
 
     if (registrationResponse && registrationResponse.success) {
       return (<div className="container">
@@ -77,4 +75,4 @@ var LoginPage = React.createClass({
   }
 });
 
-module.exports = withRouter(LoginPage);
+export default withRouter(LoginPage);

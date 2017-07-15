@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { Link } from 'react-router';
@@ -10,7 +8,7 @@ import Auth from '../js/Auth';
 import NavbarUser from './NavbarUser';
 import NewUtils from './NewUtils';
 
-var MainPage = React.createClass({
+let MainPage = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
@@ -57,4 +55,4 @@ var MainPage = React.createClass({
   }
 });
 
-module.exports = MainPage;
+export default MainPage;

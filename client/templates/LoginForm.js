@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import _ from 'lodash';
 
@@ -9,12 +7,12 @@ import AuthRedux from '../js/redux/Auth';
 import Auth from '../js/Auth';
 import Validate from '../js/Validate';
 
-var tabOptions = {
+let tabOptions = {
   login: 'Sign in',
   register: 'Register'
 };
 
-var LoginForm = React.createClass({
+let LoginForm = React.createClass({
   propTypes: {
     onLogin: React.PropTypes.func,
     onRegister: React.PropTypes.func,
@@ -62,7 +60,7 @@ var LoginForm = React.createClass({
   },
 
   register: function() {
-    var errors = Validate.user(this.state.form);
+    let errors = Validate.user(this.state.form);
     if (!_.isEmpty(errors)) {
       this.setState({ hasSubmitErrors: true, loading: false });
       return;
@@ -87,7 +85,7 @@ var LoginForm = React.createClass({
 
     this.setState({ loading: true, response: null });
 
-    var activeTab = this.props.tab;
+    let activeTab = this.props.tab;
     if (activeTab === 'login') {
       this.login();
     } else if (activeTab === 'register') {
@@ -98,15 +96,15 @@ var LoginForm = React.createClass({
   },
 
   render: function() {
-    var activeTab = this.props.tab;
-    var loading = this.state.loading || this.props.authLoading;
+    let activeTab = this.props.tab;
+    let loading = this.state.loading || this.props.authLoading;
 
-    var response = this.state.response || this.props.authError;
-    var form = this.state.form;
-    var blurred = this.state.blurred;
-    var hasSubmitErrors = this.state.hasSubmitErrors;
+    let response = this.state.response || this.props.authError;
+    let form = this.state.form;
+    let blurred = this.state.blurred;
+    let hasSubmitErrors = this.state.hasSubmitErrors;
 
-    var activeVerb = null;
+    let activeVerb = null;
     switch (activeTab) {
       case 'login': activeVerb = 'Sign in'; break;
       case 'register': activeVerb = 'Register'; break;
@@ -114,8 +112,8 @@ var LoginForm = React.createClass({
     }
 
     // Extra registration-only validation
-    var errors = Validate.user(form);
-    var visibleErrors = {};
+    let errors = Validate.user(form);
+    let visibleErrors = {};
 
     if (activeTab === 'register') {
       visibleErrors = _.clone(errors);
@@ -208,4 +206,4 @@ var LoginForm = React.createClass({
   }
 });
 
-module.exports = AuthRedux.connect()(LoginForm);
+export default AuthRedux.connect()(LoginForm);

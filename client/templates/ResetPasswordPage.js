@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { Link } from 'react-router';
@@ -7,7 +5,7 @@ import { Link } from 'react-router';
 import Auth from '../js/Auth';
 import NewUtils from './NewUtils';
 
-var ResetPasswordPage = React.createClass({
+let ResetPasswordPage = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
@@ -33,7 +31,7 @@ var ResetPasswordPage = React.createClass({
 
   checkToken: function(props) {
     props = props.params || props;
-    var token = props.token;
+    let token = props.token;
 
     this.setState({ loading: true, response: null, isValid: null });
 
@@ -65,7 +63,7 @@ var ResetPasswordPage = React.createClass({
     e.preventDefault();
     this.setState({ loading: true, response: null });
 
-    var props = this.props.params || this.props;
+    let props = this.props.params || this.props;
 
     Auth.resetPassword(props.token, this.state.password)
       .then(function(data) {
@@ -83,16 +81,16 @@ var ResetPasswordPage = React.createClass({
   },
 
   render: function() {
-    var password = this.state.password;
-    var password2 = this.state.password2;
-    var blurredPassword2 = this.state.blurredPassword2;
-    var loading = this.state.loading;
-    var response = this.state.response;
+    let password = this.state.password;
+    let password2 = this.state.password2;
+    let blurredPassword2 = this.state.blurredPassword2;
+    let loading = this.state.loading;
+    let response = this.state.response;
 
-    var enableSubmit = password === password2 &&
+    let enableSubmit = password === password2 &&
       password && password2 && !loading && !this.state.passwordChanged;
       // Disable if missing inputs, loading, or already done
-    var showPassword2Error = password !== password2 &&
+    let showPassword2Error = password !== password2 &&
       (blurredPassword2 || password2 !== '');
 
     return (
@@ -148,4 +146,4 @@ var ResetPasswordPage = React.createClass({
   }
 });
 
-module.exports = ResetPasswordPage;
+export default ResetPasswordPage;

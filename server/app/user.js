@@ -1,5 +1,3 @@
-'use strict';
-
 import express from 'express';
 import _ from 'lodash';
 import moment from 'moment';
@@ -17,7 +15,7 @@ import misc from './libs/misc';
 import logger from './libs/logger';
 import config from './config';
 
-var router = express.Router();
+let router = express.Router();
 
 /**
  * Log in using Passport.js; since they use a callback,
@@ -47,7 +45,7 @@ function login(req, user) {
  * used for password changes and resets
  */
 function checkPasswordLength(req, res, next) {
-  var password = req.body.password;
+  let password = req.body.password;
 
   if (!password || password.length < 6) {
     res.json({
@@ -63,10 +61,10 @@ function checkPasswordLength(req, res, next) {
 
 router.options('/register', cors.allowCORSOptions);
 router.post('/register', checkPasswordLength, function(req, res) {
-  var password = _.isEmpty(req.body.password) ? null : req.body.password;
+  let password = _.isEmpty(req.body.password) ? null : req.body.password;
   // If password is null, it will be hashed as null too
 
-  var email = req.body.email;
+  let email = req.body.email;
   if (config.signupEmailDomain && !(new RegExp(config.signupEmailDomain + '$', 'i')).test(email)) {
     res.json({
       success: false,
@@ -75,8 +73,8 @@ router.post('/register', checkPasswordLength, function(req, res) {
     return;
   }
 
-  var user = null;
-  var successMessage;
+  let user = null;
+  let successMessage;
   User.hashPassword(password).then(function(hash) {
     user = User.build({
       email: req.body.email,
@@ -105,7 +103,7 @@ router.post('/register', checkPasswordLength, function(req, res) {
       })
     ];
   }).spread(function(existingEmail, existingUsername) {
-    var errors = [];
+    let errors = [];
     if (existingEmail) {
       errors.push({
         message: 'There already is a user with this email address; please sign in instead',
@@ -209,7 +207,7 @@ router.get('/loginAs/:username', function(req, res) {
     return;
   }
 
-  var username = req.params.username;
+  let username = req.params.username;
   User.findOne({
     where: {
       $or: [
@@ -238,7 +236,7 @@ router.get('/loginAs/:username', function(req, res) {
 router.options('/logout', cors.allowCORSOptions);
 router.post('/logout', function(req, res) {
   req.logout();
-  var successResponse = {
+  let successResponse = {
     success: true,
     messages: ['You are now signed out']
   };
@@ -283,17 +281,17 @@ router.post('/activate/:username/:activationKey', function(req, res) {
 
 router.options('/startResetPassword', cors.allowCORSOptions);
 router.post('/startResetPassword', function(req, res) {
-  var email = req.body.email;
-  var username = req.body.username;
+  let email = req.body.email;
+  let username = req.body.username;
 
-  var errors = [];
+  let errors = [];
   if (!email) {
     errors.push({ message: 'Please enter the account\'s email', type: 'emptyEmail' });
   }
   if (!username) {
     errors.push({ message: 'Please enter the account\'s username', type: 'emptyUsername' });
   }
-  var user = null;  // Used to globalize scope across promises
+  let user = null;  // Used to globalize scope across promises
 
   User.findOne({
     where: {
@@ -339,7 +337,7 @@ router.post('/startResetPassword', function(req, res) {
  * @param password  string of new password to set
  * @return Promise.<User>
  */
-var changePassword = function(user, password) {
+function changePassword(user, password) {
   return User.hashPassword(password).then(function(hash) {
     user.password = hash;
     return user.save();
@@ -348,11 +346,11 @@ var changePassword = function(user, password) {
 
 router.options('/resetPassword', cors.allowCORSOptions);
 router.post('/resetPassword', checkPasswordLength, function(req, res) {
-  var password = req.body.password;
+  let password = req.body.password;
   // Assured to be non-empty by checkPasswordLength
 
   // 1. Check that we have the right token to change the password
-  var token = null;
+  let token = null;
   PasswordResetToken.findOne({
     where: { token: req.body.token },
     attributes: ['id', 'createdAt'],
@@ -369,7 +367,7 @@ router.post('/resetPassword', checkPasswordLength, function(req, res) {
       }]);
     }
 
-    var timeSinceCreation = Date.now() - token.createdAt;
+    let timeSinceCreation = Date.now() - token.createdAt;
     if (timeSinceCreation > 86400 * 1000) {
       throw new misc.WAError([{
         message: 'This password reset token has expired. Please request another one by going to the Sign In page',
@@ -414,9 +412,9 @@ router.post('/changePassword', auth.loginCheck,
     checkPasswordLength, function(req, res) {
   /* eslint-disable indent */
 
-  var password = req.body.password;
+  let password = req.body.password;
     // Verified to be not empty by checkPasswordLength
-  var curPassword = req.body.curPassword;
+  let curPassword = req.body.curPassword;
 
   if (!curPassword) {
     res.json({
@@ -426,7 +424,7 @@ router.post('/changePassword', auth.loginCheck,
     });
   }
 
-  var user = null;
+  let user = null;
 
   User.findById(req.user.id, { attributes: ['id', 'password'] }).then(function(dbUser) {
     user = dbUser;
@@ -448,9 +446,9 @@ router.post('/changePassword', auth.loginCheck,
 
 router.options('/tutorialStep', cors.allowCORSOptions);
 router.post('/tutorialStep', auth.loginCheck, function(req, res) {
-  var step = req.body.step;
+  let step = req.body.step;
 
-  var user = req.user;
+  let user = req.user;
   user.tutorialStep = step;
   user.save().then(function(user) {
     res.json(_.assign({
@@ -463,4 +461,4 @@ router.get('/isLoggedin', function(req, res) {
   res.json(auth.getUserOutput(req.user, req.session));
 });
 
-module.exports = router;
+export default router;

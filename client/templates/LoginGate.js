@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
@@ -8,7 +6,7 @@ import NewUtils from './NewUtils';
 import LoginPage from './LoginPage';
 
 // This component will do a login
-var LoginGate = React.createClass({
+let LoginGate = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
@@ -29,11 +27,11 @@ var LoginGate = React.createClass({
   },
 
   render: function() {
-    var component = this.props.componentOnceLoggedIn;
-    var logout = this.props.logout;
-    var username = this.props.username;
-    var authStateLoaded = this.props.authStateLoaded;
-    var isLoggedIn = this.props.isLoggedIn;
+    let component = this.props.componentOnceLoggedIn;
+    let logout = this.props.logout;
+    let username = this.props.username;
+    let authStateLoaded = this.props.authStateLoaded;
+    let isLoggedIn = this.props.isLoggedIn;
 
     if (!authStateLoaded) {
       return <div>Please wait... loading your account</div>;
@@ -51,4 +49,4 @@ var LoginGate = React.createClass({
   }
 });
 
-module.exports = Auth.connect()(LoginGate);
+export default Auth.connect()(LoginGate);

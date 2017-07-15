@@ -1,5 +1,3 @@
-'use strict';
-
 import nodemailer from 'nodemailer';
 import fs from 'fs';
 import ejs from 'ejs';
@@ -12,23 +10,23 @@ import promisify from 'es6-promisify';
 import config from '../config';
 import logger from './logger';
 
-var templateDir = path.join(__dirname.replace(/\\/g, '/'), '..', 'templates', 'mail');
+let templateDir = path.join(__dirname.replace(/\\/g, '/'), '..', 'templates', 'mail');
 // When compiling on Windows and using on Linux,
 // the above .replace() is needed
 
 // Nodemailer configuration
-var defaultSendParams = {
+let defaultSendParams = {
   from: config.mailFrom
 };
 
-var transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
-var sendMail = promisify(transporter.sendMail.bind(transporter));
+let transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
+let sendMail = promisify(transporter.sendMail.bind(transporter));
 
-var cachedTemplates = {};
+let cachedTemplates = {};
 
-var compileTemplate = function(file) {
+function compileTemplate(file) {
   return ejs.compile(fs.readFileSync(file, 'utf-8'));
-};
+}
 
 /**
  * Compile a SCSS or CSS file, or returns '' if it doesn't
@@ -39,7 +37,7 @@ var compileTemplate = function(file) {
 function compileStyle(file) {
   if (!fs.existsSync(file)) return '';
 
-  var extension = path.extname(file);
+  let extension = path.extname(file);
   if (extension === '.scss') {
     return sass.renderSync({
       file: file
@@ -59,13 +57,13 @@ function compileStyle(file) {
  * @param options   additional options to be passed to nodemailer
  * @return Promise.<info> from nodemailer.sendMail
  */
-var send = function(to, template, data, options) {
+function send(to, template, data, options) {
   if (!(template in cachedTemplates)) {
     logger.debug('Loading template "' + template + '"');
 
-    var dir = path.join(templateDir, template);
+    let dir = path.join(templateDir, template);
 
-    var templates = {
+    let templates = {
       html: compileTemplate(path.join(dir, 'html.ejs')),
       text: compileTemplate(path.join(dir, 'text.ejs')),
       subject: compileTemplate(path.join(dir, 'subject.ejs')),
@@ -76,15 +74,15 @@ var send = function(to, template, data, options) {
     logger.debug('Loaded template "' + template + '"');
   }
 
-  var tplData = _.assign({
+  let tplData = _.assign({
     _: _,
     config: config
   }, data);
 
-  var tpl = cachedTemplates[template];
-  var html = juice.inlineContent(tpl.html(tplData), tpl.style);
-  var text = tpl.text(tplData);
-  var subject = tpl.subject(tplData);
+  let tpl = cachedTemplates[template];
+  let html = juice.inlineContent(tpl.html(tplData), tpl.style);
+  let text = tpl.text(tplData);
+  let subject = tpl.subject(tplData);
 
   return sendMail(Object.assign({
     to: to,
@@ -92,9 +90,12 @@ var send = function(to, template, data, options) {
     text: text,
     html: html
   }, options));
-};
+}
 
-module.exports = {
+const exported = {
   send: send,
   transporter: transporter
 };
+
+export default exported;
+export { send, transporter };

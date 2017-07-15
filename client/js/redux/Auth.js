@@ -1,11 +1,9 @@
-'use strict';
-
 import { connect as connectRedux } from 'react-redux';
 import _ from 'lodash';
 
 import Auth from '../Auth';
 
-var Actions = {
+let Actions = {
   startLogin: function() {
     return { type: 'START_LOGIN' };
   },
@@ -192,8 +190,8 @@ function mapResponseToProps(response) {
  * @return {Promise.<Object>} object with all auth props
  */
 function getOrFetchLoginState(props) {
-  var authStateLoaded = props.authStateLoaded;
-  var getLoginState = props.getLoginState;
+  let authStateLoaded = props.authStateLoaded;
+  let getLoginState = props.getLoginState;
 
   if (authStateLoaded) {
     return Promise.resolve(props);  // Should contain all the keys we need
@@ -209,8 +207,8 @@ function getOrFetchLoginState(props) {
  * @return {Object} wrapped React component
  */
 function connect(options) {
-  var mapStateToProps = function(globalState) {
-    var state = globalState.auth;
+  function mapStateToProps(globalState) {
+    let state = globalState.auth;
     return Object.assign({
       authStateLoaded: state.loaded,
       authLoading: state.loading,
@@ -218,7 +216,7 @@ function connect(options) {
     }, mapResponseToProps(state.response));
   };
 
-  var mapDispatchToProps = function(dispatch) {
+  function mapDispatchToProps(dispatch) {
     return {
       login: login.bind(null, dispatch),
       logout: logout.bind(null, dispatch),

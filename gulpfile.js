@@ -114,7 +114,7 @@ var jsVendorPackages = require('./vendorPackages.json');
 // any code path on the client side
 var ignorePackages = [];
 
-var handleError = function(error) {
+function handleError(error) {
   var stack = error.stack;
 
   // Trim the parser junk that makes you have to scroll up a lot
@@ -173,7 +173,7 @@ function buildJavascript(sourceFile, destFile, destDir) {
       b.ignore(id);
     });
 
-    var bundle = function(rebundle) {
+    function bundle(rebundle) {
       var stream = b.bundle()
         .on('error', handleError)
         .pipe(source(destFile))

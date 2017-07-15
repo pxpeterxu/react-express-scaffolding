@@ -1,6 +1,11 @@
-var Config = {
+let Config = {
   environment: 'production',
   host: 'http://example.com'
 };
 
-module.exports = Config;
+export default Config;
+
+export const {
+  environment,
+  host
+} = Config;

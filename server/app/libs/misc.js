@@ -1,5 +1,3 @@
-'use strict';
-
 import _ from 'lodash';
 import logger from './logger';
 
@@ -9,12 +7,12 @@ import logger from './logger';
  * @param errors .errors from a sequelize.validate() or .save()
  * @return list of error messages
  */
-var oneMessagePerField = function(errors) {
-  var hasError = {};
-  var messages = [];
+function oneMessagePerField(errors) {
+  let hasError = {};
+  let messages = [];
 
-  for (var i = 0; i !== errors.length; i++) {
-    var error = errors[i];
+  for (let i = 0; i !== errors.length; i++) {
+    let error = errors[i];
     if (!hasError[error.path]) {
       hasError[error.path] = true;
       messages.push(error.message);
@@ -22,18 +20,18 @@ var oneMessagePerField = function(errors) {
   }
 
   return messages;
-};
+}
 
 /**
  * An internal error type for outputting expected error messages
  * and errTypes in catch() statements
  * @param errors  array of [{ message: '...', type: '...'}, ...]
  */
-var WAError = function(errors) {
-  var messages = errors.map(function(err) {
+function WAError(errors) {
+  let messages = errors.map(function(err) {
     return err.message;
   });
-  var errTypes = errors.map(function(err) {
+  let errTypes = errors.map(function(err) {
     return err.type;
   });
 
@@ -42,25 +40,25 @@ var WAError = function(errors) {
   this.message = messages.join('\n');
   this.errTypes = errTypes;
   this.stack = (new Error()).stack;
-};
+}
 
 /**
  * An internal error for throwing an error as a response
  * @param response   response object
  */
-var ResponseError = function(response) {
+function ResponseError(response) {
   this.name = 'ResponseError';
   this.response = response;
   this.message = response.messages.join('\n');
   this.errTypes = response.errTypes;
   this.stack = (new Error()).stack;
-};
+}
 
-var buildWAError = function(message, type) {
+function buildWAError(message, type) {
   return new WAError([{ message: message, type: type }]);
-};
+}
 
-var defaultCatch = function(res) {
+function defaultCatch(res) {
   return function(err) {
     if (_.isArray(err)) {
       // By convention, this is an error that we threw
@@ -91,7 +89,7 @@ var defaultCatch = function(res) {
       });
     }
   };
-};
+}
 
 /**
  * Middleware for disabling a feature
@@ -111,7 +109,7 @@ function doNothingMiddleware(req, res, next) {
   next();
 }
 
-module.exports = {
+const exported = {
   defaultCatch: defaultCatch,
   WAError: WAError,
   ResponseError: ResponseError,
@@ -120,3 +118,6 @@ module.exports = {
   disabledMiddleware: disabledMiddleware,
   doNothingMiddleware: doNothingMiddleware
 };
+
+export default exported;
+export { defaultCatch, WAError, ResponseError, buildWAError, oneMessagePerField, disabledMiddleware, doNothingMiddleware };

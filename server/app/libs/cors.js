@@ -1,6 +1,4 @@
-'use strict';
-
-var allowCORSOptions = function(req, res) {
+function allowCORSOptions(req, res) {
   res.header('Access-Control-Allow-Origin', req.headers.origin);
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -10,9 +8,9 @@ var allowCORSOptions = function(req, res) {
   }
 
   res.end();
-};
+}
 
-var allowChromeCrossDomain = function(req, res, next) {
+function allowChromeCrossDomain(req, res, next) {
   if (req.headers.origin &&
       req.headers.origin.indexOf('chrome-extension://') === 0) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -20,19 +18,22 @@ var allowChromeCrossDomain = function(req, res, next) {
   }
 
   next();
-};
+}
 
-var allowAllCrossDomain = function(req, res, next) {
+function allowAllCrossDomain(req, res, next) {
   if (req.headers.origin) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
     res.header('Access-Control-Allow-Credentials', 'true');
   }
 
   next();
-};
+}
 
-module.exports = {
+const exported = {
   allowCORSOptions: allowCORSOptions,
   allowChromeCrossDomain: allowChromeCrossDomain,
   allowAllCrossDomain: allowAllCrossDomain
 };
+
+export default exported;
+export { allowCORSOptions, allowChromeCrossDomain, allowAllCrossDomain };

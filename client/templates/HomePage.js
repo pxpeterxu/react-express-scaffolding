@@ -1,9 +1,7 @@
-'use strict';
-
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-var HomePage = React.createClass({
+let HomePage = React.createClass({
   mixins: [PureRenderMixin],
 
   render: function() {
@@ -18,4 +16,4 @@ var HomePage = React.createClass({
   }
 });
 
-module.exports = HomePage;
+export default HomePage;

@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import db from '../db';
 
-var Session = db.define('Session', {
+let Session = db.define('Session', {
   id: {
     type: Sequelize.STRING(255),
     primaryKey: true
@@ -18,4 +18,4 @@ var Session = db.define('Session', {
   charset: 'ascii_bin'
 });
 
-module.exports = Session;
+export default Session;
