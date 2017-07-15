@@ -61,7 +61,7 @@ class LoginPage extends React.PureComponent {
     }
 
     return (<div className="container">
-      <div className="row"><div className={tab === 'register' ? 'col-sm-12' : 'col-sm-6 col-sm-offset-3'}>
+      <div className="row"><div className="col-sm-6 col-sm-offset-3">
         <div className="wa-top20">
           <LoginForm onLogin={this.onLogin}
               onRegister={this.onRegister}

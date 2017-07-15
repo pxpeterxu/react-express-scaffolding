@@ -5,6 +5,7 @@ import randomstring from 'randomstring';
 import passport from 'passport';
 import Promise from 'es6-promise';
 
+import './models/Associations';
 import User from './models/User';
 import PasswordResetToken from './models/PasswordResetToken';
 

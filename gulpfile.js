@@ -256,6 +256,7 @@ function createBuildServerGulpTask(name, globs, destination) {
           'flow',
           ['env', { targets: { node: 6 } }]
         ],
+        plugins: ['transform-class-properties']
       }))
       .on('error', handleError)
       .pipe(sourcemaps.write('.'))

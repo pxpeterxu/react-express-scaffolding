@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
+import { callProp } from './NewUtils';
+
 /**
  * Normalize an options array for a <select> to be the format
  * of an array of { value, label }
@@ -70,21 +72,21 @@ class Tabs extends React.PureComponent {
           const tab = option.value;
           const label = option.label;
 
-          let tabClassName = null;
-          let onClick = this.onChange.bindMemoized(this, tab);
+          const isDisabled = disabledTabs && disabledTabs.indexOf(tab) !== -1;
 
+          let tabClassName = null;
           if (activeTab === tab) {
             tabClassName = 'active';
-          } else if (disabledTabs && disabledTabs.indexOf(tab) !== -1) {
+          } else if (isDisabled) {
             tabClassName = 'disabled';
-            onClick = this.doNothingCallback;
           }
 
           return (
             <li key={tab}
                 className={tabClassName}
                 data-tab={tab}>
-              <a href={`#${label}`} onClick={onClick}>
+              <a href={`#${label}`}
+                  onClick={isDisabled ? null : callProp(this, 'onChange', tab, true)}>
                 {label}
               </a>
             </li>

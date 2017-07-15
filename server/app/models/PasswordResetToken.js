@@ -1,5 +1,4 @@
 import Sequelize from 'sequelize';
-import User from './User';
 import db from '../db';
 
 const PasswordResetToken = db.define('PasswordResetToken', {
@@ -19,5 +18,4 @@ const PasswordResetToken = db.define('PasswordResetToken', {
   }
 });
 
-PasswordResetToken.belongsTo(User, { foreignKey: 'userId', targetKey: 'id' });
 export default PasswordResetToken;

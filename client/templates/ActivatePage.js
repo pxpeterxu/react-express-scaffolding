@@ -5,14 +5,6 @@ import Auth from '../js/Auth';
 import NewUtils from './NewUtils';
 
 class ActivatePage extends React.PureComponent {
-  state = {
-    activated: false,
-    loading: true,
-
-    pluginInstalled: false,
-    isChrome: true
-  };
-
   static propTypes = {
     params: PropTypes.shape({
       activationKey: PropTypes.string,
@@ -20,6 +12,17 @@ class ActivatePage extends React.PureComponent {
     }),
     activationKey: PropTypes.string,
     username: PropTypes.string,
+  }
+
+  constructor() {
+    super();
+    this.state = {
+      activated: false,
+      loading: true,
+
+      pluginInstalled: false,
+      isChrome: true
+    };
   }
 
   componentWillMount() {

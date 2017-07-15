@@ -3,7 +3,7 @@ import index from './index';
 
 function loadRoutes(app) {
   app.use('/user', user);
-  app.use('/', index);
+  app.use('*', index);
 
   return app;
 }
