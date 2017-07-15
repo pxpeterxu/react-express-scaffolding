@@ -6,6 +6,6 @@ function loadRoutes(app) {
   app.use('/', index);
 
   return app;
-};
+}
 
 export default loadRoutes;

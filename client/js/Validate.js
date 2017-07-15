@@ -1,5 +1,5 @@
-let usernameRegex = /^\w[\w-]*\w$/;
-let emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const usernameRegex = /^\w[\w-]*\w$/;
+const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 /**
  * Validate a newly-created user account, putting errors in each
@@ -8,7 +8,7 @@ let emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0
  * @return null if valid, object with { [field]: [errorMessage1, errorMessage2] } if not
  */
 function validateUser(user) {
-  let errors = {};
+  const errors = {};
   if (!user.username) {
     errors.username = 'Please enter a username.';
   } else if (!usernameRegex.test(user.username)) {

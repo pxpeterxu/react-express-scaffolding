@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import db from '../db';
 
-let Session = db.define('Session', {
+const Session = db.define('Session', {
   id: {
     type: Sequelize.STRING(255),
     primaryKey: true

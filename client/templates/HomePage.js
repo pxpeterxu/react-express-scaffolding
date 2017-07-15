@@ -1,7 +1,7 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-let HomePage = React.createClass({
+const HomePage = React.createClass({
   mixins: [PureRenderMixin],
 
   render: function() {

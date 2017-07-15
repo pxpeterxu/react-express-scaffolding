@@ -8,11 +8,11 @@ import logger from './logger';
  * @return list of error messages
  */
 function oneMessagePerField(errors) {
-  let hasError = {};
-  let messages = [];
+  const hasError = {};
+  const messages = [];
 
   for (let i = 0; i !== errors.length; i++) {
-    let error = errors[i];
+    const error = errors[i];
     if (!hasError[error.path]) {
       hasError[error.path] = true;
       messages.push(error.message);
@@ -28,10 +28,10 @@ function oneMessagePerField(errors) {
  * @param errors  array of [{ message: '...', type: '...'}, ...]
  */
 function WAError(errors) {
-  let messages = errors.map(function(err) {
+  const messages = errors.map((err) => {
     return err.message;
   });
-  let errTypes = errors.map(function(err) {
+  const errTypes = errors.map((err) => {
     return err.type;
   });
 

@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import Auth from '../Auth';
 
-let Actions = {
+const Actions = {
   startLogin: function() {
     return { type: 'START_LOGIN' };
   },
@@ -90,14 +90,14 @@ function AuthReducer(state, action) {
 function login(dispatch, email, password) {
   dispatch(Actions.startLogin());
 
-  return Auth.login(email, password).then(function(data) {
+  return Auth.login(email, password).then((data) => {
     if (data.success) {
       dispatch(Actions.finishLogin(data));
     } else {
       dispatch(Actions.setError(data));
     }
     return mapResponseToProps(data);
-  }).catch(function(err) {
+  }).catch((err) => {
     console.error(err);
     dispatch(Actions.setError(err));
   });
@@ -111,12 +111,12 @@ function login(dispatch, email, password) {
 function logout(dispatch) {
   dispatch(Actions.startLogout());
 
-  return Auth.logout().then(function(data) {
+  return Auth.logout().then((data) => {
     if (data.success) {
       dispatch(Actions.finishLogout());
     }
     return data;
-  }).catch(function(err) {
+  }).catch((err) => {
     console.error(err);
     dispatch(Actions.setError(err));
   });
@@ -130,14 +130,14 @@ function logout(dispatch) {
 function register(dispatch, userData) {
   dispatch(Actions.startRegister());
 
-  return Auth.register(userData).then(function(data) {
+  return Auth.register(userData).then((data) => {
     if (data.success) {
       dispatch(Actions.finishRegister(data));
     } else {
       dispatch(Actions.setError(data));
     }
     return mapResponseToProps(data);
-  }).catch(function(err) {
+  }).catch((err) => {
     dispatch(Actions.setError(err));
   });
 }
@@ -155,14 +155,14 @@ function getLoginState(dispatch, store) {
     return Promise.resolve(mapResponseToProps(store.auth.response));
   }
 
-  return Auth.isLoggedIn().then(function(data) {
+  return Auth.isLoggedIn().then((data) => {
     if (data.success) {
       dispatch(Actions.updateLoginState(data));
     } else {
       dispatch(Actions.setError(data));
     }
     return mapResponseToProps(data);
-  }).catch(function(err) {
+  }).catch((err) => {
     // Swallow error
     console.error('Error when trying to get login state');
     console.error(err);
@@ -190,8 +190,8 @@ function mapResponseToProps(response) {
  * @return {Promise.<Object>} object with all auth props
  */
 function getOrFetchLoginState(props) {
-  let authStateLoaded = props.authStateLoaded;
-  let getLoginState = props.getLoginState;
+  const authStateLoaded = props.authStateLoaded;
+  const getLoginState = props.getLoginState;
 
   if (authStateLoaded) {
     return Promise.resolve(props);  // Should contain all the keys we need
@@ -208,13 +208,13 @@ function getOrFetchLoginState(props) {
  */
 function connect(options) {
   function mapStateToProps(globalState) {
-    let state = globalState.auth;
+    const state = globalState.auth;
     return Object.assign({
       authStateLoaded: state.loaded,
       authLoading: state.loading,
       authError: state.error
     }, mapResponseToProps(state.response));
-  };
+  }
 
   function mapDispatchToProps(dispatch) {
     return {
@@ -223,7 +223,7 @@ function connect(options) {
       registerUser: register.bind(null, dispatch),
       getLoginState: getLoginState.bind(null, dispatch),
     };
-  };
+  }
 
   return connectRedux(mapStateToProps, mapDispatchToProps, null, options);
 }

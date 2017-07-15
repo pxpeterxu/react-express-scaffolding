@@ -7,12 +7,12 @@ import AuthRedux from '../js/redux/Auth';
 import Auth from '../js/Auth';
 import Validate from '../js/Validate';
 
-let tabOptions = {
+const tabOptions = {
   login: 'Sign in',
   register: 'Register'
 };
 
-let LoginForm = React.createClass({
+const LoginForm = React.createClass({
   propTypes: {
     onLogin: React.PropTypes.func,
     onRegister: React.PropTypes.func,
@@ -52,26 +52,26 @@ let LoginForm = React.createClass({
 
   login: function() {
     this.setState({ loading: false, response: null });
-    this.props.login(this.state.form.email, this.state.form.password).then(function(data) {
+    this.props.login(this.state.form.email, this.state.form.password).then((data) => {
       if (data.isLoggedIn) {
         this.props.onLogin();
       }
-    }.bind(this));
+    });
   },
 
   register: function() {
-    let errors = Validate.user(this.state.form);
+    const errors = Validate.user(this.state.form);
     if (!_.isEmpty(errors)) {
       this.setState({ hasSubmitErrors: true, loading: false });
       return;
     }
 
     this.setState({ hasSubmitErrors: false, loading: false, response: null });
-    this.props.registerUser(this.state.form).then(function(data) {
+    this.props.registerUser(this.state.form).then((data) => {
       if (data.isLoggedIn) {
         this.props.onRegister();
       }
-    }.bind(this));
+    });
   },
 
   resetPassword: function() {
@@ -85,7 +85,7 @@ let LoginForm = React.createClass({
 
     this.setState({ loading: true, response: null });
 
-    let activeTab = this.props.tab;
+    const activeTab = this.props.tab;
     if (activeTab === 'login') {
       this.login();
     } else if (activeTab === 'register') {
@@ -96,13 +96,13 @@ let LoginForm = React.createClass({
   },
 
   render: function() {
-    let activeTab = this.props.tab;
-    let loading = this.state.loading || this.props.authLoading;
+    const activeTab = this.props.tab;
+    const loading = this.state.loading || this.props.authLoading;
 
-    let response = this.state.response || this.props.authError;
-    let form = this.state.form;
-    let blurred = this.state.blurred;
-    let hasSubmitErrors = this.state.hasSubmitErrors;
+    const response = this.state.response || this.props.authError;
+    const form = this.state.form;
+    const blurred = this.state.blurred;
+    const hasSubmitErrors = this.state.hasSubmitErrors;
 
     let activeVerb = null;
     switch (activeTab) {
@@ -112,14 +112,14 @@ let LoginForm = React.createClass({
     }
 
     // Extra registration-only validation
-    let errors = Validate.user(form);
+    const errors = Validate.user(form);
     let visibleErrors = {};
 
     if (activeTab === 'register') {
       visibleErrors = _.clone(errors);
       if (!hasSubmitErrors) {
         // If we've tried submitting already, show all errors
-        _.forEach(errors, function(error, key) {
+        _.forEach(errors, (error, key) => {
           if (!blurred[key]) {
             delete visibleErrors[key];
           }
@@ -143,7 +143,9 @@ let LoginForm = React.createClass({
           <form onSubmit={this.submit}>
             <div className={'form-group ' + (visibleErrors.email ? 'has-error' : '')}>
               <label htmlFor="email">Email{activeTab === 'login' && ' or username'}</label>
-              <input type="text" id="email" className="form-control"
+              <input type="text"
+                  id="email"
+                  className="form-control"
                   maxLength="128"
                   value={form.email}
                   onChange={NewUtils.update(this, 'form.email')}
@@ -158,7 +160,9 @@ let LoginForm = React.createClass({
             {(activeTab === 'register' || activeTab === 'resetPassword') && (
               <div className={'form-group ' + (visibleErrors.username ? 'has-error' : '')}>
                 <label htmlFor="username">Username</label>
-                <input type="username" id="username" className="form-control"
+                <input type="username"
+                    id="username"
+                    className="form-control"
                     value={form.username}
                     onChange={NewUtils.update(this, 'form.username')}
                     onBlur={NewUtils.setState(this, 'blurred.username', true)} />
@@ -173,7 +177,9 @@ let LoginForm = React.createClass({
             {(activeTab === 'register' || activeTab === 'login') && (
               <div className={'form-group ' + (visibleErrors.password ? 'has-error' : '')}>
                 <label htmlFor="password">Password</label>
-                <input type="password" id="password" className="form-control"
+                <input type="password"
+                    id="password"
+                    className="form-control"
                     value={form.password}
                     onChange={NewUtils.update(this, 'form.password')}
                     onBlur={NewUtils.setState(this, 'blurred.password', true)} />
@@ -189,12 +195,14 @@ let LoginForm = React.createClass({
               Some fields don't seem to be filled in correctly! Take a look at the error messages above.
             </div>)}
 
-            <button className="btn btn-primary" type="submit"
+            <button className="btn btn-primary"
+                type="submit"
                 disabled={loading}>
               {activeVerb}
             </button>
             {activeTab === 'login' && (
-              <a href="#" className="pull-right"
+              <a href="#forgotPassword"
+                  className="pull-right"
                   onClick={NewUtils.callProp(this, 'onTabChange', ['resetPassword'], true)}>
                 Forgot password
               </a>

@@ -1,4 +1,4 @@
-let Config = {
+const Config = {
   environment: 'production',
   host: 'http://example.com'
 };

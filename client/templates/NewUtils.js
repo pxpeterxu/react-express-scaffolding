@@ -2,9 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 
 import Immutable from '../js/Immutable';
-let setMixed = Immutable.setMixed;
-let getMixed = Immutable.getMixed;
-let deleteMixed = Immutable.deleteMixed;
+
+const setMixed = Immutable.setMixed;
+const getMixed = Immutable.getMixed;
+const deleteMixed = Immutable.deleteMixed;
 
 /* eslint-disable prefer-rest-params */
 
@@ -152,7 +153,7 @@ function setPropNumber(elem, propFunc, propIndex, indexInProp, preventDefault) {
  * @return function to handle events or values being changed
  */
 function setPropValue(elem, propFunc, propIndex,
-    indexInProp, value, preventDefault) {
+  indexInProp, value, preventDefault) {
   return changeProp(elem, propFunc, propIndex, indexInProp, constant(value), preventDefault, ['constant', value]);
 }
 
@@ -224,8 +225,8 @@ function deleteState(elem, stateIndex, preventDefault) {
  * @return changeState, with only the keys that are different from origState
  */
 function getChanged(origState, changedState) {
-  let changes = {};
-  _.forEach(changedState, function(val, key) {
+  const changes = {};
+  _.forEach(changedState, (val, key) => {
     if (origState[key] !== changedState[key]) {
       changes[key] = val;
     }
@@ -243,7 +244,7 @@ function getChanged(origState, changedState) {
  */
 function getThen(elem, responseKey, loadingKey, dataKey) {
   // Avoid creating new functions if possible
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['getThen', responseKey, loadingKey])
   ];
 
@@ -251,11 +252,11 @@ function getThen(elem, responseKey, loadingKey, dataKey) {
   loadingKey = loadingKey || 'loading';
   dataKey = dataKey || 'data';
 
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func(data) {
-    let newState = {};
+    const newState = {};
     newState[loadingKey] = false;
     newState[responseKey] = data;
 
@@ -264,7 +265,7 @@ function getThen(elem, responseKey, loadingKey, dataKey) {
     }
 
     elem.setState(newState);
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -279,19 +280,19 @@ function getThen(elem, responseKey, loadingKey, dataKey) {
  */
 function getCatch(elem, responseKey, loadingKey) {
   // Avoid creating new functions if possible
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['getCatch', responseKey, loadingKey])
   ];
 
   responseKey = responseKey || 'response';
   loadingKey = loadingKey || 'loading';
 
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func(err) {
     console.error(err.stack);
-    let newState = {};
+    const newState = {};
     newState[loadingKey] = false;
     newState[responseKey] = {
       success: false,
@@ -299,7 +300,7 @@ function getCatch(elem, responseKey, loadingKey) {
       error: err
     };
     elem.setState(newState);
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -317,10 +318,10 @@ function getCatch(elem, responseKey, loadingKey) {
  */
 function renderResponse(response, options) {
   options = options || {};
-  let type = options.type || 'alert';  // Can be substituted with 'text'
-  let additionalClasses = options.additionalClasses || '';
-  let onClick = options.onClick;
-  let errorsOnly = !!options.errorsOnly;
+  const type = options.type || 'alert';  // Can be substituted with 'text'
+  const additionalClasses = options.additionalClasses || '';
+  const onClick = options.onClick;
+  const errorsOnly = !!options.errorsOnly;
 
   if (!response) return null;
   if (response.success && errorsOnly) return null;
@@ -330,8 +331,10 @@ function renderResponse(response, options) {
         (response.success ? 'success' : 'danger') +
         (additionalClasses ? ' ' + additionalClasses : '') +
         (onClick ? ' wa-link' : '')}
-        onClick={onClick}>
-      {response.messages.map(function(message, i) { return <p key={i}>{message}</p>; })}
+        onClick={onClick}
+        role="button"
+        tabIndex={0}>
+      {response.messages.map((message) => { return <p key={message}>{message}</p>; })}
     </div>
   );
 }
@@ -345,15 +348,15 @@ function renderResponse(response, options) {
  * @return event handler
  */
 function all(elem, handlers, preventDefault) {
-  let cacheKey = ['__cache', 'all'];
-  let allCached = _.get(elem, cacheKey) || [];
+  const cacheKey = ['__cache', 'all'];
+  const allCached = _.get(elem, cacheKey) || [];
 
   // Try to find one in the cache by deep comparisons
   let cached = null;
 
   for (let j = 0; j !== allCached.length; j++) {
-    let item = allCached[j];
-    let cachedHandlers = item.args[0];
+    const item = allCached[j];
+    const cachedHandlers = item.args[0];
 
     let matched = cachedHandlers.length !== 0;
     // Check if all the functions match
@@ -374,7 +377,7 @@ function all(elem, handlers, preventDefault) {
 
   function func(e) {
     if (preventDefault) preventDefaultAndBlur(e);
-    let origState = elem.state;
+    const origState = elem.state;
 
     for (let i = 0; i !== handlers.length; i++) {
       // We may be calling multiple sequential setStates
@@ -386,7 +389,7 @@ function all(elem, handlers, preventDefault) {
     elem.state = origState;
     // We want setState to still work
     // Restore the original state
-  };
+  }
 
   cached = {
     args: [handlers, preventDefault],
@@ -411,7 +414,7 @@ function fromEvent(curValue, e) {
  * received in the event, cast to a number
  */
 function numberFromEvent(curValue, e) {
-  let value = parseFloat(e && e.target ? e.target.value : e);
+  const value = parseFloat(e && e.target ? e.target.value : e);
   return isNaN(value) ? null : value;
 }
 
@@ -455,7 +458,7 @@ function toggleConstant(value) {
  * or if it's already the same, nulls it
  */
 function setOrNull(curValue, e) {
-  let value = e && e.target ? e.target.value : e;
+  const value = e && e.target ? e.target.value : e;
   return curValue === value ? null : value;
 }
 
@@ -472,10 +475,10 @@ function setOrNull(curValue, e) {
  * @return function to handle events or values being changed
  */
 function changeProp(elem, propFunc, propIndex, indexInProp, getNewValue, preventDefault, extraCacheKey) {
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['changeProp', propFunc, propIndex, indexInProp, preventDefault, extraCacheKey])
   ];
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func(e) {
@@ -483,10 +486,10 @@ function changeProp(elem, propFunc, propIndex, indexInProp, getNewValue, prevent
 
     let newPropObj = null;
     if (propIndex) {
-      let curPropObj = getMixed(elem.props, propIndex);
+      const curPropObj = getMixed(elem.props, propIndex);
       if (indexInProp) {
-        let curValue = getMixed(curPropObj, indexInProp);
-        let newValue = getNewValue(curValue, e);
+        const curValue = getMixed(curPropObj, indexInProp);
+        const newValue = getNewValue(curValue, e);
         newPropObj = setMixed(curPropObj, indexInProp, newValue);
       } else {
         newPropObj = getNewValue(curPropObj, e);
@@ -497,7 +500,7 @@ function changeProp(elem, propFunc, propIndex, indexInProp, getNewValue, prevent
 
     elem.props[propFunc](newPropObj);
     return newPropObj;
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -514,22 +517,22 @@ function changeProp(elem, propFunc, propIndex, indexInProp, getNewValue, prevent
  * @return function to handle events or values being changed
  */
 function changeState(elem, stateIndex, getNewValue, preventDefault, extraCacheKey) {
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['changeState', stateIndex, preventDefault, extraCacheKey])
   ];
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func(e) {
     if (preventDefault) preventDefaultAndBlur(e);
 
-    let curValue = getMixed(elem.state, stateIndex);
-    let newValue = getNewValue(curValue, e);
-    let newState = setMixed(elem.state, stateIndex, newValue);
+    const curValue = getMixed(elem.state, stateIndex);
+    const newValue = getNewValue(curValue, e);
+    const newState = setMixed(elem.state, stateIndex, newValue);
 
     elem.setState(getChanged(elem.state, newState));
     return newState;
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -546,25 +549,25 @@ function changeState(elem, stateIndex, getNewValue, preventDefault, extraCacheKe
  * @return handler that calls a component function
  */
 function call(elem, funcName, prefixArgs, preventDefault, extraCacheKey) {
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['call', funcName, prefixArgs, preventDefault, extraCacheKey])
   ];
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func() {
-    let args = Array.prototype.slice.call(arguments);
+    const args = Array.prototype.slice.call(arguments);
 
     if (preventDefault && args[0]) preventDefaultAndBlur(args[0]);
-    let callArgs = [].concat(prefixArgs).concat(args);
+    const callArgs = [].concat(prefixArgs).concat(args);
 
-    let func = _.get(elem, funcName);
+    const func = _.get(elem, funcName);
     if (func) {
       return func.apply(elem, callArgs);
     } else {
       return null;
     }
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -581,25 +584,25 @@ function call(elem, funcName, prefixArgs, preventDefault, extraCacheKey) {
  * @return handler that calls a component function
  */
 function callProp(elem, funcName, prefixArgs, preventDefault, extraCacheKey) {
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['callProp', funcName, prefixArgs, preventDefault, extraCacheKey])
   ];
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func() {
-    let args = Array.prototype.slice.call(arguments);
+    const args = Array.prototype.slice.call(arguments);
 
     if (preventDefault && args[0]) preventDefaultAndBlur(args[0]);
-    let callArgs = [].concat(prefixArgs || []).concat(args);
+    const callArgs = [].concat(prefixArgs || []).concat(args);
 
-    let func = _.get(elem.props, funcName);
+    const func = _.get(elem.props, funcName);
     if (func) {
       return func.apply(elem, callArgs);
     } else {
       return null;
     }
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -613,15 +616,15 @@ function callProp(elem, funcName, prefixArgs, preventDefault, extraCacheKey) {
  * @return {function} handler for ref=}}
  */
 function registerRef(elem, variableName) {
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['registerRef', variableName])
   ];
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (cached) return cached;
 
   function func(pageElem) {
     _.setWith(elem, variableName, pageElem, Object);
-  };
+  }
 
   _.setWith(elem, cacheKey, func, Object);
   return func;
@@ -636,12 +639,12 @@ function registerRef(elem, variableName) {
  *                            (will be JSON.stringified)
  */
 function debounce(elem, func, timeout, key) {
-  let cacheKey = ['__cache',
+  const cacheKey = ['__cache',
     JSON.stringify(['debounce', key])
   ];
-  let cached = _.get(elem, cacheKey);
+  const cached = _.get(elem, cacheKey);
   if (!cached) {
-    let debounced = _.debounce(func, timeout);
+    const debounced = _.debounce(func, timeout);
     _.setWith(elem, cacheKey, debounced);
   }
 

@@ -32,7 +32,7 @@ export default class MainRouter extends React.Component {
       callback();
     };
 
-    return Auth.getLoginState(store.dispatch, store.getState()).then(function(data) {
+    return Auth.getLoginState(store.dispatch, store.getState()).then((data) => {
       // Get the login status, and redirect to callback
       if (data.isLoggedIn) {
         callback();

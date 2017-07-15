@@ -11,7 +11,7 @@ function AuthError(error) {
 AuthError.prototype = misc.WAError.prototype;
 AuthError.prototype.constructor = AuthError;
 
-let serializedAttributes = ['id', 'username', 'email', 'password', 'activated'];
+const serializedAttributes = ['id', 'username', 'email', 'activated'];
 
 /**
  * Get output based on a user's data, used for a response for logins
@@ -20,7 +20,7 @@ let serializedAttributes = ['id', 'username', 'email', 'password', 'activated'];
  * @param {Object} session  (optional) session variables for use in yukataTutorialCompleted
  * @return {Object} response to send
  */
-function getUserOutput(user, session) {
+function getUserOutput(user/* , session */) {
   return {
     success: true,
     isLoggedIn: !!user,
@@ -30,10 +30,10 @@ function getUserOutput(user, session) {
   };
 }
 
-let localStrategy = new LocalStrategy({
+const localStrategy = new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password'
-}, function(username, password, done) {
+}, (username, password, done) => {
   let user = null;
 
   Promise.all([
@@ -44,11 +44,10 @@ let localStrategy = new LocalStrategy({
           { username: username }
         ]
       },
-      attributes: serializedUserColumns.concat(['password'])
+      attributes: serializedAttributes.concat(['password'])
     })
-  ]).then(function(results) {
+  ]).then((results) => {
     user = results[0];
-    let adminUser = results[1];
 
     if (user === null) {
       throw new AuthError({
@@ -58,7 +57,7 @@ let localStrategy = new LocalStrategy({
     }
 
     return user.comparePassword(password);
-  }).then(function(matched) {
+  }).then((matched) => {
     if (!matched) {
       throw new AuthError({
         errType: 'password',
@@ -68,9 +67,8 @@ let localStrategy = new LocalStrategy({
 
     done(null, user, Object.assign({
       message: 'You have successfully signed in!',
-      token: token
     }, getUserOutput(user)));
-  }).catch(function(err) {
+  }).catch((err) => {
     if (err instanceof AuthError) {
       return done(null, false, err.errorObject);
     } else {
@@ -86,11 +84,11 @@ function serializeUser(user, done) {
 function deserializeUser(id, done) {
   User.findOne({
     where: { id: id },
-    attributes: serializedUserColumns
-  }).then(function(user) {
+    attributes: serializedAttributes
+  }).then((user) => {
     done(null, user);
     return null;
-  }).catch(function(err) {
+  }).catch((err) => {
     done(err);
   });
 }
@@ -116,7 +114,7 @@ function loginCheck(req, res, next) {
  * Node.js middleware that ensures user is logged in AND is an admin
  */
 function adminCheck(req, res, next) {
-  loginCheck(req, res, function() {
+  loginCheck(req, res, () => {
     if (req.user.role !== 'Administrator') {
       res.json({
         success: false,

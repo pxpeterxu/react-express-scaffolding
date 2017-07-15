@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'path';
-import favicon from 'serve-favicon';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
@@ -11,16 +10,15 @@ import routes from './app/main';
 import config from './app/config';
 import logger from './app/libs/logger';
 import auth from './app/libs/auth';
-import cors from './app/libs/cors';
 
-let app = express();
+const app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // app.use(favicon(__dirname + '/public/img/favicon.ico'));
 if (process.env.NODE_REQUEST_LOG) {
-  app.use(morgan('dev', {stream: logger.requestLogger.stream}));
+  app.use(morgan('dev', { stream: logger.requestLogger.stream }));
 }
 
 app.use(bodyParser.json({ limit: '16mb' }));
@@ -31,20 +29,9 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Allow cross domain from Chrome plugins
-function allowCrossDomain(req, res, next) {
-  if (req.headers.origin &&
-      req.headers.origin.indexOf('chrome-extension://') === 0) {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-
-  next();
-};
-
 // Authentication
-let dbDetails = config.dbDetails;
-let sessionStore = new MySQLSessionStore({
+const dbDetails = config.dbDetails;
+const sessionStore = new MySQLSessionStore({
   host: dbDetails.host,
   port: dbDetails.port,
   user: dbDetails.user,
@@ -65,20 +52,20 @@ app.use(passport.session());
 
 routes(app);
 
-/// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  let err = new Error('Not Found');
+// / catch 404 and forward to error handler
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-/// error handlers
+// / error handlers
 
 // development error handler
 // will print stacktrace
 
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use((err, req, res) => {
     res.status(err.status || 500);
     logger.error('500 error', {
       message: err.message,
@@ -96,7 +83,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use((err, req, res) => {
   res.status(err.status || 500);
   logger.error('500 error', {
     message: err.message,

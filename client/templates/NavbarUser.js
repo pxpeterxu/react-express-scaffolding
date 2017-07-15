@@ -13,7 +13,7 @@ import Auth from '../js/redux/Auth';
  * This component is the user display (e.g., "Username | Sign out" or
  * "Sign in" that can be slotted into any display
  */
-let NavbarUser = React.createClass({
+const NavbarUser = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
@@ -28,21 +28,22 @@ let NavbarUser = React.createClass({
   },
 
   logout: function() {
-    this.props.logout().then(function() {
+    this.props.logout().then(() => {
       this.props.router.push('/');
-    }.bind(this));
+    });
   },
 
   render: function() {
-    let isLoggedIn = this.props.isLoggedIn;
-    let username = this.props.username;
-    let logoutLoading = this.props.authLoading;
+    const isLoggedIn = this.props.isLoggedIn;
+    const username = this.props.username;
+    const logoutLoading = this.props.authLoading;
 
     if (isLoggedIn) {
       return (
         <Nav pullRight>
           <Navbar.Text><strong>{username}</strong></Navbar.Text>
-          <NavItem href="#" onClick={this.logout}
+          <NavItem href="#"
+              onClick={this.logout}
               disabled={logoutLoading}>
             {logoutLoading ? 'Loading' : 'Sign out'}
           </NavItem>

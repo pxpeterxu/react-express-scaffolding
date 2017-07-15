@@ -1,4 +1,5 @@
 node_modules/
 .vscode
 dist/
-*-error.log
+yarn-error.log
+npm-debug.log

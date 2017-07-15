@@ -127,7 +127,7 @@ function handleError(error) {
   }
 
   this.emit('end');
-};
+}
 
 gulp.task('build-vendor', function() {
   var b = browserify({ debug: true });
@@ -185,7 +185,7 @@ function buildJavascript(sourceFile, destFile, destDir) {
       }
 
       return stream;
-    };
+    }
 
     b.on('update', function() {
       bundle(true);

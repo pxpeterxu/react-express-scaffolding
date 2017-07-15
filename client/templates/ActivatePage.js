@@ -2,12 +2,9 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import Auth from '../js/Auth';
-import Utility from '../js/Utility';
-import Config from '../js/Config';
-
 import NewUtils from './NewUtils';
 
-let ActivatePage = React.createClass({
+const ActivatePage = React.createClass({
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
@@ -21,9 +18,9 @@ let ActivatePage = React.createClass({
   },
 
   componentWillMount: function() {
-    let activationKey = this.props.params ?
+    const activationKey = this.props.params ?
       this.props.params.activationKey : this.props.activationKey;
-    let username = this.props.params ? this.props.params.username : this.props.username;
+    const username = this.props.params ? this.props.params.username : this.props.username;
 
     this.setState({ loading: true, response: null });
 

@@ -14,7 +14,7 @@
     "depcheck": "depcheck",
     "localcheck": "localcheck",
     "eslint": "eslint",
-    "lint": "eslint client/{templates,js}/**/*.js server/app/**/*.js",
+    "lint": "eslint client/{templates,js}/**/*.js server/**/*.js",
     "lintfix": "eslint --fix client/{templates,js}/**/*.js server/**/*.js",
     "build": "gulp copy-client-config && gulp build-client build-admin build-and-zip-extension && gulp build-server",
     "pack": "gulp build-packed",

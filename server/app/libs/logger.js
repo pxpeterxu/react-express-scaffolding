@@ -1,5 +1,5 @@
-import config from '../config';
 import winston from 'winston';
+import config from '../config';
 
 function createLogger(logPath) {
   return new winston.Logger({
@@ -8,7 +8,7 @@ function createLogger(logPath) {
       new winston.transports.File({ filename: logPath }),
     ]
   });
-};
+}
 
 function createFileOnlyLogger(logPath) {  // eslint-disable-line no-unused-vars
   return new winston.Logger({
@@ -16,8 +16,8 @@ function createFileOnlyLogger(logPath) {  // eslint-disable-line no-unused-vars
       new winston.transports.File({ filename: logPath }),
     ]
   });
-};
+}
 
-let logger = createLogger(config.logPath);
+const logger = createLogger(config.logPath);
 
 export default logger;

@@ -15,7 +15,7 @@ import misc from './libs/misc';
 import logger from './libs/logger';
 import config from './config';
 
-let router = express.Router();
+const router = express.Router();
 
 /**
  * Log in using Passport.js; since they use a callback,
@@ -25,17 +25,17 @@ let router = express.Router();
  * @return Promise.<token>
  */
 function login(req, user) {
-  return new Promise(function(resolve, reject) {
-    req.logIn(user, function(err) {
+  return new Promise((resolve, reject) => {
+    req.logIn(user, (err) => {
       if (err) {
         reject(err);
       }
       resolve();
     });
-  }).then(function() {
+  }).then(() => {
     user.lastLoggedInAt = moment();
     return user.save();
-  }).then(function() {
+  }).then(() => {
     return null;
   });
 }
@@ -45,7 +45,7 @@ function login(req, user) {
  * used for password changes and resets
  */
 function checkPasswordLength(req, res, next) {
-  let password = req.body.password;
+  const password = req.body.password;
 
   if (!password || password.length < 6) {
     res.json({
@@ -60,11 +60,11 @@ function checkPasswordLength(req, res, next) {
 }
 
 router.options('/register', cors.allowCORSOptions);
-router.post('/register', checkPasswordLength, function(req, res) {
-  let password = _.isEmpty(req.body.password) ? null : req.body.password;
+router.post('/register', checkPasswordLength, (req, res) => {
+  const password = _.isEmpty(req.body.password) ? null : req.body.password;
   // If password is null, it will be hashed as null too
 
-  let email = req.body.email;
+  const email = req.body.email;
   if (config.signupEmailDomain && !(new RegExp(config.signupEmailDomain + '$', 'i')).test(email)) {
     res.json({
       success: false,
@@ -75,7 +75,7 @@ router.post('/register', checkPasswordLength, function(req, res) {
 
   let user = null;
   let successMessage;
-  User.hashPassword(password).then(function(hash) {
+  User.hashPassword(password).then((hash) => {
     user = User.build({
       email: req.body.email,
       username: req.body.username,
@@ -85,7 +85,7 @@ router.post('/register', checkPasswordLength, function(req, res) {
     });
 
     return user.validate();
-  }).then(function(err) {
+  }).then((err) => {
     if (err) {
       // Found a basic validation error; just respond
       throw new misc.ResponseError({
@@ -102,8 +102,8 @@ router.post('/register', checkPasswordLength, function(req, res) {
         where: { username: user.username }, attributes: ['id']
       })
     ];
-  }).spread(function(existingEmail, existingUsername) {
-    let errors = [];
+  }).spread((existingEmail, existingUsername) => {
+    const errors = [];
     if (existingEmail) {
       errors.push({
         message: 'There already is a user with this email address; please sign in instead',
@@ -122,40 +122,31 @@ router.post('/register', checkPasswordLength, function(req, res) {
     }
 
     return user.save();
-  }).then(function(dbUser) {
-    user = dbUser;
-
-    // Create a default API key to lower friction
-    return APIKey.create({
-      username: user.username,
-      key: randomstring.generate(32),
-      type: 'server'
-    });
-  }).then(function() {
+  }).then(() => {
     return mail.send(user.email, 'confirm', {
       username: user.username,
       activationKey: user.activationKey
-    }).then(function() {
+    }).then(() => {
       return 'You have successfully signed up! We have sent an activation email to your email address. In the meantime, you can start building APIs without activating.';
-    }).catch(function(err) {
+    }).catch((err) => {
       // This should not happen in regular operation
       logger.error('Mail send failed', { err: err });
 
       // Activate it automatically; it's not their fault
       user.activated = true;
-      return user.save().then(function() {
+      return user.save().then(() => {
         return 'You have successfully signed up! We have automatically activated your account because our email systems are currently not working.';
       });
     });
-  }).then(function(message) {
+  }).then((message) => {
     successMessage = message;
 
     // Immediately log in if possible
-    return login(req, user, true).then(function() {
+    return login(req, user, true).then(() => {
       res.json(_.assign({
         messages: [successMessage],
       }, auth.getUserOutput(user, req.session)));
-    }).catch(function(err) {
+    }).catch((err) => {
       console.error(err);
       res.json({
         success: true,
@@ -169,16 +160,16 @@ router.post('/register', checkPasswordLength, function(req, res) {
 
 
 router.options('/login', cors.allowCORSOptions);
-router.post('/login', function(req, res, next) {
+router.post('/login', (req, res, next) => {
   passport.authenticate('local', {
     badRequestMessage: 'Please enter your email/username and password'
-  }, function(err, user, info) {
+  }, (err, user, info) => {
     if (user) {
-      login(req, user).then(function() {
+      login(req, user).then(() => {
         res.json(_.assign({
           messages: ['You have successfully signed in'],
         }, auth.getUserOutput(user, req.session)));
-      }).catch(function(err) {
+      }).catch((err) => {
         res.json({
           success: false,
           messages: ['An unknown error occured']
@@ -197,7 +188,7 @@ router.post('/login', function(req, res, next) {
 /**
  * Login as a given user
  */
-router.get('/loginAs/:username', function(req, res) {
+router.get('/loginAs/:username', (req, res) => {
   if (!req.user || req.user.role !== 'Administrator') {
     res.json({
       success: false,
@@ -207,7 +198,7 @@ router.get('/loginAs/:username', function(req, res) {
     return;
   }
 
-  let username = req.params.username;
+  const username = req.params.username;
   User.findOne({
     where: {
       $or: [
@@ -215,7 +206,7 @@ router.get('/loginAs/:username', function(req, res) {
         { email: username }
       ]
     }
-  }).then(function(user) {
+  }).then((user) => {
     if (!user) {
       throw new misc.WAError([{
         message: 'We could not find a matching user',
@@ -225,7 +216,7 @@ router.get('/loginAs/:username', function(req, res) {
 
     req.logout();
     return login(req, user, false);
-  }).then(function() {
+  }).then(() => {
     res.json({
       success: true,
       messages: ['We have logged you in as the user given']
@@ -234,9 +225,9 @@ router.get('/loginAs/:username', function(req, res) {
 });
 
 router.options('/logout', cors.allowCORSOptions);
-router.post('/logout', function(req, res) {
+router.post('/logout', (req, res) => {
   req.logout();
-  let successResponse = {
+  const successResponse = {
     success: true,
     messages: ['You are now signed out']
   };
@@ -245,11 +236,11 @@ router.post('/logout', function(req, res) {
 });
 
 router.options('/activate/:username/:activationKey', cors.allowCORSOptions);
-router.post('/activate/:username/:activationKey', function(req, res) {
+router.post('/activate/:username/:activationKey', (req, res) => {
   User.findOne({
     where: { username: req.params.username },
     attributes: ['id', 'username', 'activated', 'activationKey']
-  }).then(function(user) {
+  }).then((user) => {
     if (!user) {
       res.json({
         success: false,
@@ -269,7 +260,7 @@ router.post('/activate/:username/:activationKey', function(req, res) {
     }
 
     user.activated = true;
-    user.save().then(function() {
+    user.save().then(() => {
       res.json({
         success: true,
         messages: ['Your account has been activated']
@@ -280,11 +271,11 @@ router.post('/activate/:username/:activationKey', function(req, res) {
 
 
 router.options('/startResetPassword', cors.allowCORSOptions);
-router.post('/startResetPassword', function(req, res) {
-  let email = req.body.email;
-  let username = req.body.username;
+router.post('/startResetPassword', (req, res) => {
+  const email = req.body.email;
+  const username = req.body.username;
 
-  let errors = [];
+  const errors = [];
   if (!email) {
     errors.push({ message: 'Please enter the account\'s email', type: 'emptyEmail' });
   }
@@ -299,7 +290,7 @@ router.post('/startResetPassword', function(req, res) {
       email: email
     },
     attributes: ['id', 'username', 'email']
-  }).then(function(dbUser) {
+  }).then((dbUser) => {
     user = dbUser;
     if (!user) {
       throw new misc.WAError([{
@@ -312,16 +303,16 @@ router.post('/startResetPassword', function(req, res) {
       userId: user.id,
       token: randomstring.generate(32)
     });
-  }).then(function(token) {
+  }).then((token) => {
     return mail.send(user.email, 'resetPassword', {
       username: user.username,
       token: token.token
-    }).then(function() {
+    }).then(() => {
       res.json({
         success: true,
         messages: ['We have sent an email to reset your password! Please check your inbox at ' + user.email]
       });
-    }).catch(function(err) {
+    }).catch((err) => {
       logger.error('Mail send failed for password request', { err: err });
       throw new misc.WAError([{
         message: 'We could send the recovery email. Please try again later',
@@ -338,15 +329,15 @@ router.post('/startResetPassword', function(req, res) {
  * @return Promise.<User>
  */
 function changePassword(user, password) {
-  return User.hashPassword(password).then(function(hash) {
+  return User.hashPassword(password).then((hash) => {
     user.password = hash;
     return user.save();
   });
-};
+}
 
 router.options('/resetPassword', cors.allowCORSOptions);
-router.post('/resetPassword', checkPasswordLength, function(req, res) {
-  let password = req.body.password;
+router.post('/resetPassword', checkPasswordLength, (req, res) => {
+  const password = req.body.password;
   // Assured to be non-empty by checkPasswordLength
 
   // 1. Check that we have the right token to change the password
@@ -358,7 +349,7 @@ router.post('/resetPassword', checkPasswordLength, function(req, res) {
       model: User,
       attributes: ['id', 'password']
     }
-  }).then(function(dbToken) {
+  }).then((dbToken) => {
     token = dbToken;
     if (!token) {
       throw new misc.WAError([{
@@ -367,7 +358,7 @@ router.post('/resetPassword', checkPasswordLength, function(req, res) {
       }]);
     }
 
-    let timeSinceCreation = Date.now() - token.createdAt;
+    const timeSinceCreation = Date.now() - token.createdAt;
     if (timeSinceCreation > 86400 * 1000) {
       throw new misc.WAError([{
         message: 'This password reset token has expired. Please request another one by going to the Sign In page',
@@ -377,10 +368,10 @@ router.post('/resetPassword', checkPasswordLength, function(req, res) {
 
     // 2. Actually change the user's password
     return changePassword(token.User, password);
-  }).then(function() {
+  }).then(() => {
     // 3. Invalidate the token
     return token.destroy();
-  }).then(function() {
+  }).then(() => {
     res.json({
       success: true,
       messages: ['Your password has been updated. You can now log in using the new password']
@@ -390,7 +381,7 @@ router.post('/resetPassword', checkPasswordLength, function(req, res) {
 
 
 // Check if password reset token is valid
-router.get('/isValidPasswordResetToken', function(req, res) {
+router.get('/isValidPasswordResetToken', (req, res) => {
   if (!req.query.token) {
     res.json({
       success: true,
@@ -398,7 +389,7 @@ router.get('/isValidPasswordResetToken', function(req, res) {
     });
   }
 
-  PasswordResetToken.findOne({ where: { token: req.query.token }, attributes: ['id'] }).then(function(token) {
+  PasswordResetToken.findOne({ where: { token: req.query.token }, attributes: ['id'] }).then((token) => {
     res.json({
       success: true,
       isValid: !!token
@@ -409,12 +400,12 @@ router.get('/isValidPasswordResetToken', function(req, res) {
 
 router.options('/changePassword', cors.allowCORSOptions);
 router.post('/changePassword', auth.loginCheck,
-    checkPasswordLength, function(req, res) {
+    checkPasswordLength, (req, res) => {
   /* eslint-disable indent */
 
-  let password = req.body.password;
+  const password = req.body.password;
     // Verified to be not empty by checkPasswordLength
-  let curPassword = req.body.curPassword;
+  const curPassword = req.body.curPassword;
 
   if (!curPassword) {
     res.json({
@@ -426,17 +417,17 @@ router.post('/changePassword', auth.loginCheck,
 
   let user = null;
 
-  User.findById(req.user.id, { attributes: ['id', 'password'] }).then(function(dbUser) {
+  User.findById(req.user.id, { attributes: ['id', 'password'] }).then((dbUser) => {
     user = dbUser;
 
     return user.comparePassword(curPassword);
-  }).then(function(matched) {
+  }).then((matched) => {
     if (!matched) {
       throw new misc.WAError([{ message: 'Your current password did not match', type: 'wrongCurPassword' }]);
     }
 
     return changePassword(user, password);
-  }).then(function() {  // function(dbUser)
+  }).then(() => {  // function(dbUser)
     res.json({
       success: true,
       messages: ['Your password has been changed']
@@ -445,19 +436,19 @@ router.post('/changePassword', auth.loginCheck,
 });
 
 router.options('/tutorialStep', cors.allowCORSOptions);
-router.post('/tutorialStep', auth.loginCheck, function(req, res) {
-  let step = req.body.step;
+router.post('/tutorialStep', auth.loginCheck, (req, res) => {
+  const step = req.body.step;
 
-  let user = req.user;
+  const user = req.user;
   user.tutorialStep = step;
-  user.save().then(function(user) {
+  user.save().then((user) => {
     res.json(_.assign({
       messages: ['Updated the current tutorial step to step ' + step]
     }, auth.getUserOutput(user, req.session)));
   }).catch(misc.defaultCatch(res));
 });
 
-router.get('/isLoggedin', function(req, res) {
+router.get('/isLoggedin', (req, res) => {
   res.json(auth.getUserOutput(req.user, req.session));
 });
 

@@ -10,19 +10,19 @@ import promisify from 'es6-promisify';
 import config from '../config';
 import logger from './logger';
 
-let templateDir = path.join(__dirname.replace(/\\/g, '/'), '..', 'templates', 'mail');
+const templateDir = path.join(__dirname.replace(/\\/g, '/'), '..', 'templates', 'mail');
 // When compiling on Windows and using on Linux,
 // the above .replace() is needed
 
 // Nodemailer configuration
-let defaultSendParams = {
+const defaultSendParams = {
   from: config.mailFrom
 };
 
-let transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
-let sendMail = promisify(transporter.sendMail.bind(transporter));
+const transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
+const sendMail = promisify(transporter.sendMail.bind(transporter));
 
-let cachedTemplates = {};
+const cachedTemplates = {};
 
 function compileTemplate(file) {
   return ejs.compile(fs.readFileSync(file, 'utf-8'));
@@ -37,7 +37,7 @@ function compileTemplate(file) {
 function compileStyle(file) {
   if (!fs.existsSync(file)) return '';
 
-  let extension = path.extname(file);
+  const extension = path.extname(file);
   if (extension === '.scss') {
     return sass.renderSync({
       file: file
@@ -61,9 +61,9 @@ function send(to, template, data, options) {
   if (!(template in cachedTemplates)) {
     logger.debug('Loading template "' + template + '"');
 
-    let dir = path.join(templateDir, template);
+    const dir = path.join(templateDir, template);
 
-    let templates = {
+    const templates = {
       html: compileTemplate(path.join(dir, 'html.ejs')),
       text: compileTemplate(path.join(dir, 'text.ejs')),
       subject: compileTemplate(path.join(dir, 'subject.ejs')),
@@ -74,15 +74,15 @@ function send(to, template, data, options) {
     logger.debug('Loaded template "' + template + '"');
   }
 
-  let tplData = _.assign({
+  const tplData = _.assign({
     _: _,
     config: config
   }, data);
 
-  let tpl = cachedTemplates[template];
-  let html = juice.inlineContent(tpl.html(tplData), tpl.style);
-  let text = tpl.text(tplData);
-  let subject = tpl.subject(tplData);
+  const tpl = cachedTemplates[template];
+  const html = juice.inlineContent(tpl.html(tplData), tpl.style);
+  const text = tpl.text(tplData);
+  const subject = tpl.subject(tplData);
 
   return sendMail(Object.assign({
     to: to,

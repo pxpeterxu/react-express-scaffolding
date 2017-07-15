@@ -1,4 +1,6 @@
 import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
+import _ from 'lodash';
 
 /**
  * Normalize an options array for a <select> to be the format
@@ -13,13 +15,13 @@ function normalizeOptions(options) {
   if (options instanceof Array) {
     if (options[0] && typeof options[0] !== 'object') {
       // Options is array of simple strings/numbers
-      return options.map(function(opt) {
+      return options.map((opt) => {
         return { value: opt, label: opt };
       });
     }
   } else if (typeof options === 'object') {
     // Options is { value: label }
-    return _.map(options, function(label, value) {
+    return _.map(options, (label, value) => {
       return { value: value, label: label };
     });
   }
@@ -27,7 +29,9 @@ function normalizeOptions(options) {
   return options;
 }
 
-let Tabs = React.createClass({
+const Tabs = React.createClass({
+  mixins: [PureRenderMixin],
+
   propTypes: {
     tabs: React.PropTypes.oneOfType([
       React.PropTypes.object,
@@ -57,16 +61,16 @@ let Tabs = React.createClass({
   },
 
   render: function() {
-    let tabs = normalizeOptions(this.props.tabs);
-    let activeTab = this.props.value;
-    let className = this.props.className || 'nav nav-tabs';
-    let disabledTabs = this.props.disabledTabs;
+    const tabs = normalizeOptions(this.props.tabs);
+    const activeTab = this.props.value;
+    const className = this.props.className || 'nav nav-tabs';
+    const disabledTabs = this.props.disabledTabs;
 
     return (
       <ul className={className} role="navigation">
-        {tabs.map(function renderTab(option) {
-          let tab = option.value;
-          let label = option.label;
+        {tabs.map((option) => {
+          const tab = option.value;
+          const label = option.label;
 
           let tabClassName = null;
           let onClick = this.onChange.bindMemoized(this, tab);
@@ -79,14 +83,15 @@ let Tabs = React.createClass({
           }
 
           return (
-            <li key={tab} className={tabClassName}
+            <li key={tab}
+                className={tabClassName}
                 data-tab={tab}>
-              <a href="#" onClick={onClick}>
+              <a href={`#${label}`} onClick={onClick}>
                 {label}
               </a>
             </li>
           );
-        }.bind(this))}
+        })}
       </ul>
     );
   }

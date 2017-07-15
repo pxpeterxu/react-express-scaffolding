@@ -1,13 +1,13 @@
 import Sequelize from 'sequelize';
 import promisify from 'es6-promisify';
+import bcrypt from 'bcryptjs';
+
 import db from '../db';
 
-// For password generation
-import bcrypt from 'bcryptjs';
-let hash = promisify(bcrypt.hash.bind(bcrypt));
-let compare = promisify(bcrypt.compare.bind(bcrypt));
+const hash = promisify(bcrypt.hash.bind(bcrypt));
+const compare = promisify(bcrypt.compare.bind(bcrypt));
 
-let User = db.define('User', {
+const User = db.define('User', {
   id: {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,

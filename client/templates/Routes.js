@@ -7,7 +7,7 @@ import LoginPage from './LoginPage';
 import ActivatePage from './ActivatePage';
 import ResetPasswordPage from './ResetPasswordPage';
 
-export default (requireLoggedIn) => (
+export default requireLoggedIn => (
   <Route path="/" component={MainPage}>
     <IndexRoute component={HomePage} />
     <Route path="/index" component={HomePage} />

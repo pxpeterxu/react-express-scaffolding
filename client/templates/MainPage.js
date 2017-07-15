@@ -1,14 +1,11 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import { Link } from 'react-router';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 
-import Auth from '../js/Auth';
 import NavbarUser from './NavbarUser';
-import NewUtils from './NewUtils';
 
-let MainPage = React.createClass({
+const MainPage = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
@@ -46,7 +43,7 @@ let MainPage = React.createClass({
           <div className="container">
             <p>
               <span className="pull-left">Created by YOUR NAME</span>
-              <span className="pull-left" style={{marginLeft: 20}}>Email: email@example.com</span>
+              <span className="pull-left" style={{ marginLeft: 20 }}>Email: email@example.com</span>
             </p>
           </div>
         </footer>

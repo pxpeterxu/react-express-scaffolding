@@ -2,11 +2,10 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import Auth from '../js/redux/Auth';
-import NewUtils from './NewUtils';
 import LoginPage from './LoginPage';
 
 // This component will do a login
-let LoginGate = React.createClass({
+const LoginGate = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
@@ -27,11 +26,11 @@ let LoginGate = React.createClass({
   },
 
   render: function() {
-    let component = this.props.componentOnceLoggedIn;
-    let logout = this.props.logout;
-    let username = this.props.username;
-    let authStateLoaded = this.props.authStateLoaded;
-    let isLoggedIn = this.props.isLoggedIn;
+    const component = this.props.componentOnceLoggedIn;
+    const logout = this.props.logout;
+    const username = this.props.username;
+    const authStateLoaded = this.props.authStateLoaded;
+    const isLoggedIn = this.props.isLoggedIn;
 
     if (!authStateLoaded) {
       return <div>Please wait... loading your account</div>;

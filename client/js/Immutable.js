@@ -4,19 +4,21 @@ import _ from 'lodash';
 // Extend Immutable with a.b.c getIn formats for better
 // readability in the code
 function dotFunc(origFuncName) {
-  return function(searchKey) {
-    let args = Array.prototype.slice.call(arguments);
+  return function(...allArgs) {
+    const searchKey = allArgs[0];
+    const args = Array.prototype.slice.call(allArgs);
     args[0] = searchKey.split('.');
-    return this[origFuncName].apply(this, args);
+    return this[origFuncName].apply(this, ...args);
   };
 }
 
 function autoFunc(origFuncName, dotFuncName) {
-  return function(searchKey) {
+  return function(...args) {
+    const searchKey = args[0];
     if (typeof searchKey === 'string') {
-      return this[dotFuncName].apply(this, arguments);
+      return this[dotFuncName].apply(this, ...args);
     } else {
-      return this[origFuncName].apply(this, arguments);
+      return this[origFuncName].apply(this, ...args);
     }
   };
 }
@@ -67,7 +69,7 @@ function splitMutableImmutable(obj, index) {
 
   let cur = obj;
   let immutableParts = [];
-  let mutableParts = [];
+  const mutableParts = [];
 
   for (let i = 0; i !== index.length; i++) {
     if (Immutable.Iterable.isIterable(cur)) {
@@ -75,7 +77,7 @@ function splitMutableImmutable(obj, index) {
       immutableParts = index.slice(i);
       break;
     }
-    let part = index[i];
+    const part = index[i];
     mutableParts.push(part);
     cur = obj[part];
   }
@@ -96,27 +98,27 @@ function splitMutableImmutable(obj, index) {
  * @return modified root obj
  */
 function setMixed(obj, stateIndex, value, withType) {
-  let keys = splitMutableImmutable(obj, stateIndex);
-  let hasMutable = !!keys.mutable.length;
-  let hasImmutable = !!keys.immutable.length;
+  const keys = splitMutableImmutable(obj, stateIndex);
+  const hasMutable = !!keys.mutable.length;
+  const hasImmutable = !!keys.immutable.length;
 
-  let immutable = hasMutable ? _.get(obj, keys.mutable) : obj;
-  let curValue = hasImmutable ? immutable.getIn(keys.immutable) : immutable;
+  const immutable = hasMutable ? _.get(obj, keys.mutable) : obj;
+  const curValue = hasImmutable ? immutable.getIn(keys.immutable) : immutable;
   if (curValue === value) {
     // Prevent unneeded changes
     return obj;
   }
 
-  let toSet = hasImmutable ? immutable.setIn(keys.immutable, value) : value;
+  const toSet = hasImmutable ? immutable.setIn(keys.immutable, value) : value;
 
   if (hasMutable) {
-    let keysSoFar = [];
+    const keysSoFar = [];
 
     // Clone parents so that we still have good behavior
     // with PureRenderMixin
     obj = _.clone(obj);
     for (let i = 0; i !== keys.mutable.length - 1; i++) {
-      let key = keys.mutable[i];
+      const key = keys.mutable[i];
       keysSoFar.push(key);
       _.set(obj, keysSoFar, _.clone(_.get(obj, keysSoFar)));
     }
@@ -141,12 +143,12 @@ function setMixed(obj, stateIndex, value, withType) {
  * @return value or undefined
  */
 function getMixed(obj, stateIndex) {
-  let keys = splitMutableImmutable(obj, stateIndex);
-  let hasMutable = !!keys.mutable.length;
-  let hasImmutable = !!keys.immutable.length;
+  const keys = splitMutableImmutable(obj, stateIndex);
+  const hasMutable = !!keys.mutable.length;
+  const hasImmutable = !!keys.immutable.length;
 
-  let immutable = hasMutable ? _.get(obj, keys.mutable) : obj;
-  let value = hasImmutable ? immutable.getIn(keys.immutable) : immutable;
+  const immutable = hasMutable ? _.get(obj, keys.mutable) : obj;
+  const value = hasImmutable ? immutable.getIn(keys.immutable) : immutable;
 
   return value;
 }
@@ -159,20 +161,20 @@ function getMixed(obj, stateIndex) {
  * @return updated obj (with shallow copies to preserve immutable semantices)
  */
 function deleteMixed(obj, stateIndex) {
-  let keys = splitMutableImmutable(obj, stateIndex);
-  let hasMutable = !!keys.mutable.length;
-  let hasImmutable = !!keys.immutable.length;
-  let immutable = hasMutable ? _.get(obj, keys.mutable) : obj;
-  let toSet = hasImmutable ? immutable.deleteIn(keys.immutable) : immutable;
+  const keys = splitMutableImmutable(obj, stateIndex);
+  const hasMutable = !!keys.mutable.length;
+  const hasImmutable = !!keys.immutable.length;
+  const immutable = hasMutable ? _.get(obj, keys.mutable) : obj;
+  const toSet = hasImmutable ? immutable.deleteIn(keys.immutable) : immutable;
 
   if (hasMutable) {
-    let keysSoFar = [];
+    const keysSoFar = [];
 
     // Clone parents so that we still have good behavior
     // with PureRenderMixin
     obj = _.clone(obj);
     for (let i = 0; i !== keys.mutable.length - 1; i++) {
-      let key = keys.mutable[i];
+      const key = keys.mutable[i];
       keysSoFar.push(key);
       _.set(obj, keysSoFar, _.clone(_.get(obj, keysSoFar)));
     }
@@ -182,9 +184,9 @@ function deleteMixed(obj, stateIndex) {
       _.set(obj, keys.mutable, toSet);
     } else {
       // Use the second-to-last key to get the object to delete in
-      let deleteObjKey = keys.mutable.slice(0, -1);
-      let deleteObj = deleteObjKey.length !== 0 ? _.get(obj, deleteObjKey) : obj;
-      let deleteKey = keys.mutable[keys.mutable.length - 1];
+      const deleteObjKey = keys.mutable.slice(0, -1);
+      const deleteObj = deleteObjKey.length !== 0 ? _.get(obj, deleteObjKey) : obj;
+      const deleteKey = keys.mutable[keys.mutable.length - 1];
 
       if (deleteObj instanceof Array) {
         deleteObj.splice(deleteKey, 1);

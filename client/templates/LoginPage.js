@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import NewUtils from './NewUtils';
 import LoginForm from './LoginForm';
 
-let LoginPage = React.createClass({
+const LoginPage = React.createClass({
   propTypes: {
     showLogo: React.PropTypes.bool,
 
@@ -22,7 +22,7 @@ let LoginPage = React.createClass({
   },
 
   setTabFromUrl: function(props) {
-    let pathname = _.get(props, 'location.pathname');
+    const pathname = _.get(props, 'location.pathname');
     if (pathname === '/register') {
       this.setState({ tab: 'register' });
     } else {
@@ -39,7 +39,7 @@ let LoginPage = React.createClass({
   },
 
   onLogin: function() {
-    let redirect = _.get(this.props, 'location.query.redirect');
+    const redirect = _.get(this.props, 'location.query.redirect');
     if (redirect) {
       this.props.router.push(redirect);
     }
@@ -50,9 +50,9 @@ let LoginPage = React.createClass({
   },
 
   render: function() {
-    let showLogo = this.props.showLogo;
-    let registrationResponse = this.state.registrationResponse;
-    let tab = this.state.tab;
+    const showLogo = this.props.showLogo;
+    const registrationResponse = this.state.registrationResponse;
+    const tab = this.state.tab;
 
     if (registrationResponse && registrationResponse.success) {
       return (<div className="container">

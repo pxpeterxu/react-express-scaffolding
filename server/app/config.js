@@ -1,16 +1,15 @@
 import dotenv from 'dotenv';
-import path from 'path';
 
-let file = process.env.DATABASE === 'production' ? '.env.prod' : '.env.local';
+const file = process.env.DATABASE === 'production' ? '.env.prod' : '.env.local';
 
 // When webpacking on Windows and using the resulting file on a Mac,
 // __dirname with backslashes doesn't play well
-let dirname = __dirname.replace(/\\/g, '/');
+const dirname = __dirname.replace(/\\/g, '/');
 
 dotenv.config({ path: dirname + '/../' + file });
 dotenv.config({ path: dirname + '/' + file });
 
-let dbDetails = {
+const dbDetails = {
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'wrapapi',
@@ -18,7 +17,7 @@ let dbDetails = {
   database: process.env.DB_DATABASE || 'wrapapi'
 };
 
-let config = {
+const config = {
   host: process.env.WEB_HOST,
   db: 'mysql://' + dbDetails.user + ':' + dbDetails.password + '@' +
     dbDetails.host + ':' + dbDetails.port + '/' + dbDetails.database,
