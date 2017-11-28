@@ -39,7 +39,7 @@ const config = {
       pass: process.env.SMTP_PASS
     }
   },
-  hashSecret: process.env.HASH_SECRET || 'SomeAbsurdlylongStringthatevenFiguringitoutwithMD5wouldn\'tbeeasywith',
+  hashSecret: process.env.HASH_SECRET || 'ThisisaReallyReallyLongStrin!WhatisupwithTHAThuh?',
   logPath: dirname + '/../logs/log.txt',
   requestsLogPath: dirname + '/../logs/requests.txt',
   sqlLogPath: dirname + '/../logs/sql.txt',
