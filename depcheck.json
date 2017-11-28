@@ -29,7 +29,6 @@
     "mysql2",
     "mocha",
     "chai",
-    "myrtlelime-depcheck",
-    "react-router-dom"
+    "myrtlelime-depcheck"
   ]
 }

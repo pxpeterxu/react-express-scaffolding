@@ -66,7 +66,7 @@ class ResetPasswordPage extends React.PureComponent {
         if (data.success) {
           // Add extra link if successful
           data.messages.push(<span>
-            <Link to="/login">Sign in with your new password</Link> to start using WrapAPI.
+            <Link to="/login">Sign in with your new password</Link> to start using Site Name.
           </span>);
           this.setState({ passwordChanged: true });
         }
@@ -119,7 +119,7 @@ class ResetPasswordPage extends React.PureComponent {
 
                 <div className={'form-group ' +
                     (showPassword2Error ? 'has-error' : '')}>
-                  <label htmlFor="password">New password again</label>
+                  <label htmlFor="password2">New password again</label>
                   <input type="password"
                       id="password2"
                       className="form-control"

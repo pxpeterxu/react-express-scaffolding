@@ -76,8 +76,10 @@ function toggleValue(elem, stateIndex, value, preventDefault) {
  * @param preventDefault  whether to preventDefault
  */
 function togglePropValue(elem, propFunc, propIndex, indexInProp, value, preventDefault) {
-  return changeProp(elem, propFunc, propIndex, indexInProp,
-    toggleConstant(value), preventDefault, ['toggleConstant', value]);
+  return changeProp(
+    elem, propFunc, propIndex, indexInProp,
+    toggleConstant(value), preventDefault, ['toggleConstant', value]
+  );
 }
 
 /**
@@ -105,8 +107,10 @@ function toggleFromEvent(elem, stateIndex, preventDefault) {
  * @param preventDefault  whether to preventDefault
  */
 function togglePropFromEvent(elem, propFunc, propIndex, indexInProp, value, preventDefault) {
-  return changeProp(elem, propFunc, propIndex, indexInProp,
-    setOrNull, preventDefault, 'setOrNull');
+  return changeProp(
+    elem, propFunc, propIndex, indexInProp,
+    setOrNull, preventDefault, 'setOrNull'
+  );
 }
 
 /**
@@ -152,8 +156,7 @@ function setPropNumber(elem, propFunc, propIndex, indexInProp, preventDefault) {
  * @param preventDefault  whether to preventDefault
  * @return function to handle events or values being changed
  */
-function setPropValue(elem, propFunc, propIndex,
-  indexInProp, value, preventDefault) {
+function setPropValue(elem, propFunc, propIndex, indexInProp, value, preventDefault) {
   return changeProp(elem, propFunc, propIndex, indexInProp, constant(value), preventDefault, ['constant', value]);
 }
 
@@ -326,6 +329,7 @@ function renderResponse(response, options) {
   if (!response) return null;
   if (response.success && errorsOnly) return null;
 
+  /* eslint-disable jsx-a11y/click-events-have-key-events */
   return response && response.messages && (
     <div className={`${type} ${type}-` +
         (response.success ? 'success' : 'danger') +
@@ -337,6 +341,7 @@ function renderResponse(response, options) {
       {response.messages.map((message) => { return <p key={message}>{message}</p>; })}
     </div>
   );
+  /* eslint-enable jsx-a11y/click-events-have-key-events */
 }
 
 /**

@@ -401,7 +401,7 @@ router.get('/isValidPasswordResetToken', (req, res) => {
 
 router.options('/changePassword', cors.allowCORSOptions);
 router.post('/changePassword', auth.loginCheck,
-    checkPasswordLength, (req, res) => {
+  checkPasswordLength, (req, res) => {
   /* eslint-disable indent */
 
   const password = req.body.password;

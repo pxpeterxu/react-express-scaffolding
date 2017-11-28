@@ -12,9 +12,9 @@ dotenv.config({ path: dirname + '/' + file });
 const dbDetails = {
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'wrapapi',
+  user: process.env.DB_USER || 'db_username',
   password: process.env.DB_PASS,
-  database: process.env.DB_DATABASE || 'wrapapi'
+  database: process.env.DB_DATABASE || 'db_database'
 };
 
 const config = {

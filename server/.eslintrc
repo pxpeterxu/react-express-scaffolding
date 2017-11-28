@@ -67,6 +67,11 @@
     "arrow-body-style": 0,
     "class-methods-use-this": 0,
     "no-plusplus": 0,
+    "prefer-destructuring": 0,
+    "no-multi-spaces": [2, { "ignoreEOLComments": true }],
+    "object-curly-newline": 0,
+    "function-paren-newline": 0,
+    "no-restricted-globals": 0,
     "import/no-named-as-default-member": 0,
     "import/no-named-as-default": 0,
     "react/prefer-stateless-function": 0,  // propTypes is nice to have
@@ -80,6 +85,9 @@
     "react/forbid-prop-types": 0,
     "react/require-default-props": 0,
     "react/no-unused-prop-types": 0,
-    "react/no-unescaped-entities": 0
+    "react/no-unescaped-entities": 0,
+    "jsx-a11y/anchor-is-valid": 0,
+    "react/jsx-closing-tag-location": 0,
+    "jsx-a11y/label-has-for": [2, { "some": ["nesting", "id"], "allowChildren": true }]
   }
 }

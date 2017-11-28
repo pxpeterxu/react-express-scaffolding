@@ -21,7 +21,7 @@ class MainPage extends React.PureComponent {
           <Navbar.Header>
             <Navbar.Brand>
               <a href="#/">
-                Site name
+                Site Name
               </a>
             </Navbar.Brand>
             <Navbar.Toggle />

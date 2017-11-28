@@ -299,7 +299,7 @@ function launchServer(script) {
 
 //
 // These jobs are used for packing server components for distribution
-// to WrapAPI private cloud hosting licensors
+// to private cloud hosting licensors
 //
 var packedWatchGlobs = {};
 createCopyGulpTask('copy-packed', 'dist/app/{server/{logs/.gitignore,{public,app/templates}/**/*},.ebextensions/**/*,package.json}', 'dist/packed', packedWatchGlobs);

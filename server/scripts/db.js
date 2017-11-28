@@ -1,4 +1,4 @@
-import requireDir from 'require-dir';
+import requireDir from 'require-dir'; // eslint-disable-line import/no-extraneous-dependencies
 import db from '../app/db';
 
 requireDir('../app/models');

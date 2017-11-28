@@ -17,11 +17,7 @@ class ActivatePage extends React.PureComponent {
   constructor() {
     super();
     this.state = {
-      activated: false,
       loading: true,
-
-      pluginInstalled: false,
-      isChrome: true
     };
   }
 
