@@ -62,7 +62,7 @@ class LoginPage extends React.PureComponent {
 
     return (<div className="container">
       <div className="row"><div className="col-sm-6 col-sm-offset-3">
-        <div className="wa-top20">
+        <div className="top20">
           <LoginForm onLogin={this.onLogin}
               onRegister={this.onRegister}
               showLogo={showLogo}

@@ -127,9 +127,9 @@ class LoginForm extends React.PureComponent {
     }
 
     return (<div>
-      <h1 className="wa-top0">{activeVerb}</h1>
+      <h1 className="top0">{activeVerb}</h1>
 
-      <div className="wa-bottom20">
+      <div className="bottom20">
         <Tabs tabs={tabOptions}
             value={activeTab}
             onChange={NewUtils.callProp(this, 'onTabChange')} />

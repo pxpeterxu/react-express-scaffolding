@@ -334,7 +334,7 @@ function renderResponse(response, options) {
     <div className={`${type} ${type}-` +
         (response.success ? 'success' : 'danger') +
         (additionalClasses ? ' ' + additionalClasses : '') +
-        (onClick ? ' wa-link' : '')}
+        (onClick ? ' link' : '')}
         onClick={onClick}
         role="button"
         tabIndex={0}>
