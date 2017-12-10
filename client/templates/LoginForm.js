@@ -68,7 +68,7 @@ class LoginForm extends React.PureComponent {
     this.setState({ hasSubmitErrors: false, loading: false, response: null });
     this.props.registerUser(this.state.form).then((data) => {
       if (data.isLoggedIn) {
-        this.props.onRegister();
+        this.props.onRegister(data);
       }
     });
   };

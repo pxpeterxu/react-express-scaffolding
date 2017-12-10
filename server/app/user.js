@@ -85,25 +85,22 @@ router.post('/register', checkPasswordLength, (req, res) => {
       activationKey: randomstring.generate(8)
     });
 
-    return user.validate();
-  }).then((err) => {
-    if (err) {
-      // Found a basic validation error; just respond
+    return user.validate().catch((err) => {
       throw new misc.ResponseError({
         messages: misc.oneMessagePerField(err.errors)
       });
-    }
-
+    });
+  }).then(() => {
     // Do deeper validation
-    return [
+    return Promise.all([
       User.findOne({
         where: { email: user.email }, attributes: ['id']
       }),
       User.findOne({
         where: { username: user.username }, attributes: ['id']
       })
-    ];
-  }).spread((existingEmail, existingUsername) => {
+    ]);
+  }).then(([existingEmail, existingUsername]) => {
     const errors = [];
     if (existingEmail) {
       errors.push({
@@ -151,7 +148,7 @@ router.post('/register', checkPasswordLength, (req, res) => {
       console.error(err);
       res.json({
         success: true,
-        loggedIn: false,
+        isLoggedIn: false,
         messages: [successMessage, 'Please log in with your newly-created account to get started.']
       });
       logger.error('Login failed', { err: err });
@@ -283,7 +280,7 @@ router.post('/startResetPassword', (req, res) => {
   if (!username) {
     errors.push({ message: 'Please enter the account\'s username', type: 'emptyUsername' });
   }
-  let user = null;  // Used to globalize scope across promises
+  let user = null; // Used to globalize scope across promises
 
   User.findOne({
     where: {
@@ -428,7 +425,7 @@ router.post('/changePassword', auth.loginCheck,
     }
 
     return changePassword(user, password);
-  }).then(() => {  // function(dbUser)
+  }).then(() => { // function(dbUser)
     res.json({
       success: true,
       messages: ['Your password has been changed']

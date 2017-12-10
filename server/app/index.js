@@ -5,6 +5,8 @@ import { match, RouterContext } from 'react-router';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
+import auth from './libs/auth';
+import { Actions as AuthActions } from '../../client/js/redux/Auth';
 import MainReducer from '../../client/js/redux/MainReducer';
 import routes from '../../client/templates/Routes';
 
@@ -19,8 +21,11 @@ const router = express.Router();
  * @param renderProps   router render props
  * @return store to use, or null if redirected
  */
-function loadData(/* req, res, renderProps */) {
+function loadData(req/* , res, renderProps */) {
   const store = createStore(MainReducer);
+  if (req.user) {
+    store.dispatch(AuthActions.updateLoginState(auth.getUserOutput(req.user, req.session)));
+  }
 
   return Promise.resolve({ store });
 }
@@ -39,7 +44,7 @@ function handleRequest(req, res) {
       const loadDataStart = Date.now();
       loadData(req, res, renderProps).then((result) => {
         console.log(`Load data: ${Date.now() - loadDataStart}`);
-        if (!result) return;  // We got redirected
+        if (!result) return; // We got redirected
         const { store, title, keywords, description, fbImage } = result;
 
         res.type('text/html');

@@ -8,10 +8,10 @@ const Actions = {
     return { type: 'START_LOGIN' };
   },
   finishLogin: function(data) {
-    return { type: 'FINISH_LOGIN', data: data };
+    return { type: 'FINISH_LOGIN', data };
   },
   updateLoginState: function(data) {
-    return { type: 'UPDATE_LOGIN_STATE', data: data };
+    return { type: 'UPDATE_LOGIN_STATE', data };
   },
   startLogout: function() {
     return { type: 'START_LOGOUT' };
@@ -22,8 +22,8 @@ const Actions = {
   startRegister: function() {
     return { type: 'START_REGISTER' };
   },
-  finishRegister: function() {
-    return { type: 'FINISH_REGISTER' };
+  finishRegister: function(data) {
+    return { type: 'FINISH_REGISTER', data };
   },
   setError: function(error) {
     return { type: 'SET_ERROR', error: error };
@@ -36,7 +36,7 @@ function AuthReducer(state, action) {
       loading: false,
       loaded: false,
       response: {
-        loggedIn: false,
+        isLoggedIn: false,
         username: null,
         activated: null,
       },
@@ -136,7 +136,7 @@ function register(dispatch, userData) {
     } else {
       dispatch(Actions.setError(data));
     }
-    return mapResponseToProps(data);
+    return data;
   }).catch((err) => {
     dispatch(Actions.setError(err));
   });
@@ -176,7 +176,7 @@ function getLoginState(dispatch, store) {
  */
 function mapResponseToProps(response) {
   return {
-    isLoggedIn: response.loggedIn,
+    isLoggedIn: response.isLoggedIn,
     username: response.username,
     isActivated: response.activated,
   };
@@ -194,7 +194,7 @@ function getOrFetchLoginState(props) {
   const getLoginState = props.getLoginState;
 
   if (authStateLoaded) {
-    return Promise.resolve(props);  // Should contain all the keys we need
+    return Promise.resolve(props); // Should contain all the keys we need
   }
 
   return getLoginState();

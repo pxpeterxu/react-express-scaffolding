@@ -50,19 +50,23 @@ const User = db.define('User', {
   activated: { type: Sequelize.BOOLEAN, defaultValue: 0, allowNull: false },
   apiElementModifyTime: { type: Sequelize.INTEGER, defaultValue: 0, allowNull: false }
 }, {
-  instanceMethods: {
-    comparePassword: function(password) {
-      return compare(password, this.password);
-    }
-  },
-  classMethods: {
-    hashPassword: function(password) {
-      return hash(password, 10);
-    },
-    comparePassword: function(password, hash) {
-      return compare(password, hash);
-    }
-  }
+  indexes: [{
+    name: 'email',
+    fields: ['email'],
+    unique: true
+  }],
 });
+
+User.prototype.comparePassword = function(password) {
+  return compare(password, this.password);
+};
+
+User.hashPassword = function(password) {
+  return hash(password, 10);
+};
+
+User.comparePassword = function(password, hash) {
+  return compare(password, hash);
+};
 
 export default User;
