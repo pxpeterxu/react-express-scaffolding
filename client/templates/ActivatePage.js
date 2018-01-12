@@ -1,36 +1,36 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
+import { getThen, getCatch, renderResponse } from 'react-updaters';
 
 import Auth from '../js/Auth';
-import NewUtils from './NewUtils';
+import type { Response } from '../../common/Types';
 
-class ActivatePage extends React.PureComponent {
-  static propTypes = {
-    params: PropTypes.shape({
-      activationKey: PropTypes.string,
-      username: PropTypes.string
-    }),
-    activationKey: PropTypes.string,
-    username: PropTypes.string,
+type Props = {
+  params: {
+    activationKey: string,
+    username: string,
   }
+};
 
-  constructor() {
-    super();
-    this.state = {
-      loading: true,
-    };
-  }
+type State = {
+  loading: boolean,
+  response: ?Response,
+};
+
+class ActivatePage extends React.PureComponent<Props, State> {
+  state = {
+    loading: true,
+    response: null,
+  };
 
   componentWillMount() {
-    const activationKey = this.props.params ?
-      this.props.params.activationKey : this.props.activationKey;
-    const username = this.props.params ? this.props.params.username : this.props.username;
+    const { username, activationKey } = this.props.params;
 
     this.setState({ loading: true, response: null });
 
     Auth.activate(username, activationKey)
-      .then(NewUtils.getThen(this))
-      .catch(NewUtils.getCatch(this));
+      .then(getThen(this))
+      .catch(getCatch(this));
   }
 
   render() {
@@ -45,7 +45,7 @@ class ActivatePage extends React.PureComponent {
           </div>
         )}
 
-        {NewUtils.renderResponse(this.state.response)}
+        {renderResponse(this.state.response)}
       </div>
     );
   }

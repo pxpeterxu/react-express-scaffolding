@@ -5,7 +5,6 @@
   "immutable",
   "lodash",
   "react",
-  "react-addons-pure-render-mixin",
   "react-bootstrap/lib/Nav",
   "react-bootstrap/lib/Navbar",
   "react-bootstrap/lib/NavItem",

@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import _ from 'lodash';
-
-import { callProp } from './NewUtils';
+import { callProp } from 'react-updaters';
+import type { Options, OptionValue } from '../../common/Types';
 
 /**
  * Normalize an options array for a <select> to be the format
@@ -13,49 +13,39 @@ import { callProp } from './NewUtils';
  *                                - Object of { label: value }
  * @return Array of { value, label } for each option
  */
-function normalizeOptions(options) {
+function normalizeOptions(options: Options): Array<{ value: OptionValue, label: React.Node }> {
   if (options instanceof Array) {
-    if (options[0] && typeof options[0] !== 'object') {
-      // Options is array of simple strings/numbers
-      return options.map((opt) => {
-        return { value: opt, label: opt };
-      });
-    }
+    return options.map((option) => {
+      if (typeof option === 'string') {
+        return { value: option, label: option };
+      } else {
+        return option;
+      }
+    });
   } else if (typeof options === 'object') {
     // Options is { value: label }
     return _.map(options, (label, value) => {
       return { value: value, label: label };
     });
   }
-
-  return options;
+  return [];
 }
 
-class Tabs extends React.PureComponent {
-  static propTypes = {
-    tabs: PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.array
-    ]).isRequired,
-    value: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-      PropTypes.bool
-    ]),
-    onChange: PropTypes.func.isRequired,
-    disabledTabs: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.object
-    ]),
-    className: PropTypes.string
-  };
+type Props = {
+  tabs: Options,
+  value: OptionValue,
+  onChange: (OptionValue) => mixed,
+  disabledTabs?: ?Array<mixed>,
+  className?: ?string,
+};
 
-  onChange = (tab, e) => {
+class Tabs extends React.PureComponent<Props> {
+  onChange = (tab: OptionValue, e: Event) => {
     e.preventDefault();
     this.props.onChange(tab);
   };
 
-  doNothingCallback = (e) => {
+  doNothingCallback = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
   };
@@ -68,7 +58,7 @@ class Tabs extends React.PureComponent {
 
     return (
       <ul className={className} role="navigation">
-        {tabs.map((option) => {
+        {tabs.map((option, index) => {
           const tab = option.value;
           const label = option.label;
 
@@ -82,10 +72,10 @@ class Tabs extends React.PureComponent {
           }
 
           return (
-            <li key={tab}
+            <li key={JSON.stringify(tab)}
                 className={tabClassName}
                 data-tab={tab}>
-              <a href={`#${label}`}
+              <a href={`#tab${index}`}>
                   onClick={isDisabled ? null : callProp(this, 'onChange', tab, true)}>
                 {label}
               </a>

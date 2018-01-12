@@ -1,19 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
-
 import NavbarUser from './NavbarUser';
 
-class MainPage extends React.PureComponent {
-  static propTypes = {
-    children: PropTypes.node,
-    router: PropTypes.object.isRequired,
+type Prop = {
+  children: React.Node,
+};
 
-    // Redux injected
-    isLoggedIn: PropTypes.bool,
-  };
-
+class MainPage extends React.PureComponent<Prop> {
   render() {
     return (
       <div>

@@ -1,5 +1,5 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
 import { LinkContainer } from 'react-router-bootstrap';
 import { withRouter } from 'react-router';
 
@@ -7,24 +7,19 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 
-import Auth from '../js/redux/Auth';
+import Auth, { type InjectedProps } from '../js/redux/Auth';
+
+type Props = {
+  router: {
+    push: Function,
+  }
+} & InjectedProps;
 
 /**
  * This component is the user display (e.g., "Username | Sign out" or
  * "Sign in" that can be slotted into any display
  */
-class NavbarUser extends React.PureComponent {
-  static propTypes = {
-    // withRouter injected
-    router: PropTypes.object,
-
-    // Redux injected
-    isLoggedIn: PropTypes.bool,
-    username: PropTypes.string,
-    authLoading: PropTypes.bool.isRequired,
-    logout: PropTypes.func
-  };
-
+class NavbarUser extends React.PureComponent<Props> {
   logout = () => {
     this.props.logout().then(() => {
       this.props.router.push('/');

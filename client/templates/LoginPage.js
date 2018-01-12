@@ -1,20 +1,32 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { withRouter } from 'react-router';
-
-import NewUtils from './NewUtils';
+import { update, renderResponse } from 'react-updaters';
 import LoginForm from './LoginForm';
+import type { Response } from '../../common/Types';
 
-class LoginPage extends React.PureComponent {
-  static propTypes = {
-    showLogo: PropTypes.bool,
+type Props = {
+  showLogo: boolean,
+  location: {
+    pathname: string,
+    query: {
+      redirect?: string,
+    },
+  },
+  router: {
+    push: Function,
+  },
+};
 
-    // Injected
-    location: PropTypes.object,
-    router: PropTypes.object,
-  };
+type Tab = 'register' | 'login';
 
+type State = {
+  tab: Tab,
+  registrationResponse: ?Response,
+};
+
+class LoginPage extends React.PureComponent<Props, State> {
   state = {
     tab: 'login',
     registrationResponse: null
@@ -56,7 +68,7 @@ class LoginPage extends React.PureComponent {
     if (registrationResponse && registrationResponse.success) {
       return (<div className="container">
         <h1>Register</h1>
-        {NewUtils.renderResponse(registrationResponse)}
+        {renderResponse(registrationResponse)}
       </div>);
     }
 
@@ -67,7 +79,7 @@ class LoginPage extends React.PureComponent {
               onRegister={this.onRegister}
               showLogo={showLogo}
               tab={tab}
-              onTabChange={NewUtils.update(this, 'tab')} />
+              onTabChange={update(this, 'tab')} />
         </div>
       </div></div>
     </div>);

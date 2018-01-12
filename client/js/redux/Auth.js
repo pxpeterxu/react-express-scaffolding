@@ -1,44 +1,64 @@
+// @flow
 import { connect as connectRedux } from 'react-redux';
 import _ from 'lodash';
+import Auth, { type RegistrationData } from '../Auth';
 
-import Auth from '../Auth';
+type AuthResponse = {
+  success: boolean,
+  loggedIn: boolean,
+  username: ?string,
+  email: ?string,
+  activated: ?boolean,
+};
 
-const Actions = {
-  startLogin: function() {
+export const Actions = {
+  startLogin() {
     return { type: 'START_LOGIN' };
   },
-  finishLogin: function(data) {
+  finishLogin(data: AuthResponse) {
     return { type: 'FINISH_LOGIN', data };
   },
-  updateLoginState: function(data) {
+  updateLoginState(data: AuthResponse) {
     return { type: 'UPDATE_LOGIN_STATE', data };
   },
-  startLogout: function() {
+  startLogout() {
     return { type: 'START_LOGOUT' };
   },
-  finishLogout: function() {
+  finishLogout() {
     return { type: 'FINISH_LOGOUT' };
   },
-  startRegister: function() {
+  startRegister() {
     return { type: 'START_REGISTER' };
   },
-  finishRegister: function(data) {
+  finishRegister(data: AuthResponse) {
     return { type: 'FINISH_REGISTER', data };
   },
-  setError: function(error) {
-    return { type: 'SET_ERROR', error: error };
+  setError(error: Object) {
+    return { type: 'SET_ERROR', error };
+  },
+  setTutorialCompleted(tutorial: string, completed: boolean) {
+    return { type: 'SET_TUTORIAL_COMPLETED', tutorial, completed };
   }
 };
 
-function AuthReducer(state, action) {
-  function getDefaultState() {
+type State = {
+  loading: boolean,
+  loaded: boolean,
+  response: AuthResponse,
+  error: ?Object,
+};
+
+export function Reducer(state: ?State, action: any) { // Not typing action yet; not likely source of bugs
+  function getDefaultState(): State {
     return {
       loading: false,
       loaded: false,
       response: {
-        isLoggedIn: false,
+        success: false,
+        loggedIn: false,
         username: null,
         activated: null,
+        email: null,
       },
       error: null
     };
@@ -87,7 +107,7 @@ function AuthReducer(state, action) {
  * @param {string} password
  * @return {Promise.<object>} object with response
  */
-function login(dispatch, email, password) {
+export function login(dispatch: Function, email: string, password: string) {
   dispatch(Actions.startLogin());
 
   return Auth.login(email, password).then((data) => {
@@ -108,10 +128,9 @@ function login(dispatch, email, password) {
  * @param {function} dispatch  Redux dispatch function
  * @return {Promise.<object>} object with response
  */
-function logout(dispatch) {
+export function logout(dispatch: Function) {
   dispatch(Actions.startLogout());
-
-  return Auth.logout().then((data) => {
+  Auth.logout().then((data) => {
     if (data.success) {
       dispatch(Actions.finishLogout());
     }
@@ -124,23 +143,43 @@ function logout(dispatch) {
 
 /**
  * Register a user with given info
- * @param {Object} user  user with email, username, password
+ * @param {Object} userData  user with email, username, password, name, company, etc.
+ * @param {string} inviteKey optionally, an invite key
  * @return {Promise.<Object>} with login details
  */
-function register(dispatch, userData) {
+function register(dispatch: Function, userData: RegistrationData, inviteKey?: string) {
   dispatch(Actions.startRegister());
 
-  return Auth.register(userData).then((data) => {
+  return Auth.register(userData, inviteKey).then((data) => {
     if (data.success) {
       dispatch(Actions.finishRegister(data));
     } else {
       dispatch(Actions.setError(data));
     }
-    return data;
+    return mapResponseToProps(data);
   }).catch((err) => {
     dispatch(Actions.setError(err));
   });
 }
+
+type AuthResponseInjectedProps = {
+  isLoggedIn: boolean,
+  username: ?string,
+  isActivated: ?boolean,
+  userEmail: ?string,
+};
+
+export type InjectedProps = {
+  authStateLoaded: boolean,
+  authLoading: boolean,
+  authError: ?Object,
+
+  // Dispatch functions
+  login: Function,
+  logout: Function,
+  registerUser: Function,
+  getLoginState: Function,
+} & AuthResponseInjectedProps;
 
 /**
  * Update the logged in status if it hasn't been loaded
@@ -150,7 +189,7 @@ function register(dispatch, userData) {
  *                              use the cache
  * @return {Promise.<Object>} promise with response
  */
-function getLoginState(dispatch, store) {
+function getLoginState(dispatch: Function, store: { auth: State }): Promise<AuthResponseInjectedProps> {
   if (store && _.get(store, 'auth.loaded')) {
     return Promise.resolve(mapResponseToProps(store.auth.response));
   }
@@ -174,11 +213,12 @@ function getLoginState(dispatch, store) {
  * @param {Object} response  response data
  * @return {Object} object with slightly altered keys
  */
-function mapResponseToProps(response) {
+function mapResponseToProps(response: AuthResponse): AuthResponseInjectedProps {
   return {
-    isLoggedIn: response.isLoggedIn,
+    isLoggedIn: response.loggedIn,
     username: response.username,
     isActivated: response.activated,
+    userEmail: response.email,
   };
 }
 
@@ -189,12 +229,12 @@ function mapResponseToProps(response) {
  * @param {Object} props     props of the component
  * @return {Promise.<Object>} object with all auth props
  */
-function getOrFetchLoginState(props) {
+function getOrFetchLoginState(props: InjectedProps): Promise<InjectedProps> {
   const authStateLoaded = props.authStateLoaded;
   const getLoginState = props.getLoginState;
 
   if (authStateLoaded) {
-    return Promise.resolve(props); // Should contain all the keys we need
+    return Promise.resolve(props);  // Should contain all the keys we need
   }
 
   return getLoginState();
@@ -206,32 +246,30 @@ function getOrFetchLoginState(props) {
  * @param {Object} options   options for ReactRedux.connect
  * @return {Object} wrapped React component
  */
-function connect(options) {
-  function mapStateToProps(globalState) {
+export function connect(options?: ?Object) {
+  const mapStateToProps = (globalState) => {
     const state = globalState.auth;
-    return Object.assign({
+    return Object.assign({}, {
       authStateLoaded: state.loaded,
       authLoading: state.loading,
       authError: state.error
     }, mapResponseToProps(state.response));
-  }
+  };
 
-  function mapDispatchToProps(dispatch) {
-    return {
-      login: login.bind(null, dispatch),
-      logout: logout.bind(null, dispatch),
-      registerUser: register.bind(null, dispatch),
-      getLoginState: getLoginState.bind(null, dispatch),
-    };
-  }
+  const mapDispatchToProps = dispatch => ({
+    login: login.bind(null, dispatch),
+    logout: logout.bind(null, dispatch),
+    registerUser: register.bind(null, dispatch),
+    getLoginState: getLoginState.bind(null, dispatch),
+  });
 
   return connectRedux(mapStateToProps, mapDispatchToProps, null, options);
 }
 
-module.exports = {
-  Actions: Actions,
-  Reducer: AuthReducer,
-  connect: connect,
-  getOrFetchLoginState: getOrFetchLoginState,
-  getLoginState: getLoginState
+export default {
+  Actions,
+  Reducer,
+  connect,
+  getOrFetchLoginState,
+  getLoginState
 };

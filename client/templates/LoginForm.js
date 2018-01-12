@@ -1,34 +1,50 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { callProp, update, setState, getThen, getCatch, renderResponse } from 'react-updaters';
 
-import NewUtils from './NewUtils';
 import Tabs from './Tabs';
 import AuthRedux from '../js/redux/Auth';
-import Auth from '../js/Auth';
+import Auth, { type InjectedProps } from '../js/Auth';
 import Validate from '../js/Validate';
+import type { Response } from '../../common/Types';
 
 const tabOptions = {
   login: 'Sign in',
   register: 'Register'
 };
 
-class LoginForm extends React.PureComponent {
-  static propTypes = {
-    onLogin: PropTypes.func,
-    onRegister: PropTypes.func,
+type Tab = 'login' | 'register';
 
-    // Tab is controlled to allow LoginModal to adjust its size
-    tab: PropTypes.oneOf(['login', 'register']),
-    onTabChange: PropTypes.func.isRequired,
+type Props = {
+  onLogin: () => mixed,
+  onRegister: () => mixed,
 
-    // Injected
-    login: PropTypes.func.isRequired,
-    registerUser: PropTypes.func.isRequired,
-    authLoading: PropTypes.bool.isRequired,
-    authError: PropTypes.object
-  };
+  /** Tab is controlled to allow the containing element adjust its size */
+  tab: Tab,
+  onTabChange: (Tab) => mixed,
+} & InjectedProps;
 
+type State = {
+  form: {
+    email: string,
+    username: string,
+    password: string,
+
+    name: string,
+    title: string,
+    company: string,
+    intendedUse: string,
+    shouldContact: ?boolean,
+  },
+
+  blurred: {[string]: boolean},
+  hasSubmitErrors: boolean,
+  loading: boolean,
+  response: ?Response,
+};
+
+class LoginForm extends React.PureComponent<Props, State> {
   state = {
     form: {
       email: '',
@@ -75,8 +91,8 @@ class LoginForm extends React.PureComponent {
 
   resetPassword = () => {
     Auth.startResetPassword(this.state.form.username, this.state.form.email)
-      .then(NewUtils.getThen(this))
-      .catch(NewUtils.getCatch(this));
+      .then(getThen(this))
+      .catch(getCatch(this));
   };
 
   submit = (e) => {
@@ -132,10 +148,10 @@ class LoginForm extends React.PureComponent {
       <div className="bottom20">
         <Tabs tabs={tabOptions}
             value={activeTab}
-            onChange={NewUtils.callProp(this, 'onTabChange')} />
+            onChange={callProp(this, 'onTabChange')} />
       </div>
 
-      {NewUtils.renderResponse(response)}
+      {renderResponse(response)}
 
       <form onSubmit={this.submit}>
         <div className={'form-group ' + (visibleErrors.email ? 'has-error' : '')}>
@@ -145,8 +161,8 @@ class LoginForm extends React.PureComponent {
               className="form-control"
               maxLength="128"
               value={form.email}
-              onChange={NewUtils.update(this, 'form.email')}
-              onBlur={NewUtils.setState(this, 'blurred.email', true)} />
+              onChange={update(this, 'form.email')}
+              onBlur={setState(this, 'blurred.email', true)} />
           {activeTab === 'register' && (
             <p className="help-block">
               {visibleErrors.email || 'We will send an email here with an activation link.'}
@@ -161,8 +177,8 @@ class LoginForm extends React.PureComponent {
                 id="username"
                 className="form-control"
                 value={form.username}
-                onChange={NewUtils.update(this, 'form.username')}
-                onBlur={NewUtils.setState(this, 'blurred.username', true)} />
+                onChange={update(this, 'form.username')}
+                onBlur={setState(this, 'blurred.username', true)} />
             {activeTab === 'register' && (
               <p className="help-block">
                 {visibleErrors.username || <span>APIs you publish will be accessible at <code>(your username)/(repository)/(API name)</code></span>}
@@ -178,8 +194,8 @@ class LoginForm extends React.PureComponent {
                 id="password"
                 className="form-control"
                 value={form.password}
-                onChange={NewUtils.update(this, 'form.password')}
-                onBlur={NewUtils.setState(this, 'blurred.password', true)} />
+                onChange={update(this, 'form.password')}
+                onBlur={setState(this, 'blurred.password', true)} />
             {activeTab === 'register' && (
               <p className="help-block">
                 {visibleErrors.password || 'Choose a long, hard-to-guess password that you don\'t use anywhere else.'}
@@ -200,7 +216,7 @@ class LoginForm extends React.PureComponent {
         {activeTab === 'login' && (
           <a href="#forgotPassword"
               className="pull-right"
-              onClick={NewUtils.callProp(this, 'onTabChange', ['resetPassword'], true)}>
+              onClick={callProp(this, 'onTabChange', ['resetPassword'], true)}>
             Forgot password
           </a>
         )}

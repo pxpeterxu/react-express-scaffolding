@@ -1,23 +1,16 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import Auth from '../js/redux/Auth';
+import Auth, { type InjectedProps } from '../js/redux/Auth';
 import LoginPage from './LoginPage';
 
+type Props = {
+  componentOnceLoggedIn: Class<React.Component<*, *>>,
+  showLogo: boolean,
+} & InjectedProps;
+
 // This component will do a login
-class LoginGate extends React.PureComponent {
-  static propTypes = {
-    updateLocalTutorialStep: PropTypes.func.isRequired,
-    componentOnceLoggedIn: PropTypes.any.isRequired,
-    showLogo: PropTypes.bool,
-
-    // Injected
-    logout: PropTypes.func.isRequired,
-    username: PropTypes.string,
-    authStateLoaded: PropTypes.bool.isRequired,
-    isLoggedIn: PropTypes.bool.isRequired
-  };
-
+class LoginGate extends React.PureComponent<Props> {
   componentWillMount() {
     // Fetch current logged-in user
     Auth.getOrFetchLoginState(this.props);

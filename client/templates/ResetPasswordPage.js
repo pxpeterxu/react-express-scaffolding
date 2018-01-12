@@ -1,18 +1,29 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router';
-
+import { update, setState, getCatch, getThen, renderResponse } from 'react-updaters';
+import type { Response } from '../../common/Types';
 import Auth from '../js/Auth';
-import NewUtils from './NewUtils';
 
-class ResetPasswordPage extends React.PureComponent {
-  static propTypes = {
-    params: PropTypes.shape({
-      token: PropTypes.string
-    }),
-    token: PropTypes.string
-  };
+type Props = {
+  params: {
+    token: string,
+  },
+};
 
+type State = {
+  loading: boolean,
+  isValid: ?boolean,
+  response: ?Response,
+
+  password: string,
+  password2: string,
+  blurredPassword2: boolean,
+
+  passwordChanged: boolean,
+};
+
+class ResetPasswordPage extends React.PureComponent<Props, State> {
   state = {
     loading: true,
     isValid: null,
@@ -25,9 +36,8 @@ class ResetPasswordPage extends React.PureComponent {
     passwordChanged: false
   };
 
-  checkToken = (props) => {
-    props = props.params || props;
-    const token = props.token;
+  checkToken = (props: Props) => {
+    const token = props.params.token;
 
     this.setState({ loading: true, response: null, isValid: null });
 
@@ -38,30 +48,31 @@ class ResetPasswordPage extends React.PureComponent {
           isValid: data.isValid,
           response: !data.isValid ? {
             success: false,
-            messages: ['The password reset link you followed has expired or is invalid. Please go to the Sign In page to request another one']
+            messages: ['The password reset link you followed has expired or is invalid. Please go to the Sign In page to request another one'],
+            errTypes: ['expired'],
           } : null
         });
       })
-      .catch(NewUtils.getCatch(this));
+      .catch(getCatch(this));
   };
 
   componentWillMount() {
     this.checkToken(this.props);
   }
 
-  componentWillReceiveProps(props) {
-    if (props.token !== this.props.token) {
+  componentWillReceiveProps(props: Props) {
+    if (props.params.token !== this.props.params.token) {
       this.checkToken(props);
     }
   }
 
-  resetPassword = (e) => {
+  resetPassword = (e: Event) => {
     e.preventDefault();
     this.setState({ loading: true, response: null });
 
-    const props = this.props.params || this.props;
+    const params = this.props.params;
 
-    Auth.resetPassword(props.token, this.state.password)
+    Auth.resetPassword(params.token, this.state.password)
       .then((data) => {
         if (data.success) {
           // Add extra link if successful
@@ -71,9 +82,9 @@ class ResetPasswordPage extends React.PureComponent {
           this.setState({ passwordChanged: true });
         }
 
-        NewUtils.getThen(this)(data);
+        getThen(this)(data);
       })
-      .catch(NewUtils.getCatch(this));
+      .catch(getCatch(this));
   };
 
   render() {
@@ -101,7 +112,7 @@ class ResetPasswordPage extends React.PureComponent {
             </div>
           ) : (<div>
 
-            {NewUtils.renderResponse(response)}
+            {renderResponse(response)}
 
             {this.state.isValid && (
               <form onSubmit={this.resetPassword}>
@@ -111,7 +122,7 @@ class ResetPasswordPage extends React.PureComponent {
                       id="password"
                       className="form-control"
                       value={password}
-                      onChange={NewUtils.update(this, 'password')} />
+                      onChange={update(this, 'password')} />
                   <p className="help-block">
                     Choose a long, hard-to-guess password that you don't use anywhere else.
                   </p>
@@ -124,8 +135,8 @@ class ResetPasswordPage extends React.PureComponent {
                       id="password2"
                       className="form-control"
                       value={password2}
-                      onChange={NewUtils.update(this, 'password2')}
-                      onBlur={NewUtils.setState(this, 'blurredPassword2', true)} />
+                      onChange={update(this, 'password2')}
+                      onBlur={setState(this, 'blurredPassword2', true)} />
                   <p className="help-block">
                     {showPassword2Error ?
                       'The two passwords you entered do not match; please try again.' :
