@@ -385,7 +385,7 @@ gulp.task('webpack-server', function(callback) {
   });
 });
 
-createCopyGulpTask('copy-server', '{server/{certs/ca.pem,keys/ca.{public,private}.key,logs/.gitignore,app/templates/**/*},.ebextensions/**/*,package.json}', 'dist/app', serverWatchGlobs);
+createCopyGulpTask('copy-server', '{server/{certs/ca.pem,keys/ca.{public,private}.key,logs/.gitignore,app/templates/**/*},.ebextensions/**/*,package.json,client/assets/**/*.{css,scss}}', 'dist/app', serverWatchGlobs);
 createCopyGulpTask('copy-env', 'server/.env*', 'dist/app/server', serverWatchGlobs);
 createBuildServerGulpTask('build-server-js', '{common/**/*.js,server/{{app,es6,bin,scripts}/**/*.js,*.js},client/{js,templates,libs}/**/*.js}', 'dist/app');
 
@@ -418,7 +418,7 @@ gulp.task('rev-rename', function() {
     return gulp.src(revRenameGlob)
       .pipe(rev())
       .pipe(gulp.dest('dist/client'))
-      .pipe(rev.manifest())  // Used for rev-replace-references
+      .pipe(rev.manifest()) // Used for rev-replace-references
       .pipe(gulp.dest('dist/client/js'));
   }
   return null;

@@ -77,7 +77,7 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
         if (data.success) {
           // Add extra link if successful
           data.messages.push(<span>
-            <Link to="/login">Sign in with your new password</Link> to start using Site Name.
+            <Link to="/login">Sign in with your new password</Link> to start using YOUR_SITE_NAME.
           </span>);
           this.setState({ passwordChanged: true });
         }

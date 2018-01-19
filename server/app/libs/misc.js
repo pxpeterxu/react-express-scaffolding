@@ -27,7 +27,7 @@ function oneMessagePerField(errors) {
  * and errTypes in catch() statements
  * @param errors  array of [{ message: '...', type: '...'}, ...]
  */
-function WAError(errors) {
+function ApplicationError(errors) {
   const messages = errors.map((err) => {
     return err.message;
   });
@@ -35,7 +35,7 @@ function WAError(errors) {
     return err.type;
   });
 
-  this.name = 'WAError';
+  this.name = 'ApplicationError';
   this.messages = messages;
   this.message = messages.join('\n');
   this.errTypes = errTypes;
@@ -54,8 +54,8 @@ function ResponseError(response) {
   this.stack = (new Error()).stack;
 }
 
-function buildWAError(message, type) {
-  return new WAError([{ message: message, type: type }]);
+function buildApplicationError(message, type) {
+  return new ApplicationError([{ message: message, type: type }]);
 }
 
 function defaultCatch(res) {
@@ -70,7 +70,7 @@ function defaultCatch(res) {
       });
     } else if (err instanceof ResponseError) {
       res.json(err.response);
-    } else if (err instanceof WAError) {
+    } else if (err instanceof ApplicationError) {
       // This is also an internally-generated error similar
       // to the above, except with details and futureproofing
       res.json({
@@ -111,13 +111,13 @@ function doNothingMiddleware(req, res, next) {
 
 const exported = {
   defaultCatch: defaultCatch,
-  WAError: WAError,
+  ApplicationError: ApplicationError,
   ResponseError: ResponseError,
-  buildWAError: buildWAError,
+  buildApplicationError: buildApplicationError,
   oneMessagePerField: oneMessagePerField,
   disabledMiddleware: disabledMiddleware,
   doNothingMiddleware: doNothingMiddleware
 };
 
 export default exported;
-export { defaultCatch, WAError, ResponseError, buildWAError, oneMessagePerField, disabledMiddleware, doNothingMiddleware };
+export { defaultCatch, ApplicationError, ResponseError, buildApplicationError, oneMessagePerField, disabledMiddleware, doNothingMiddleware };

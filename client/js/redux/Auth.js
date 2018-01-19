@@ -156,7 +156,7 @@ function register(dispatch: Function, userData: RegistrationData, inviteKey?: st
     } else {
       dispatch(Actions.setError(data));
     }
-    return mapResponseToProps(data);
+    return data;
   }).catch((err) => {
     dispatch(Actions.setError(err));
   });
@@ -215,7 +215,7 @@ function getLoginState(dispatch: Function, store: { auth: State }): Promise<Auth
  */
 function mapResponseToProps(response: AuthResponse): AuthResponseInjectedProps {
   return {
-    isLoggedIn: response.loggedIn,
+    isLoggedIn: response.isLoggedIn,
     username: response.username,
     isActivated: response.activated,
     userEmail: response.email,

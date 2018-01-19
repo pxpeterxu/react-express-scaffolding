@@ -1,5 +1,6 @@
 // @flow
 import * as React from 'react';
+import { Link } from 'react-router';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavbarUser from './NavbarUser';
@@ -15,9 +16,9 @@ class MainPage extends React.PureComponent<Prop> {
         <Navbar fixedTop>
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#/">
-                Site Name
-              </a>
+              <Link to="/">
+                YOUR_SITE_NAME
+              </Link>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>

@@ -5,10 +5,10 @@ import misc from './misc';
 const LocalStrategy = PassportLocal.Strategy;
 
 function AuthError(error) {
-  misc.WAError.call(this, [error]);
+  misc.ApplicationError.call(this, [error]);
   this.errorObject = error;
 }
-AuthError.prototype = misc.WAError.prototype;
+AuthError.prototype = misc.ApplicationError.prototype;
 AuthError.prototype.constructor = AuthError;
 
 const serializedAttributes = ['id', 'username', 'email', 'activated'];

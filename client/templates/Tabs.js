@@ -75,7 +75,7 @@ class Tabs extends React.PureComponent<Props> {
             <li key={JSON.stringify(tab)}
                 className={tabClassName}
                 data-tab={tab}>
-              <a href={`#tab${index}`}>
+              <a href={`#tab${index}`}
                   onClick={isDisabled ? null : callProp(this, 'onChange', tab, true)}>
                 {label}
               </a>

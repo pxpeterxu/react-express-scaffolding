@@ -15,7 +15,8 @@ const Session = db.define('Session', {
     allowNull: false
   }
 }, {
-  charset: 'ascii_bin'
+  charset: 'ascii',
+  collate: 'ascii_bin',
 });
 
 export default Session;

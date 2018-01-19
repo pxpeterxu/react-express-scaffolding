@@ -5,8 +5,10 @@ import randomstring from 'randomstring';
 import passport from 'passport';
 import Promise from 'es6-promise';
 
+import db from './db';
 import './models/Associations';
 import User from './models/User';
+import Account from './models/Account';
 import PasswordResetToken from './models/PasswordResetToken';
 
 import auth from './libs/auth';
@@ -82,7 +84,8 @@ router.post('/register', checkPasswordLength, (req, res) => {
       username: req.body.username,
       name: req.body.name,
       password: hash,
-      activationKey: randomstring.generate(8)
+      activationKey: randomstring.generate(8),
+      accountId: 1, // Placeholder for validation purposes
     });
 
     return user.validate().catch((err) => {
@@ -116,16 +119,26 @@ router.post('/register', checkPasswordLength, (req, res) => {
     }
 
     if (errors.length !== 0) {
-      throw new misc.WAError(errors);
+      throw new misc.ApplicationError(errors);
     }
 
-    return user.save();
+    return db.transaction(t =>
+      // Create an account and an associated user
+      Account.create({
+        company: req.body.company || null,
+      }, {
+        transaction: t
+      }).then((account) => {
+        user.accountId = account.id;
+        return user.save({ transaction: t });
+      })
+    );
   }).then(() => {
     return mail.send(user.email, 'confirm', {
       username: user.username,
       activationKey: user.activationKey
     }).then(() => {
-      return 'You have successfully signed up! We have sent an activation email to your email address. In the meantime, you can start building APIs without activating.';
+      return 'You have successfully signed up! We have sent an activation email to your email address. In the meantime, you can start creating projects without activating.';
     }).catch((err) => {
       // This should not happen in regular operation
       logger.error('Mail send failed', { err: err });
@@ -206,7 +219,7 @@ router.get('/loginAs/:username', (req, res) => {
     }
   }).then((user) => {
     if (!user) {
-      throw new misc.WAError([{
+      throw new misc.ApplicationError([{
         message: 'We could not find a matching user',
         type: 'userNotFound'
       }]);
@@ -291,7 +304,7 @@ router.post('/startResetPassword', (req, res) => {
   }).then((dbUser) => {
     user = dbUser;
     if (!user) {
-      throw new misc.WAError([{
+      throw new misc.ApplicationError([{
         message: 'We could not find a matching user; please check the entered email and username',
         type: 'userNotFound'
       }]);
@@ -312,7 +325,7 @@ router.post('/startResetPassword', (req, res) => {
       });
     }).catch((err) => {
       logger.error('Mail send failed for password request', { err: err });
-      throw new misc.WAError([{
+      throw new misc.ApplicationError([{
         message: 'We could send the recovery email. Please try again later',
         type: 'resetEmailSendFailed'
       }]);
@@ -350,7 +363,7 @@ router.post('/resetPassword', checkPasswordLength, (req, res) => {
   }).then((dbToken) => {
     token = dbToken;
     if (!token) {
-      throw new misc.WAError([{
+      throw new misc.ApplicationError([{
         message: 'We could not find the matching password reset token',
         type: 'badPasswordToken'
       }]);
@@ -358,7 +371,7 @@ router.post('/resetPassword', checkPasswordLength, (req, res) => {
 
     const timeSinceCreation = Date.now() - token.createdAt;
     if (timeSinceCreation > 86400 * 1000) {
-      throw new misc.WAError([{
+      throw new misc.ApplicationError([{
         message: 'This password reset token has expired. Please request another one by going to the Sign In page',
         type: 'expiredPasswordToken'
       }]);
@@ -421,7 +434,7 @@ router.post('/changePassword', auth.loginCheck,
     return user.comparePassword(curPassword);
   }).then((matched) => {
     if (!matched) {
-      throw new misc.WAError([{ message: 'Your current password did not match', type: 'wrongCurPassword' }]);
+      throw new misc.ApplicationError([{ message: 'Your current password did not match', type: 'wrongCurPassword' }]);
     }
 
     return changePassword(user, password);

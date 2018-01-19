@@ -1,6 +1,10 @@
 import dotenv from 'dotenv';
 
-const file = process.env.DATABASE === 'production' ? '.env.prod' : '.env.local';
+let file = '.env.local';
+switch (process.env.DATABASE) {
+  case 'production': file = '.env.prod'; break;
+  case 'test': file = '.env.test'; break;
+}
 
 // When webpacking on Windows and using the resulting file on a Mac,
 // __dirname with backslashes doesn't play well
@@ -18,6 +22,7 @@ const dbDetails = {
 };
 
 const config = {
+  siteName: 'YOUR_SITE_NAME',
   host: process.env.WEB_HOST,
   db: 'mysql://' + dbDetails.user + ':' + dbDetails.password + '@' +
     dbDetails.host + ':' + dbDetails.port + '/' + dbDetails.database,
@@ -30,7 +35,7 @@ const config = {
       data: 'data'
     }
   },
-  mailFrom: process.env.MAIL_FROM || 'no-reply@wrapapi.com',
+  mailFrom: process.env.MAIL_FROM || 'no-reply@example.com',
   smtp: {
     host: process.env.SMTP_SERVER,
     port: process.env.SMTP_PORT,
@@ -39,7 +44,7 @@ const config = {
       pass: process.env.SMTP_PASS
     }
   },
-  hashSecret: process.env.HASH_SECRET || 'ThisisaReallyReallyLongStrin!WhatisupwithTHAThuh?',
+  hashSecret: process.env.HASH_SECRET,
   logPath: dirname + '/../logs/log.txt',
   requestsLogPath: dirname + '/../logs/requests.txt',
   sqlLogPath: dirname + '/../logs/sql.txt',
@@ -49,6 +54,7 @@ export default config;
 export { dbDetails };
 
 export const {
+  siteName,
   host,
   db,
   sessionsSchema,

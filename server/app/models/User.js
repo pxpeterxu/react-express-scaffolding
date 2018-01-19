@@ -1,3 +1,4 @@
+// @flow
 import Sequelize from 'sequelize';
 import promisify from 'es6-promisify';
 import bcrypt from 'bcryptjs';
@@ -12,6 +13,10 @@ const User = db.define('User', {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,
     autoIncrement: true
+  },
+  accountId: {
+    type: Sequelize.INTEGER.UNSIGNED,
+    allowNull: false,
   },
   email: {
     type: Sequelize.STRING(128),
@@ -57,15 +62,15 @@ const User = db.define('User', {
   }],
 });
 
-User.prototype.comparePassword = function(password) {
+User.prototype.comparePassword = function(password: string) {
   return compare(password, this.password);
 };
 
-User.hashPassword = function(password) {
+User.hashPassword = function(password: string) {
   return hash(password, 10);
 };
 
-User.comparePassword = function(password, hash) {
+User.comparePassword = function(password: string, hash: string) {
   return compare(password, hash);
 };
 

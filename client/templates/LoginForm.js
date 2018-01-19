@@ -18,7 +18,7 @@ type Tab = 'login' | 'register';
 
 type Props = {
   onLogin: () => mixed,
-  onRegister: () => mixed,
+  onRegister: (Response) => mixed,
 
   /** Tab is controlled to allow the containing element adjust its size */
   tab: Tab,
@@ -30,12 +30,7 @@ type State = {
     email: string,
     username: string,
     password: string,
-
-    name: string,
-    title: string,
     company: string,
-    intendedUse: string,
-    shouldContact: ?boolean,
   },
 
   blurred: {[string]: boolean},
@@ -50,11 +45,7 @@ class LoginForm extends React.PureComponent<Props, State> {
       email: '',
       username: '',
       password: '',
-      name: '',
-      title: '',
       company: '',
-      intendedUse: '',
-      shouldContact: null
     },
 
     // These determine which errors to show
@@ -173,17 +164,12 @@ class LoginForm extends React.PureComponent<Props, State> {
         {(activeTab === 'register' || activeTab === 'resetPassword') && (
           <div className={'form-group ' + (visibleErrors.username ? 'has-error' : '')}>
             <label htmlFor="username">Username</label>
-            <input type="username"
+            <input type="text"
                 id="username"
                 className="form-control"
                 value={form.username}
                 onChange={update(this, 'form.username')}
                 onBlur={setState(this, 'blurred.username', true)} />
-            {activeTab === 'register' && (
-              <p className="help-block">
-                {visibleErrors.username || <span>APIs you publish will be accessible at <code>(your username)/(repository)/(API name)</code></span>}
-              </p>
-            )}
           </div>
         )}
 
@@ -201,6 +187,18 @@ class LoginForm extends React.PureComponent<Props, State> {
                 {visibleErrors.password || 'Choose a long, hard-to-guess password that you don\'t use anywhere else.'}
               </p>
             )}
+          </div>
+        )}
+
+        {activeTab === 'register' && (
+          <div className="form-group">
+            <label htmlFor="company">Company name</label>
+            <input type="text"
+                id="company"
+                className="form-control"
+                value={form.company}
+                onChange={update(this, 'form.company')}
+                onBlur={setState(this, 'blurred.company', true)} />
           </div>
         )}
 

@@ -3,29 +3,69 @@ import fs from 'fs';
 import ejs from 'ejs';
 import path from 'path';
 import _ from 'lodash';
-import juice from 'juice';
+import glob from 'glob';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 import sass from 'node-sass';
+import juice from 'juice';
+import moment from 'moment';
+import wordwrap from 'wordwrap';
 import promisify from 'es6-promisify';
 
 import config from '../config';
-import logger from './logger';
 
-const templateDir = path.join(__dirname.replace(/\\/g, '/'), '..', 'templates', 'mail');
-// When compiling on Windows and using on Linux,
-// the above .replace() is needed
+const wrap = wordwrap(0, 75);
+
+const templateDir = path.join(__dirname, '..', 'templates', 'mail');
+const cachedTemplates = {};
 
 // Nodemailer configuration
 const defaultSendParams = {
   from: config.mailFrom
 };
 
-const transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
-const sendMail = promisify(transporter.sendMail.bind(transporter));
+export const transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
+export const sendMail = promisify(transporter.sendMail.bind(transporter));
 
-const cachedTemplates = {};
+/**
+ * Compile a template file at filePath into a function
+ * that can be called with the input data to get resulting
+ * text or HTML
+ * @param filePath  path to the file (without extension)
+ * @return function(templateData) { return rendered; }
+ */
+function compileTemplate(filePath) {
+  const files = glob.sync(filePath + '*');
+  if (!files || !files.length) {
+    return function() { return ''; };
+  }
+  const file = files[0];
 
-function compileTemplate(file) {
-  return ejs.compile(fs.readFileSync(file, 'utf-8'));
+  const extension = path.extname(file);
+  if (extension === '.ejs') {
+    // EJS
+    try {
+      return ejs.compile(fs.readFileSync(file, 'utf-8'), { filename: file });
+    } catch (err) {
+      console.error(`Error while compiling ${file}`);
+      throw err;
+    }
+  } else if (extension === '.js') {
+    // React
+    /* eslint-disable global-require import/no-dynamic-require */
+    let reactObj = require(file);
+    if (reactObj && reactObj.default) {
+      reactObj = reactObj.default;
+    }
+
+    return function renderReact(tplData) {
+      return ReactDOMServer.renderToStaticMarkup(
+        React.createElement(reactObj, tplData)
+      );
+    };
+  }
+
+  return function() { return ''; };
 }
 
 /**
@@ -34,13 +74,19 @@ function compileTemplate(file) {
  * @param filePath
  * @return CSS file (compiled from SCSS if needed)
  */
-function compileStyle(file) {
-  if (!fs.existsSync(file)) return '';
+function compileStyle(filePath) {
+  const files = glob.sync(filePath + '*');
+  if (!files || !files.length) return '';
+  const file = files[0];
 
   const extension = path.extname(file);
   if (extension === '.scss') {
     return sass.renderSync({
-      file: file
+      file: file,
+      includePaths: [
+        path.join(__dirname, '/../../../client/assets'),
+        path.join(__dirname, '/../../../../../client/assets'), // Escape the `dist` directory
+      ],
     }).css.toString();
   } else if (extension === '.css') {
     return fs.readFileSync(file);
@@ -57,45 +103,45 @@ function compileStyle(file) {
  * @param options   additional options to be passed to nodemailer
  * @return Promise.<info> from nodemailer.sendMail
  */
-function send(to, template, data, options) {
+export function send(to, template, data, options = {}) {
   if (!(template in cachedTemplates)) {
-    logger.debug('Loading template "' + template + '"');
-
     const dir = path.join(templateDir, template);
 
-    const templates = {
-      html: compileTemplate(path.join(dir, 'html.ejs')),
-      text: compileTemplate(path.join(dir, 'text.ejs')),
-      subject: compileTemplate(path.join(dir, 'subject.ejs')),
-      style: compileStyle(path.join(dir, 'style.scss')),
+    const templateFuncs = {
+      html: compileTemplate(path.join(dir, 'html')),
+      text: compileTemplate(path.join(dir, 'text')),
+      subject: compileTemplate(path.join(dir, 'subject')),
+      style: compileStyle(path.join(dir, 'style')),
+      styleTag: compileStyle(path.join(dir, 'styleTag'))
     };
-
-    cachedTemplates[template] = templates;
-    logger.debug('Loaded template "' + template + '"');
+    cachedTemplates[template] = templateFuncs;
   }
 
+  const tpl = cachedTemplates[template];
   const tplData = _.assign({
-    _: _,
-    config: config
+    config,
+    moment,
+    _,
+    style: tpl.styleTag,
+    email: to
   }, data);
 
-  const tpl = cachedTemplates[template];
-  const html = juice.inlineContent(tpl.html(tplData), tpl.style);
-  const text = tpl.text(tplData);
-  const subject = tpl.subject(tplData);
+  const html = juice.inlineContent(tpl.html(tplData), tpl.style)
+    .replace(/class="([^"]+)"/g, 'class="$1" summary="$1"');
+    // Duplicate all classes in title tags for use in CSS
+    // selectors (Gmail strips classes)
+  const text = wrap(tpl.text(tplData));
+  const subject = tpl.subject(tplData).trim();
+
 
   return sendMail(Object.assign({
-    to: to,
-    subject: subject,
-    text: text,
-    html: html
+    to,
+    subject,
+    text,
+    html
   }, options));
 }
 
-const exported = {
-  send: send,
-  transporter: transporter
+export default {
+  send
 };
-
-export default exported;
-export { send, transporter };
