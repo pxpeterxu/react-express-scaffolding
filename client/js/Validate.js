@@ -12,7 +12,8 @@ function validateUser(user) {
   if (!user.username) {
     errors.username = 'Please enter a username.';
   } else if (!usernameRegex.test(user.username)) {
-    errors.username = 'Your username must only contain numbers, letters, and dashes (-) and be at least 2 characters long';
+    errors.username =
+      'Your username must only contain numbers, letters, and dashes (-) and be at least 2 characters long';
   }
 
   if (!user.password) {
@@ -21,14 +22,14 @@ function validateUser(user) {
   if (!user.email) {
     errors.email = 'Please enter your email address.';
   } else if (!emailRegex.test(user.email)) {
-    errors.email = 'The email address doesn\'t look valid. Please try again.';
+    errors.email = "The email address doesn't look valid. Please try again.";
   }
 
   return errors;
 }
 
 const exported = {
-  user: validateUser
+  user: validateUser,
 };
 
 export default exported;

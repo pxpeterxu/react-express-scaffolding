@@ -29,10 +29,10 @@ type State = {
 class LoginPage extends React.PureComponent<Props, State> {
   state = {
     tab: 'login',
-    registrationResponse: null
+    registrationResponse: null,
   };
 
-  setTabFromUrl = (props) => {
+  setTabFromUrl = props => {
     const pathname = _.get(props, 'location.pathname');
     if (pathname === '/register') {
       this.setState({ tab: 'register' });
@@ -56,7 +56,7 @@ class LoginPage extends React.PureComponent<Props, State> {
     }
   };
 
-  onRegister = (data) => {
+  onRegister = data => {
     this.setState({ registrationResponse: data });
   };
 
@@ -66,23 +66,31 @@ class LoginPage extends React.PureComponent<Props, State> {
     const tab = this.state.tab;
 
     if (registrationResponse && registrationResponse.success) {
-      return (<div className="container">
-        <h1>Register</h1>
-        {renderResponse(registrationResponse)}
-      </div>);
+      return (
+        <div className="container">
+          <h1>Register</h1>
+          {renderResponse(registrationResponse)}
+        </div>
+      );
     }
 
-    return (<div className="container">
-      <div className="row"><div className="col-sm-6 col-sm-offset-3">
-        <div className="top20">
-          <LoginForm onLogin={this.onLogin}
-              onRegister={this.onRegister}
-              showLogo={showLogo}
-              tab={tab}
-              onTabChange={update(this, 'tab')} />
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col-sm-6 col-sm-offset-3">
+            <div className="top20">
+              <LoginForm
+                onLogin={this.onLogin}
+                onRegister={this.onRegister}
+                showLogo={showLogo}
+                tab={tab}
+                onTabChange={update(this, 'tab')}
+              />
+            </div>
+          </div>
         </div>
-      </div></div>
-    </div>);
+      </div>
+    );
   }
 }
 

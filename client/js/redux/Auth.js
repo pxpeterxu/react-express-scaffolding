@@ -38,7 +38,7 @@ export const Actions = {
   },
   setTutorialCompleted(tutorial: string, completed: boolean) {
     return { type: 'SET_TUTORIAL_COMPLETED', tutorial, completed };
-  }
+  },
 };
 
 type State = {
@@ -48,7 +48,8 @@ type State = {
   error: ?Object,
 };
 
-export function Reducer(state: ?State, action: any) { // Not typing action yet; not likely source of bugs
+export function Reducer(state: ?State, action: any) {
+  // Not typing action yet; not likely source of bugs
   function getDefaultState(): State {
     return {
       loading: false,
@@ -60,7 +61,7 @@ export function Reducer(state: ?State, action: any) { // Not typing action yet; 
         activated: null,
         email: null,
       },
-      error: null
+      error: null,
     };
   }
 
@@ -74,7 +75,7 @@ export function Reducer(state: ?State, action: any) { // Not typing action yet; 
     case 'START_LOGOUT':
       return Object.assign({}, state, {
         loading: true,
-        error: null
+        error: null,
       });
 
     case 'FINISH_LOGIN':
@@ -83,13 +84,13 @@ export function Reducer(state: ?State, action: any) { // Not typing action yet; 
       return Object.assign({}, state, {
         loading: false,
         loaded: true,
-        response: action.data
+        response: action.data,
       });
 
     case 'SET_ERROR':
       return Object.assign({}, state, {
         loading: false,
-        error: action.error
+        error: action.error,
       });
 
     case 'FINISH_LOGOUT':
@@ -110,17 +111,19 @@ export function Reducer(state: ?State, action: any) { // Not typing action yet; 
 export function login(dispatch: Function, email: string, password: string) {
   dispatch(Actions.startLogin());
 
-  return Auth.login(email, password).then((data) => {
-    if (data.success) {
-      dispatch(Actions.finishLogin(data));
-    } else {
-      dispatch(Actions.setError(data));
-    }
-    return mapResponseToProps(data);
-  }).catch((err) => {
-    console.error(err);
-    dispatch(Actions.setError(err));
-  });
+  return Auth.login(email, password)
+    .then(data => {
+      if (data.success) {
+        dispatch(Actions.finishLogin(data));
+      } else {
+        dispatch(Actions.setError(data));
+      }
+      return mapResponseToProps(data);
+    })
+    .catch(err => {
+      console.error(err);
+      dispatch(Actions.setError(err));
+    });
 }
 
 /**
@@ -130,15 +133,17 @@ export function login(dispatch: Function, email: string, password: string) {
  */
 export function logout(dispatch: Function) {
   dispatch(Actions.startLogout());
-  Auth.logout().then((data) => {
-    if (data.success) {
-      dispatch(Actions.finishLogout());
-    }
-    return data;
-  }).catch((err) => {
-    console.error(err);
-    dispatch(Actions.setError(err));
-  });
+  Auth.logout()
+    .then(data => {
+      if (data.success) {
+        dispatch(Actions.finishLogout());
+      }
+      return data;
+    })
+    .catch(err => {
+      console.error(err);
+      dispatch(Actions.setError(err));
+    });
 }
 
 /**
@@ -147,19 +152,25 @@ export function logout(dispatch: Function) {
  * @param {string} inviteKey optionally, an invite key
  * @return {Promise.<Object>} with login details
  */
-function register(dispatch: Function, userData: RegistrationData, inviteKey?: string) {
+function register(
+  dispatch: Function,
+  userData: RegistrationData,
+  inviteKey?: string
+) {
   dispatch(Actions.startRegister());
 
-  return Auth.register(userData, inviteKey).then((data) => {
-    if (data.success) {
-      dispatch(Actions.finishRegister(data));
-    } else {
-      dispatch(Actions.setError(data));
-    }
-    return data;
-  }).catch((err) => {
-    dispatch(Actions.setError(err));
-  });
+  return Auth.register(userData, inviteKey)
+    .then(data => {
+      if (data.success) {
+        dispatch(Actions.finishRegister(data));
+      } else {
+        dispatch(Actions.setError(data));
+      }
+      return data;
+    })
+    .catch(err => {
+      dispatch(Actions.setError(err));
+    });
 }
 
 type AuthResponseInjectedProps = {
@@ -189,23 +200,28 @@ export type InjectedProps = {
  *                              use the cache
  * @return {Promise.<Object>} promise with response
  */
-function getLoginState(dispatch: Function, store: { auth: State }): Promise<AuthResponseInjectedProps> {
+function getLoginState(
+  dispatch: Function,
+  store: { auth: State }
+): Promise<AuthResponseInjectedProps> {
   if (store && _.get(store, 'auth.loaded')) {
     return Promise.resolve(mapResponseToProps(store.auth.response));
   }
 
-  return Auth.isLoggedIn().then((data) => {
-    if (data.success) {
-      dispatch(Actions.updateLoginState(data));
-    } else {
-      dispatch(Actions.setError(data));
-    }
-    return mapResponseToProps(data);
-  }).catch((err) => {
-    // Swallow error
-    console.error('Error when trying to get login state');
-    console.error(err);
-  });
+  return Auth.isLoggedIn()
+    .then(data => {
+      if (data.success) {
+        dispatch(Actions.updateLoginState(data));
+      } else {
+        dispatch(Actions.setError(data));
+      }
+      return mapResponseToProps(data);
+    })
+    .catch(err => {
+      // Swallow error
+      console.error('Error when trying to get login state');
+      console.error(err);
+    });
 }
 
 /**
@@ -234,7 +250,7 @@ function getOrFetchLoginState(props: InjectedProps): Promise<InjectedProps> {
   const getLoginState = props.getLoginState;
 
   if (authStateLoaded) {
-    return Promise.resolve(props);  // Should contain all the keys we need
+    return Promise.resolve(props); // Should contain all the keys we need
   }
 
   return getLoginState();
@@ -247,13 +263,17 @@ function getOrFetchLoginState(props: InjectedProps): Promise<InjectedProps> {
  * @return {Object} wrapped React component
  */
 export function connect(options?: ?Object) {
-  const mapStateToProps = (globalState) => {
+  const mapStateToProps = globalState => {
     const state = globalState.auth;
-    return Object.assign({}, {
-      authStateLoaded: state.loaded,
-      authLoading: state.loading,
-      authError: state.error
-    }, mapResponseToProps(state.response));
+    return Object.assign(
+      {},
+      {
+        authStateLoaded: state.loaded,
+        authLoading: state.loading,
+        authError: state.error,
+      },
+      mapResponseToProps(state.response)
+    );
   };
 
   const mapDispatchToProps = dispatch => ({
@@ -271,5 +291,5 @@ export default {
   Reducer,
   connect,
   getOrFetchLoginState,
-  getLoginState
+  getLoginState,
 };

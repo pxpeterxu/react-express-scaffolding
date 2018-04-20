@@ -1,7 +1,9 @@
-function getAxiosData(response) { return response.data; }
+function getAxiosData(response) {
+  return response.data;
+}
 
 const exported = {
-  getAxiosData: getAxiosData
+  getAxiosData: getAxiosData,
 };
 
 export default exported;

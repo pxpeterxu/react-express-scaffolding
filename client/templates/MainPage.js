@@ -16,28 +16,25 @@ class MainPage extends React.PureComponent<Prop> {
         <Navbar fixedTop>
           <Navbar.Header>
             <Navbar.Brand>
-              <Link to="/">
-                YOUR_SITE_NAME
-              </Link>
+              <Link to="/">YOUR_SITE_NAME</Link>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
-            <Nav pullLeft>
-            </Nav>
+            <Nav pullLeft />
             <NavbarUser />
           </Navbar.Collapse>
         </Navbar>
 
-        <div className="navbar-offset">
-          {this.props.children}
-        </div>
+        <div className="navbar-offset">{this.props.children}</div>
 
         <footer className="footer">
           <div className="container">
             <p>
               <span className="pull-left">Created by YOUR NAME</span>
-              <span className="pull-left" style={{ marginLeft: 20 }}>Email: email@example.com</span>
+              <span className="pull-left" style={{ marginLeft: 20 }}>
+                Email: email@example.com
+              </span>
             </p>
           </div>
         </footer>

@@ -31,10 +31,13 @@ var fs = require('fs');
 var webpack = require('webpack');
 var gutil = require('gulp-util');
 
-var production = (process.env.NODE_ENV === 'production');
+var production = process.env.NODE_ENV === 'production';
 var webType = production ? 'prod' : 'local';
-var dbType = production ? 'prod' :
-  (process.env.DATABASE !== 'production' ? 'local' : 'prod');
+var dbType = production
+  ? 'prod'
+  : process.env.DATABASE !== 'production'
+    ? 'local'
+    : 'prod';
 
 /*
  * Start general helpers section
@@ -46,7 +49,8 @@ function createCopyGulpTask(taskName, globs, destDir, watchGlobsVar) {
   }
 
   gulp.task(taskName, function() {
-    return gulp.src(globs)
+    return gulp
+      .src(globs)
       .pipe(cache(taskName))
       .pipe(gulp.dest(destDir));
   });
@@ -54,7 +58,8 @@ function createCopyGulpTask(taskName, globs, destDir, watchGlobsVar) {
 
 function getWatchTask(globs) {
   return function(cb) {
-    for (var taskName in globs) {  // eslint-disable-line
+    for (var taskName in globs) {
+      // eslint-disable-line
       var glob = globs[taskName];
       gulp.watch(glob, [taskName]);
     }
@@ -90,8 +95,18 @@ var clientWatchGlobs = {};
 var serverWatchGlobs = {};
 
 // Copy all assets to the destination
-createCopyGulpTask('copy-assets', 'client/assets/{**/*,*}', 'dist/client/assets', clientWatchGlobs);
-createCopyGulpTask('copy-fonts', 'node_modules/font-awesome/fonts/*', 'dist/client/assets', clientWatchGlobs);
+createCopyGulpTask(
+  'copy-assets',
+  'client/assets/{**/*,*}',
+  'dist/client/assets',
+  clientWatchGlobs
+);
+createCopyGulpTask(
+  'copy-fonts',
+  'node_modules/font-awesome/fonts/*',
+  'dist/client/assets',
+  clientWatchGlobs
+);
 
 // Copy specific configuration files
 gulp.task('copy-client-config', function() {
@@ -99,7 +114,8 @@ gulp.task('copy-client-config', function() {
   serverWatchGlobs['copy-client-config'] = glob;
   console.log(glob);
 
-  return gulp.src(glob)
+  return gulp
+    .src(glob)
     .pipe(rename('Config.js'))
     .pipe(gulp.dest('client/js'));
 });
@@ -136,12 +152,16 @@ gulp.task('build-vendor', function() {
   }
 
   jsVendorPackages.forEach(function(id) {
-    b.require(nodeResolve.sync(id, {
-      basedir: path.join(__dirname, 'client')
-    }), { expose: id });
+    b.require(
+      nodeResolve.sync(id, {
+        basedir: path.join(__dirname, 'client'),
+      }),
+      { expose: id }
+    );
   });
 
-  return b.bundle()
+  return b
+    .bundle()
     .on('error', handleError)
     .pipe(source('vendor.js'))
     .pipe(buffer())
@@ -152,15 +172,23 @@ function buildJavascript(sourceFile, destFile, destDir) {
   destDir = destDir || 'dist/client/js';
 
   return function() {
-    var b = browserify(sourceFile, { debug: true, cache: {}, packageCache: {} });
+    var b = browserify(sourceFile, {
+      debug: true,
+      cache: {},
+      packageCache: {},
+    });
     if (jsWatchEnabled) {
       b.plugin(watchify);
     }
 
     b.transform(coffeeify, { sourceMap: !production });
     b.transform(babelify, {
-      presets: ['react', 'es2015', 'flow'],
-      plugins: ['transform-class-properties']
+      presets: [
+        'react',
+        'flow',
+        ['env', { targets: { browsers: ['last 2 versions', 'IE >= 11'] }}],
+      ],
+      plugins: ['transform-class-properties'],
     });
     if (production) {
       b.plugin('minifyify', { map: !production });
@@ -174,14 +202,17 @@ function buildJavascript(sourceFile, destFile, destDir) {
     });
 
     function bundle(rebundle) {
-      var stream = b.bundle()
+      var stream = b
+        .bundle()
         .on('error', handleError)
         .pipe(source(destFile))
         .pipe(buffer())
         .pipe(gulp.dest(destDir));
 
       if (rebundle) {
-        stream.on('end', function() { console.log('Rebundled ' + destFile); });
+        stream.on('end', function() {
+          console.log('Rebundled ' + destFile);
+        });
       }
 
       return stream;
@@ -195,7 +226,11 @@ function buildJavascript(sourceFile, destFile, destDir) {
   };
 }
 
-gulp.task('build-web', ['copy-client-config'], buildJavascript('client/js/InitWeb.js', 'web.js'));
+gulp.task(
+  'build-web',
+  ['copy-client-config'],
+  buildJavascript('client/js/InitWeb.js', 'web.js')
+);
 
 /* eslint-disable dot-notation */
 clientWatchGlobs['sass'] = 'client/assets/styles.scss';
@@ -218,7 +253,13 @@ gulp.task('sass', function() {
 });
 
 gulp.task('clean-client', getDelTask('dist/client'));
-gulp.task('build-client', ['sass', 'copy-assets', 'copy-fonts', 'build-web', 'build-vendor']);
+gulp.task('build-client', [
+  'sass',
+  'copy-assets',
+  'copy-fonts',
+  'build-web',
+  'build-vendor',
+]);
 gulp.task('start-watching-client', getWatchTask(clientWatchGlobs));
 
 gulp.task('watch-client', function(cb) {
@@ -247,24 +288,28 @@ function createBuildServerGulpTask(name, globs, destination) {
   serverWatchGlobs[name] = globs;
 
   gulp.task(name, function() {
-    return gulp.src(globs)
+    return gulp
+      .src(globs)
       .pipe(cache(name))
       .pipe(sourcemaps.init())
-      .pipe(babel({
-        presets: [
-          'react',
-          'flow',
-          ['env', { targets: { node: 6 } }]
-        ],
-        plugins: ['transform-class-properties']
-      }))
+      .pipe(
+        babel({
+          presets: ['react', 'flow', ['env', { targets: { node: 6 }}]],
+          plugins: ['transform-class-properties'],
+        })
+      )
       .on('error', handleError)
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(destination));
   });
 }
 
-createCopyGulpTask('copy-client', 'dist/client/{assets/**/*,docs/*,js/*}', 'dist/app/server/public', serverWatchGlobs);
+createCopyGulpTask(
+  'copy-client',
+  'dist/client/{assets/**/*,docs/*,js/*}',
+  'dist/app/server/public',
+  serverWatchGlobs
+);
 
 gulp.task('copy-and-rename-client', function(cb) {
   runSequence('build-views-and-rename', 'copy-client', cb);
@@ -281,11 +326,11 @@ function launchServer(script) {
     ext: 'js ejs coffee css jpg png',
     env: {
       NODE_ENV: webType === 'prod' ? 'production' : 'development',
-      DATABASE: dbType === 'prod' ? 'production' : 'development'
+      DATABASE: dbType === 'prod' ? 'production' : 'development',
     },
     delay: 0.2,
     watch: ['server', 'client'],
-    stdout: false
+    stdout: false,
   }).on('readable', function() {
     this.stdout.on('data', function(chunk) {
       if (/^Express server listening on port/.test(chunk)) {
@@ -302,7 +347,12 @@ function launchServer(script) {
 // to private cloud hosting licensors
 //
 var packedWatchGlobs = {};
-createCopyGulpTask('copy-packed', 'dist/app/{server/{logs/.gitignore,{public,app/templates}/**/*},.ebextensions/**/*,package.json}', 'dist/packed', packedWatchGlobs);
+createCopyGulpTask(
+  'copy-packed',
+  'dist/app/{server/{logs/.gitignore,{public,app/templates}/**/*},.ebextensions/**/*,package.json}',
+  'dist/packed',
+  packedWatchGlobs
+);
 gulp.task('clean-packed', getDelTask('dist/{app.zip,packed}'));
 
 gulp.task('build-packed', function(cb) {
@@ -310,7 +360,8 @@ gulp.task('build-packed', function(cb) {
 });
 
 gulp.task('zip-packed', function() {
-  gulp.src('dist/packed/{.ebextensions,**}/**/*')
+  gulp
+    .src('dist/packed/{.ebextensions,**}/**/*')
     .pipe(zip('app.zip'))
     .pipe(gulp.dest('dist'));
 });
@@ -321,11 +372,12 @@ gulp.task('webpack-server', function(callback) {
   var plugins = [
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(true),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin(),
   ];
 
   var nodeModules = {};
-  fs.readdirSync('node_modules')
+  fs
+    .readdirSync('node_modules')
     .filter(function(x) {
       return ['.bin'].indexOf(x) === -1;
     })
@@ -334,63 +386,95 @@ gulp.task('webpack-server', function(callback) {
     });
 
   var callbackCalled = false;
-  webpack({
-    context: __dirname,
-    entry: {
-      www: './server/bin/www-packed.js'
+  webpack(
+    {
+      context: __dirname,
+      entry: {
+        www: './server/bin/www-packed.js',
+      },
+      target: 'node',
+      node: {
+        __dirname: true,
+        __filename: false,
+      },
+      externals: nodeModules,
+      module: {
+        loaders: [
+          {
+            test: /\.json$/,
+            loader: 'json-loader',
+          },
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'babel-loader',
+            query: {
+              presets: [
+                'react',
+                'flow',
+                [
+                  'env',
+                  { targets: { browsers: ['last 2 versions', 'IE >= 11'] }},
+                ],
+              ],
+              plugins: ['transform-class-properties'],
+            },
+          },
+        ],
+      },
+      plugins: plugins,
+      output: {
+        filename: '[name].js',
+        path: 'dist/packed',
+      },
+      profile: true,
+      devtool: false,
     },
-    target: 'node',
-    node: {
-      __dirname: true,
-      __filename: false
-    },
-    externals: nodeModules,
-    module: {
-      loaders: [{
-        test: /\.json$/,
-        loader: 'json-loader'
-      }, {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['react', 'es2015', 'flow'],
-          plugins: ['transform-class-properties']
-        }
-      }]
-    },
-    plugins: plugins,
-    output: {
-      filename: '[name].js',
-      path: 'dist/packed'
-    },
-    profile: true,
-    devtool: false
-  }, function(err, stats) {
-    if (err) throw new gutil.PluginError('webpack', err);
-    var output = stats.toString({
-      chunks: false,
-      warnings: false
-    });
-    if (output) {
-      gutil.log('[webpack]', output);
-    } else {
-      gutil.log('[webpack] Rebundled');
-    }
+    function(err, stats) {
+      if (err) throw new gutil.PluginError('webpack', err);
+      var output = stats.toString({
+        chunks: false,
+        warnings: false,
+      });
+      if (output) {
+        gutil.log('[webpack]', output);
+      } else {
+        gutil.log('[webpack] Rebundled');
+      }
 
-    if (!callbackCalled) {
-      callbackCalled = true;
-      callback();
+      if (!callbackCalled) {
+        callbackCalled = true;
+        callback();
+      }
     }
-  });
+  );
 });
 
-createCopyGulpTask('copy-server', '{server/{certs/ca.pem,keys/ca.{public,private}.key,logs/.gitignore,app/templates/**/*},.ebextensions/**/*,package.json,client/assets/**/*.{css,scss}}', 'dist/app', serverWatchGlobs);
-createCopyGulpTask('copy-env', 'server/.env*', 'dist/app/server', serverWatchGlobs);
-createBuildServerGulpTask('build-server-js', '{common/**/*.js,server/{{app,es6,bin,scripts}/**/*.js,*.js},client/{js,templates,libs}/**/*.js}', 'dist/app');
+createCopyGulpTask(
+  'copy-server',
+  '{server/{certs/ca.pem,keys/ca.{public,private}.key,logs/.gitignore,app/templates/**/*},.ebextensions/**/*,package.json,client/assets/**/*.{css,scss}}',
+  'dist/app',
+  serverWatchGlobs
+);
+createCopyGulpTask(
+  'copy-env',
+  'server/.env*',
+  'dist/app/server',
+  serverWatchGlobs
+);
+createBuildServerGulpTask(
+  'build-server-js',
+  '{common/**/*.js,server/{{app,es6,bin,scripts}/**/*.js,*.js},client/{js,templates,libs}/**/*.js}',
+  'dist/app'
+);
 
 gulp.task('clean-server', getDelTask('dist/app'));
-gulp.task('build-server', ['copy-server', 'copy-env', 'build-server-js', 'copy-and-rename-client']);
+gulp.task('build-server', [
+  'copy-server',
+  'copy-env',
+  'build-server-js',
+  'copy-and-rename-client',
+]);
 
 //
 // Version suffixing
@@ -401,10 +485,12 @@ gulp.task('build-views', function buildViews() {
 
   var ret = gulp.src(viewsGlob);
   if (production) {
-    ret = ret.pipe(revReplace({
-      replaceInExtensions: ['.html'],
-      manifest: gulp.src('dist/client/js/rev-manifest.json')
-    }));
+    ret = ret.pipe(
+      revReplace({
+        replaceInExtensions: ['.html'],
+        manifest: gulp.src('dist/client/js/rev-manifest.json'),
+      })
+    );
   } else {
     ret = ret.pipe(cache('build-views'));
   }
@@ -415,7 +501,8 @@ gulp.task('build-views', function buildViews() {
 var revRenameGlob = 'dist/client/{js/{web,vendor}.js,assets/styles.css}';
 gulp.task('rev-rename', function() {
   if (production) {
-    return gulp.src(revRenameGlob)
+    return gulp
+      .src(revRenameGlob)
       .pipe(rev())
       .pipe(gulp.dest('dist/client'))
       .pipe(rev.manifest()) // Used for rev-replace-references
@@ -428,15 +515,33 @@ gulp.task('build-views-and-rename', ['rev-rename'], function(cb) {
   runSequence('build-views', cb);
 });
 
-gulp.task('run-proxy', ['build-server'], launchServer.bind(null, 'dist/app/server/bin/proxy.js'));
-gulp.task('run-server', ['build-server'], launchServer.bind(null, 'dist/app/server/bin/www.js'));
-gulp.task('run-everything', ['build-server'], launchServer.bind(null, 'dist/app/server/bin/all.js'));
+gulp.task(
+  'run-proxy',
+  ['build-server'],
+  launchServer.bind(null, 'dist/app/server/bin/proxy.js')
+);
+gulp.task(
+  'run-server',
+  ['build-server'],
+  launchServer.bind(null, 'dist/app/server/bin/www.js')
+);
+gulp.task(
+  'run-everything',
+  ['build-server'],
+  launchServer.bind(null, 'dist/app/server/bin/all.js')
+);
 
 gulp.task('start-watching-server', getWatchTask(serverWatchGlobs));
 
-gulp.task('watch-server', ['run-server'], function(cb) { runSequence('start-watching-server', cb); });
-gulp.task('watch-everything', ['run-everything'], function(cb) { runSequence('start-watching-server', cb); });
-gulp.task('watch-proxy', ['run-proxy'], function(cb) { runSequence('start-watching-server', cb); });
+gulp.task('watch-server', ['run-server'], function(cb) {
+  runSequence('start-watching-server', cb);
+});
+gulp.task('watch-everything', ['run-everything'], function(cb) {
+  runSequence('start-watching-server', cb);
+});
+gulp.task('watch-proxy', ['run-proxy'], function(cb) {
+  runSequence('start-watching-server', cb);
+});
 
 gulp.task('server', ['watch-server']); // Alias
 

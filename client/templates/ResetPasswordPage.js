@@ -1,7 +1,13 @@
 // @flow
 import React from 'react';
 import { Link } from 'react-router';
-import { update, setState, getCatch, getThen, renderResponse } from 'react-updaters';
+import {
+  update,
+  setState,
+  getCatch,
+  getThen,
+  renderResponse,
+} from 'react-updaters';
 import type { Response } from '../../common/Types';
 import Auth from '../js/Auth';
 
@@ -33,7 +39,7 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
     password2: '',
     blurredPassword2: false,
 
-    passwordChanged: false
+    passwordChanged: false,
   };
 
   checkToken = (props: Props) => {
@@ -42,15 +48,19 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
     this.setState({ loading: true, response: null, isValid: null });
 
     Auth.isValidPasswordResetToken(token)
-      .then((data) => {
+      .then(data => {
         this.setState({
           loading: false,
           isValid: data.isValid,
-          response: !data.isValid ? {
-            success: false,
-            messages: ['The password reset link you followed has expired or is invalid. Please go to the Sign In page to request another one'],
-            errTypes: ['expired'],
-          } : null
+          response: !data.isValid
+            ? {
+                success: false,
+                messages: [
+                  'The password reset link you followed has expired or is invalid. Please go to the Sign In page to request another one',
+                ],
+                errTypes: ['expired'],
+              }
+            : null,
         });
       })
       .catch(getCatch(this));
@@ -73,12 +83,15 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
     const params = this.props.params;
 
     Auth.resetPassword(params.token, this.state.password)
-      .then((data) => {
+      .then(data => {
         if (data.success) {
           // Add extra link if successful
-          data.messages.push(<span>
-            <Link to="/login">Sign in with your new password</Link> to start using YOUR_SITE_NAME.
-          </span>);
+          data.messages.push(
+            <span>
+              <Link to="/login">Sign in with your new password</Link> to start
+              using YOUR_SITE_NAME.
+            </span>
+          );
           this.setState({ passwordChanged: true });
         }
 
@@ -94,66 +107,86 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
     const loading = this.state.loading;
     const response = this.state.response;
 
-    const enableSubmit = password === password2 &&
-      password && password2 && !loading && !this.state.passwordChanged;
-      // Disable if missing inputs, loading, or already done
-    const showPassword2Error = password !== password2 &&
-      (blurredPassword2 || password2 !== '');
+    const enableSubmit =
+      password === password2 &&
+      password &&
+      password2 &&
+      !loading &&
+      !this.state.passwordChanged;
+    // Disable if missing inputs, loading, or already done
+    const showPassword2Error =
+      password !== password2 && (blurredPassword2 || password2 !== '');
 
     return (
-      <div className="container"><div className="row">
-        <div className="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-          <h1>Reset your password</h1>
+      <div className="container">
+        <div className="row">
+          <div className="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            <h1>Reset your password</h1>
 
-          {(loading && this.state.isValid === null) ? (
-            <div className="text-center">
-              <p>Please wait while we check if you followed a valid password reset link:</p>
-              <i className="fa fa-circle-o-notch fa-spin fa-3x"></i>
-            </div>
-          ) : (<div>
+            {loading && this.state.isValid === null ? (
+              <div className="text-center">
+                <p>
+                  Please wait while we check if you followed a valid password
+                  reset link:
+                </p>
+                <i className="fa fa-circle-o-notch fa-spin fa-3x" />
+              </div>
+            ) : (
+              <div>
+                {renderResponse(response)}
 
-            {renderResponse(response)}
+                {this.state.isValid && (
+                  <form onSubmit={this.resetPassword}>
+                    <div className="form-group">
+                      <label htmlFor="password">New password</label>
+                      <input
+                        type="password"
+                        id="password"
+                        className="form-control"
+                        value={password}
+                        onChange={update(this, 'password')}
+                      />
+                      <p className="help-block">
+                        Choose a long, hard-to-guess password that you don't use
+                        anywhere else.
+                      </p>
+                    </div>
 
-            {this.state.isValid && (
-              <form onSubmit={this.resetPassword}>
-                <div className="form-group">
-                  <label htmlFor="password">New password</label>
-                  <input type="password"
-                      id="password"
-                      className="form-control"
-                      value={password}
-                      onChange={update(this, 'password')} />
-                  <p className="help-block">
-                    Choose a long, hard-to-guess password that you don't use anywhere else.
-                  </p>
-                </div>
+                    <div
+                      className={
+                        'form-group ' + (showPassword2Error ? 'has-error' : '')
+                      }
+                    >
+                      <label htmlFor="password2">New password again</label>
+                      <input
+                        type="password"
+                        id="password2"
+                        className="form-control"
+                        value={password2}
+                        onChange={update(this, 'password2')}
+                        onBlur={setState(this, 'blurredPassword2', true)}
+                      />
+                      <p className="help-block">
+                        {showPassword2Error
+                          ? 'The two passwords you entered do not match; please try again.'
+                          : "Enter your password again to ensure that you entered it correctly and won't be locked out of your account."}
+                      </p>
+                    </div>
 
-                <div className={'form-group ' +
-                    (showPassword2Error ? 'has-error' : '')}>
-                  <label htmlFor="password2">New password again</label>
-                  <input type="password"
-                      id="password2"
-                      className="form-control"
-                      value={password2}
-                      onChange={update(this, 'password2')}
-                      onBlur={setState(this, 'blurredPassword2', true)} />
-                  <p className="help-block">
-                    {showPassword2Error ?
-                      'The two passwords you entered do not match; please try again.' :
-                      'Enter your password again to ensure that you entered it correctly and won\'t be locked out of your account.'}
-                  </p>
-                </div>
-
-                <button className="btn btn-primary"
-                    type="submit"
-                    disabled={!enableSubmit}>
-                  Set new password
-                </button>
-              </form>
+                    <button
+                      className="btn btn-primary"
+                      type="submit"
+                      disabled={!enableSubmit}
+                    >
+                      Set new password
+                    </button>
+                  </form>
+                )}
+              </div>
             )}
-          </div>)}
+          </div>
         </div>
-      </div></div>
+      </div>
     );
   }
 }

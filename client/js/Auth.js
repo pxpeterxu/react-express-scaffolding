@@ -15,9 +15,9 @@ function login(email, password) {
     method: 'post',
     data: {
       email: email,
-      password: password
+      password: password,
     },
-    withCredentials: true
+    withCredentials: true,
   });
 }
 
@@ -27,7 +27,7 @@ function login(email, password) {
  */
 function isLoggedIn() {
   return axios({
-    url: Config.host + '/user/isLoggedin'
+    url: Config.host + '/user/isLoggedin',
   });
 }
 
@@ -38,7 +38,7 @@ function isLoggedIn() {
 function logout() {
   return axios({
     url: Config.host + '/user/logout',
-    method: 'post'
+    method: 'post',
   });
 }
 
@@ -51,7 +51,7 @@ function register(user) {
   return axios({
     url: Config.host + '/user/register',
     data: user,
-    method: 'post'
+    method: 'post',
   });
 }
 
@@ -65,7 +65,7 @@ function setTutorialStep(step) {
   return axios({
     url: Config.host + '/user/tutorialStep',
     data: { step: step },
-    method: 'post'
+    method: 'post',
   });
 }
 
@@ -78,7 +78,7 @@ function setYukataTutorialCompleted(completed) {
   return axios({
     url: Config.host + '/user/yukataTutorialCompleted',
     data: { completed: completed },
-    method: 'post'
+    method: 'post',
   });
 }
 
@@ -92,7 +92,7 @@ function startResetPassword(username, email) {
   return axios({
     url: Config.host + '/user/startResetPassword',
     data: { username: username, email: email },
-    method: 'post'
+    method: 'post',
   });
 }
 
@@ -106,7 +106,7 @@ function startResetPassword(username, email) {
 function activate(username, activationKey) {
   return axios({
     url: Config.host + '/user/activate/' + username + '/' + activationKey,
-    method: 'post'
+    method: 'post',
   });
 }
 
@@ -119,7 +119,7 @@ function isValidPasswordResetToken(token) {
   return axios({
     url: Config.host + '/user/isValidPasswordResetToken',
     method: 'get',
-    params: { token: token }
+    params: { token: token },
   });
 }
 
@@ -133,7 +133,7 @@ function resetPassword(token, password) {
   return axios({
     url: Config.host + '/user/resetPassword',
     method: 'post',
-    data: { token: token, password: password }
+    data: { token: token, password: password },
   });
 }
 
@@ -147,8 +147,19 @@ const exported = {
   setYukataTutorialCompleted: setYukataTutorialCompleted,
   startResetPassword: startResetPassword,
   isValidPasswordResetToken: isValidPasswordResetToken,
-  resetPassword: resetPassword
+  resetPassword: resetPassword,
 };
 
 export default exported;
-export { login, isLoggedIn, logout, register, activate, setTutorialStep, setYukataTutorialCompleted, startResetPassword, isValidPasswordResetToken, resetPassword };
+export {
+  login,
+  isLoggedIn,
+  logout,
+  register,
+  activate,
+  setTutorialStep,
+  setYukataTutorialCompleted,
+  startResetPassword,
+  isValidPasswordResetToken,
+  resetPassword,
+};

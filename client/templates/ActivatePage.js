@@ -9,7 +9,7 @@ type Props = {
   params: {
     activationKey: string,
     username: string,
-  }
+  },
 };
 
 type State = {
@@ -41,7 +41,7 @@ class ActivatePage extends React.PureComponent<Props, State> {
         {this.state.loading && (
           <div className="text-center">
             <p>Please wait while we try to activate your account:</p>
-            <i className="fa fa-circle-o-notch fa-spin fa-3x"></i>
+            <i className="fa fa-circle-o-notch fa-spin fa-3x" />
           </div>
         )}
 

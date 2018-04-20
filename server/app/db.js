@@ -3,7 +3,7 @@ import config from './config';
 import logger from './libs/logger';
 
 const options = {
-  logging: false
+  logging: false,
 };
 
 if (process.env.NODE_SQL_LOG) {

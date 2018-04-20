@@ -7,7 +7,7 @@ const Account = db.define('Account', {
   id: {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   company: {
     type: Sequelize.STRING(128),

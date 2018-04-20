@@ -13,9 +13,11 @@ import type { Options, OptionValue } from '../../common/Types';
  *                                - Object of { label: value }
  * @return Array of { value, label } for each option
  */
-function normalizeOptions(options: Options): Array<{ value: OptionValue, label: React.Node }> {
+function normalizeOptions(
+  options: Options
+): Array<{ value: OptionValue, label: React.Node }> {
   if (options instanceof Array) {
-    return options.map((option) => {
+    return options.map(option => {
       if (typeof option === 'string') {
         return { value: option, label: option };
       } else {
@@ -34,7 +36,7 @@ function normalizeOptions(options: Options): Array<{ value: OptionValue, label: 
 type Props = {
   tabs: Options,
   value: OptionValue,
-  onChange: (OptionValue) => mixed,
+  onChange: OptionValue => mixed,
   disabledTabs?: ?Array<mixed>,
   className?: ?string,
 };
@@ -72,11 +74,17 @@ class Tabs extends React.PureComponent<Props> {
           }
 
           return (
-            <li key={JSON.stringify(tab)}
-                className={tabClassName}
-                data-tab={tab}>
-              <a href={`#tab${index}`}
-                  onClick={isDisabled ? null : callProp(this, 'onChange', tab, true)}>
+            <li
+              key={JSON.stringify(tab)}
+              className={tabClassName}
+              data-tab={tab}
+            >
+              <a
+                href={`#tab${index}`}
+                onClick={
+                  isDisabled ? null : callProp(this, 'onChange', tab, true)
+                }
+              >
                 {label}
               </a>
             </li>

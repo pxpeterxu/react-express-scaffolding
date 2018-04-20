@@ -14,8 +14,15 @@ export default requireLoggedIn => (
     <Route path="/login" component={LoginPage} />
     <Route path="/register" component={LoginPage} />
     <Route path="/startResetPassword" component={LoginPage} />
-    <Route path="/resetPassword/:username/:token" component={ResetPasswordPage} />
+    <Route
+      path="/resetPassword/:username/:token"
+      component={ResetPasswordPage}
+    />
     <Route path="/activate/:username/:activationKey" component={ActivatePage} />
-    <Route path="/changePassword" component={ResetPasswordPage} onEnter={requireLoggedIn} />
+    <Route
+      path="/changePassword"
+      component={ResetPasswordPage}
+      onEnter={requireLoggedIn}
+    />
   </Route>
 );

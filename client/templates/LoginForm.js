@@ -1,7 +1,14 @@
 // @flow
 import React from 'react';
 import _ from 'lodash';
-import { callProp, update, setState, getThen, getCatch, renderResponse } from 'react-updaters';
+import {
+  callProp,
+  update,
+  setState,
+  getThen,
+  getCatch,
+  renderResponse,
+} from 'react-updaters';
 
 import Tabs from './Tabs';
 import AuthRedux from '../js/redux/Auth';
@@ -11,18 +18,18 @@ import type { Response } from '../../common/Types';
 
 const tabOptions = {
   login: 'Sign in',
-  register: 'Register'
+  register: 'Register',
 };
 
 type Tab = 'login' | 'register';
 
 type Props = {
   onLogin: () => mixed,
-  onRegister: (Response) => mixed,
+  onRegister: Response => mixed,
 
   /** Tab is controlled to allow the containing element adjust its size */
   tab: Tab,
-  onTabChange: (Tab) => mixed,
+  onTabChange: Tab => mixed,
 } & InjectedProps;
 
 type State = {
@@ -33,7 +40,7 @@ type State = {
     company: string,
   },
 
-  blurred: {[string]: boolean},
+  blurred: { [string]: boolean },
   hasSubmitErrors: boolean,
   loading: boolean,
   response: ?Response,
@@ -53,16 +60,18 @@ class LoginForm extends React.PureComponent<Props, State> {
     hasSubmitErrors: false,
 
     loading: false,
-    response: null
+    response: null,
   };
 
   login = () => {
     this.setState({ loading: false, response: null });
-    this.props.login(this.state.form.email, this.state.form.password).then((data) => {
-      if (data.isLoggedIn) {
-        this.props.onLogin();
-      }
-    });
+    this.props
+      .login(this.state.form.email, this.state.form.password)
+      .then(data => {
+        if (data.isLoggedIn) {
+          this.props.onLogin();
+        }
+      });
   };
 
   register = () => {
@@ -73,7 +82,7 @@ class LoginForm extends React.PureComponent<Props, State> {
     }
 
     this.setState({ hasSubmitErrors: false, loading: false, response: null });
-    this.props.registerUser(this.state.form).then((data) => {
+    this.props.registerUser(this.state.form).then(data => {
       if (data.isLoggedIn) {
         this.props.onRegister(data);
       }
@@ -86,7 +95,7 @@ class LoginForm extends React.PureComponent<Props, State> {
       .catch(getCatch(this));
   };
 
-  submit = (e) => {
+  submit = e => {
     if (e) e.preventDefault();
 
     this.setState({ loading: true, response: null });
@@ -112,9 +121,15 @@ class LoginForm extends React.PureComponent<Props, State> {
 
     let activeVerb = null;
     switch (activeTab) {
-      case 'login': activeVerb = 'Sign in'; break;
-      case 'register': activeVerb = 'Register'; break;
-      case 'resetPassword': activeVerb = 'Reset password'; break;
+      case 'login':
+        activeVerb = 'Sign in';
+        break;
+      case 'register':
+        activeVerb = 'Register';
+        break;
+      case 'resetPassword':
+        activeVerb = 'Reset password';
+        break;
     }
 
     // Extra registration-only validation
@@ -133,93 +148,122 @@ class LoginForm extends React.PureComponent<Props, State> {
       }
     }
 
-    return (<div>
-      <h1 className="top0">{activeVerb}</h1>
+    return (
+      <div>
+        <h1 className="top0">{activeVerb}</h1>
 
-      <div className="bottom20">
-        <Tabs tabs={tabOptions}
+        <div className="bottom20">
+          <Tabs
+            tabs={tabOptions}
             value={activeTab}
-            onChange={callProp(this, 'onTabChange')} />
-      </div>
+            onChange={callProp(this, 'onTabChange')}
+          />
+        </div>
 
-      {renderResponse(response)}
+        {renderResponse(response)}
 
-      <form onSubmit={this.submit}>
-        <div className={'form-group ' + (visibleErrors.email ? 'has-error' : '')}>
-          <label htmlFor="email">Email{activeTab === 'login' && ' or username'}</label>
-          <input type="text"
+        <form onSubmit={this.submit}>
+          <div
+            className={'form-group ' + (visibleErrors.email ? 'has-error' : '')}
+          >
+            <label htmlFor="email">
+              Email{activeTab === 'login' && ' or username'}
+            </label>
+            <input
+              type="text"
               id="email"
               className="form-control"
               maxLength="128"
               value={form.email}
               onChange={update(this, 'form.email')}
-              onBlur={setState(this, 'blurred.email', true)} />
-          {activeTab === 'register' && (
-            <p className="help-block">
-              {visibleErrors.email || 'We will send an email here with an activation link.'}
-            </p>
-          )}
-        </div>
+              onBlur={setState(this, 'blurred.email', true)}
+            />
+            {activeTab === 'register' && (
+              <p className="help-block">
+                {visibleErrors.email ||
+                  'We will send an email here with an activation link.'}
+              </p>
+            )}
+          </div>
 
-        {(activeTab === 'register' || activeTab === 'resetPassword') && (
-          <div className={'form-group ' + (visibleErrors.username ? 'has-error' : '')}>
-            <label htmlFor="username">Username</label>
-            <input type="text"
+          {(activeTab === 'register' || activeTab === 'resetPassword') && (
+            <div
+              className={
+                'form-group ' + (visibleErrors.username ? 'has-error' : '')
+              }
+            >
+              <label htmlFor="username">Username</label>
+              <input
+                type="text"
                 id="username"
                 className="form-control"
                 value={form.username}
                 onChange={update(this, 'form.username')}
-                onBlur={setState(this, 'blurred.username', true)} />
-          </div>
-        )}
+                onBlur={setState(this, 'blurred.username', true)}
+              />
+            </div>
+          )}
 
-        {(activeTab === 'register' || activeTab === 'login') && (
-          <div className={'form-group ' + (visibleErrors.password ? 'has-error' : '')}>
-            <label htmlFor="password">Password</label>
-            <input type="password"
+          {(activeTab === 'register' || activeTab === 'login') && (
+            <div
+              className={
+                'form-group ' + (visibleErrors.password ? 'has-error' : '')
+              }
+            >
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
                 id="password"
                 className="form-control"
                 value={form.password}
                 onChange={update(this, 'form.password')}
-                onBlur={setState(this, 'blurred.password', true)} />
-            {activeTab === 'register' && (
-              <p className="help-block">
-                {visibleErrors.password || 'Choose a long, hard-to-guess password that you don\'t use anywhere else.'}
-              </p>
-            )}
-          </div>
-        )}
+                onBlur={setState(this, 'blurred.password', true)}
+              />
+              {activeTab === 'register' && (
+                <p className="help-block">
+                  {visibleErrors.password ||
+                    "Choose a long, hard-to-guess password that you don't use anywhere else."}
+                </p>
+              )}
+            </div>
+          )}
 
-        {activeTab === 'register' && (
-          <div className="form-group">
-            <label htmlFor="company">Company name</label>
-            <input type="text"
+          {activeTab === 'register' && (
+            <div className="form-group">
+              <label htmlFor="company">Company name</label>
+              <input
+                type="text"
                 id="company"
                 className="form-control"
                 value={form.company}
                 onChange={update(this, 'form.company')}
-                onBlur={setState(this, 'blurred.company', true)} />
-          </div>
-        )}
+                onBlur={setState(this, 'blurred.company', true)}
+              />
+            </div>
+          )}
 
-        {hasSubmitErrors && (<div className="alert alert-danger">
-          Some fields don't seem to be filled in correctly! Take a look at the error messages above.
-        </div>)}
+          {hasSubmitErrors && (
+            <div className="alert alert-danger">
+              Some fields don't seem to be filled in correctly! Take a look at
+              the error messages above.
+            </div>
+          )}
 
-        <button className="btn btn-primary"
-            type="submit"
-            disabled={loading}>
-          {activeVerb}
-        </button>
-        {activeTab === 'login' && (
-          <a href="#forgotPassword"
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {activeVerb}
+          </button>
+          {activeTab === 'login' && (
+            <a
+              href="#forgotPassword"
               className="pull-right"
-              onClick={callProp(this, 'onTabChange', ['resetPassword'], true)}>
-            Forgot password
-          </a>
-        )}
-      </form>
-    </div>);
+              onClick={callProp(this, 'onTabChange', ['resetPassword'], true)}
+            >
+              Forgot password
+            </a>
+          )}
+        </form>
+      </div>
+    );
   }
 }
 

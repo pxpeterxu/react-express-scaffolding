@@ -20,7 +20,7 @@ const serializedAttributes = ['id', 'username', 'email', 'activated'];
  * @param {Object} session  (optional) session variables for use in yukataTutorialCompleted
  * @return {Object} response to send
  */
-function getUserOutput(user/* , session */) {
+function getUserOutput(user /* , session */) {
   return {
     success: true,
     isLoggedIn: !!user,
@@ -30,52 +30,63 @@ function getUserOutput(user/* , session */) {
   };
 }
 
-const localStrategy = new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-}, (username, password, done) => {
-  let user = null;
+const localStrategy = new LocalStrategy(
+  {
+    usernameField: 'email',
+    passwordField: 'password',
+  },
+  (username, password, done) => {
+    let user = null;
 
-  Promise.all([
-    User.findOne({
-      where: {
-        $or: [
-          { email: username },
-          { username: username }
-        ]
-      },
-      attributes: serializedAttributes.concat(['password'])
-    })
-  ]).then((results) => {
-    user = results[0];
+    Promise.all([
+      User.findOne({
+        where: {
+          $or: [{ email: username }, { username: username }],
+        },
+        attributes: serializedAttributes.concat(['password']),
+      }),
+    ])
+      .then(results => {
+        user = results[0];
 
-    if (user === null) {
-      throw new AuthError({
-        errType: 'username',
-        message: 'We could not find a user with the given username or email'
+        if (user === null) {
+          throw new AuthError({
+            errType: 'username',
+            message:
+              'We could not find a user with the given username or email',
+          });
+        }
+
+        return user.comparePassword(password);
+      })
+      .then(matched => {
+        if (!matched) {
+          throw new AuthError({
+            errType: 'password',
+            message: 'The password is incorrect',
+          });
+        }
+
+        done(
+          null,
+          user,
+          Object.assign(
+            {
+              message: 'You have successfully signed in!',
+            },
+            getUserOutput(user)
+          )
+        );
+      })
+      .catch(err => {
+        if (err instanceof AuthError) {
+          return done(null, false, err.errorObject);
+        } else {
+          return done(err, false, err);
+        }
       });
-    }
-
-    return user.comparePassword(password);
-  }).then((matched) => {
-    if (!matched) {
-      throw new AuthError({
-        errType: 'password',
-        message: 'The password is incorrect'
-      });
-    }
-
-    done(null, user, Object.assign({
-      message: 'You have successfully signed in!',
-    }, getUserOutput(user)));
-  }).catch((err) => {
-    if (err instanceof AuthError) {
-      return done(null, false, err.errorObject);
-    } else {
-      return done(err, false, err);
-    }
-  });
-});
+  }
+);
 
 function serializeUser(user, done) {
   done(null, user.id);
@@ -84,13 +95,15 @@ function serializeUser(user, done) {
 function deserializeUser(id, done) {
   User.findOne({
     where: { id: id },
-    attributes: serializedAttributes
-  }).then((user) => {
-    done(null, user);
-    return null;
-  }).catch((err) => {
-    done(err);
-  });
+    attributes: serializedAttributes,
+  })
+    .then(user => {
+      done(null, user);
+      return null;
+    })
+    .catch(err => {
+      done(err);
+    });
 }
 
 /**
@@ -102,7 +115,7 @@ function loginCheck(req, res, next) {
     res.json({
       success: false,
       messages: ['You must be logged in'],
-      errType: 'notLoggedin'
+      errType: 'notLoggedin',
     });
     return;
   }
@@ -119,7 +132,7 @@ function adminCheck(req, res, next) {
       res.json({
         success: false,
         message: ['You are not authorized to see this page'],
-        errType: 'notAuthorized'
+        errType: 'notAuthorized',
       });
     } else {
       next();
@@ -140,8 +153,16 @@ const exported = {
   localStrategy: localStrategy,
   loadAuth: loadAuth,
   loginCheck: loginCheck,
-  adminCheck: adminCheck
+  adminCheck: adminCheck,
 };
 
 export default exported;
-export { serializeUser, deserializeUser, getUserOutput, localStrategy, loadAuth, loginCheck, adminCheck };
+export {
+  serializeUser,
+  deserializeUser,
+  getUserOutput,
+  localStrategy,
+  loadAuth,
+  loginCheck,
+  adminCheck,
+};

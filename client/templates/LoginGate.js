@@ -26,14 +26,11 @@ class LoginGate extends React.PureComponent<Props> {
     if (!authStateLoaded) {
       return <div>Please wait... loading your account</div>;
     } else if (!isLoggedIn) {
-      return (
-        <LoginPage
-            showLogo={this.props.showLogo} />
-      );
+      return <LoginPage showLogo={this.props.showLogo} />;
     } else {
       return React.createElement(component, {
         username: username,
-        logout: logout
+        logout: logout,
       });
     }
   }

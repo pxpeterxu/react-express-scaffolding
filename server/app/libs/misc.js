@@ -28,10 +28,10 @@ function oneMessagePerField(errors) {
  * @param errors  array of [{ message: '...', type: '...'}, ...]
  */
 function ApplicationError(errors) {
-  const messages = errors.map((err) => {
+  const messages = errors.map(err => {
     return err.message;
   });
-  const errTypes = errors.map((err) => {
+  const errTypes = errors.map(err => {
     return err.type;
   });
 
@@ -39,7 +39,7 @@ function ApplicationError(errors) {
   this.messages = messages;
   this.message = messages.join('\n');
   this.errTypes = errTypes;
-  this.stack = (new Error()).stack;
+  this.stack = new Error().stack;
 }
 
 /**
@@ -51,7 +51,7 @@ function ResponseError(response) {
   this.response = response;
   this.message = response.messages.join('\n');
   this.errTypes = response.errTypes;
-  this.stack = (new Error()).stack;
+  this.stack = new Error().stack;
 }
 
 function buildApplicationError(message, type) {
@@ -66,7 +66,7 @@ function defaultCatch(res) {
       // messages to the client
       res.json({
         success: false,
-        messages: err
+        messages: err,
       });
     } else if (err instanceof ResponseError) {
       res.json(err.response);
@@ -76,7 +76,7 @@ function defaultCatch(res) {
       res.json({
         success: false,
         messages: err.messages,
-        errTypes: err.errTypes
+        errTypes: err.errTypes,
       });
     } else if (err.name === 'SequelizeValidationError') {
       res.json({ success: false, messages: oneMessagePerField(err.errors) });
@@ -85,7 +85,7 @@ function defaultCatch(res) {
       res.json({
         success: false,
         messages: ['An unexpected error has occurred'],
-        error: err
+        error: err,
       });
     }
   };
@@ -98,7 +98,7 @@ function disabledMiddleware(req, res) {
   res.json({
     success: false,
     messages: ['This feature is disabled'],
-    errTypes: ['disabled']
+    errTypes: ['disabled'],
   });
 }
 
@@ -116,8 +116,16 @@ const exported = {
   buildApplicationError: buildApplicationError,
   oneMessagePerField: oneMessagePerField,
   disabledMiddleware: disabledMiddleware,
-  doNothingMiddleware: doNothingMiddleware
+  doNothingMiddleware: doNothingMiddleware,
 };
 
 export default exported;
-export { defaultCatch, ApplicationError, ResponseError, buildApplicationError, oneMessagePerField, disabledMiddleware, doNothingMiddleware };
+export {
+  defaultCatch,
+  ApplicationError,
+  ResponseError,
+  buildApplicationError,
+  oneMessagePerField,
+  disabledMiddleware,
+  doNothingMiddleware,
+};

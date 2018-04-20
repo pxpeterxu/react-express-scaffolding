@@ -8,4 +8,6 @@ export type Response = {
 };
 
 export type OptionValue = string | number | boolean | null;
-export type Options = Array<{value: OptionValue, label: Node} | string> | {[string]: Node};
+export type Options =
+  | Array<{ value: OptionValue, label: Node } | string>
+  | { [string]: Node };

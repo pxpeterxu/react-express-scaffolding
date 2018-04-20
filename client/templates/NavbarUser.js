@@ -12,7 +12,7 @@ import Auth, { type InjectedProps } from '../js/redux/Auth';
 type Props = {
   router: {
     push: Function,
-  }
+  },
 } & InjectedProps;
 
 /**
@@ -34,10 +34,10 @@ class NavbarUser extends React.PureComponent<Props> {
     if (isLoggedIn) {
       return (
         <Nav pullRight>
-          <Navbar.Text><strong>{username}</strong></Navbar.Text>
-          <NavItem href="#"
-              onClick={this.logout}
-              disabled={logoutLoading}>
+          <Navbar.Text>
+            <strong>{username}</strong>
+          </Navbar.Text>
+          <NavItem href="#" onClick={this.logout} disabled={logoutLoading}>
             {logoutLoading ? 'Loading' : 'Sign out'}
           </NavItem>
         </Nav>

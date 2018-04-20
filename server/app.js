@@ -22,10 +22,12 @@ if (process.env.NODE_REQUEST_LOG) {
 }
 
 app.use(bodyParser.json({ limit: '16mb' }));
-app.use(bodyParser.urlencoded({
-  extended: true,
-  limit: '1mb'
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: '1mb',
+  })
+);
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -37,15 +39,17 @@ const sessionStore = new MySQLSessionStore({
   user: dbDetails.user,
   password: dbDetails.password,
   database: dbDetails.database,
-  schema: config.sessionsSchema
+  schema: config.sessionsSchema,
 });
 
-app.use(session({
-  secret: 'ThisisAnINterestingsecret',
-  saveUninitialized: false,
-  resave: false,
-  store: sessionStore
-}));
+app.use(
+  session({
+    secret: 'ThisisAnINterestingsecret',
+    saveUninitialized: false,
+    resave: false,
+    store: sessionStore,
+  })
+);
 auth.loadAuth(passport);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -70,13 +74,13 @@ if (app.get('env') === 'development') {
     logger.error('500 error', {
       message: err.message,
       error: err,
-      title: 'error'
+      title: 'error',
     });
 
     res.render('error', {
       message: err.message,
       error: err,
-      title: 'error'
+      title: 'error',
     });
   });
 }
@@ -88,9 +92,8 @@ app.use((err, req, res) => {
   logger.error('500 error', {
     message: err.message,
     error: err,
-    title: 'error'
+    title: 'error',
   });
 });
-
 
 export default app;

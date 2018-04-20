@@ -21,10 +21,13 @@ const cachedTemplates = {};
 
 // Nodemailer configuration
 const defaultSendParams = {
-  from: config.mailFrom
+  from: config.mailFrom,
 };
 
-export const transporter = nodemailer.createTransport(config.smtp, defaultSendParams);
+export const transporter = nodemailer.createTransport(
+  config.smtp,
+  defaultSendParams
+);
 export const sendMail = promisify(transporter.sendMail.bind(transporter));
 
 /**
@@ -37,7 +40,9 @@ export const sendMail = promisify(transporter.sendMail.bind(transporter));
 function compileTemplate(filePath) {
   const files = glob.sync(filePath + '*');
   if (!files || !files.length) {
-    return function() { return ''; };
+    return function() {
+      return '';
+    };
   }
   const file = files[0];
 
@@ -65,7 +70,9 @@ function compileTemplate(filePath) {
     };
   }
 
-  return function() { return ''; };
+  return function() {
+    return '';
+  };
 }
 
 /**
@@ -81,13 +88,15 @@ function compileStyle(filePath) {
 
   const extension = path.extname(file);
   if (extension === '.scss') {
-    return sass.renderSync({
-      file: file,
-      includePaths: [
-        path.join(__dirname, '/../../../client/assets'),
-        path.join(__dirname, '/../../../../../client/assets'), // Escape the `dist` directory
-      ],
-    }).css.toString();
+    return sass
+      .renderSync({
+        file: file,
+        includePaths: [
+          path.join(__dirname, '/../../../client/assets'),
+          path.join(__dirname, '/../../../../../client/assets'), // Escape the `dist` directory
+        ],
+      })
+      .css.toString();
   } else if (extension === '.css') {
     return fs.readFileSync(file);
   } else {
@@ -112,36 +121,44 @@ export function send(to, template, data, options = {}) {
       text: compileTemplate(path.join(dir, 'text')),
       subject: compileTemplate(path.join(dir, 'subject')),
       style: compileStyle(path.join(dir, 'style')),
-      styleTag: compileStyle(path.join(dir, 'styleTag'))
+      styleTag: compileStyle(path.join(dir, 'styleTag')),
     };
     cachedTemplates[template] = templateFuncs;
   }
 
   const tpl = cachedTemplates[template];
-  const tplData = _.assign({
-    config,
-    moment,
-    _,
-    style: tpl.styleTag,
-    email: to
-  }, data);
+  const tplData = _.assign(
+    {
+      config,
+      moment,
+      _,
+      style: tpl.styleTag,
+      email: to,
+    },
+    data
+  );
 
-  const html = juice.inlineContent(tpl.html(tplData), tpl.style)
+  const html = juice
+    .inlineContent(tpl.html(tplData), tpl.style)
     .replace(/class="([^"]+)"/g, 'class="$1" summary="$1"');
-    // Duplicate all classes in title tags for use in CSS
-    // selectors (Gmail strips classes)
+  // Duplicate all classes in title tags for use in CSS
+  // selectors (Gmail strips classes)
   const text = wrap(tpl.text(tplData));
   const subject = tpl.subject(tplData).trim();
 
-
-  return sendMail(Object.assign({
-    to,
-    subject,
-    text,
-    html
-  }, options));
+  return sendMail(
+    Object.assign(
+      {
+        to,
+        subject,
+        text,
+        html,
+      },
+      options
+    )
+  );
 }
 
 export default {
-  send
+  send,
 };

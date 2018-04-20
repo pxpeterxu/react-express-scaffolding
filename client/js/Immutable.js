@@ -84,7 +84,7 @@ function splitMutableImmutable(obj, index) {
 
   return {
     mutable: mutableParts,
-    immutable: immutableParts
+    immutable: immutableParts,
   };
 }
 
@@ -185,7 +185,8 @@ function deleteMixed(obj, stateIndex) {
     } else {
       // Use the second-to-last key to get the object to delete in
       const deleteObjKey = keys.mutable.slice(0, -1);
-      const deleteObj = deleteObjKey.length !== 0 ? _.get(obj, deleteObjKey) : obj;
+      const deleteObj =
+        deleteObjKey.length !== 0 ? _.get(obj, deleteObjKey) : obj;
       const deleteKey = keys.mutable[keys.mutable.length - 1];
 
       if (deleteObj instanceof Array) {
@@ -208,7 +209,4 @@ Immutable.deleteMixed = deleteMixed;
 export default Immutable;
 export { setMixed, getMixed, deleteMixed };
 
-export const {
-  isImmutable,
-  toJS
-} = Immutable;
+export const { isImmutable, toJS } = Immutable;

@@ -16,11 +16,7 @@ const preloadedState = window.__REDUX_STATE__;
 
 let store;
 if (Config.environment === 'development') {
-  store = createStore(
-    MainReducer,
-    preloadedState,
-    applyMiddleware(logger),
-  );
+  store = createStore(MainReducer, preloadedState, applyMiddleware(logger));
 } else {
   store = createStore(MainReducer, preloadedState);
 }
@@ -28,7 +24,7 @@ export default class MainRouter extends React.PureComponent {
   componentWillMount() {
     Auth.getLoginState(store.dispatch, store.getState());
     ga.initialize(Constants.googleAnalyticsId);
-    browserHistory.listen((location) => {
+    browserHistory.listen(location => {
       ga.pageview(location.pathname);
     });
   }
@@ -37,27 +33,32 @@ export default class MainRouter extends React.PureComponent {
     const redirectToLogin = () => {
       replace({
         pathname: '/login',
-        query: { redirect: nextState.location.pathname }
+        query: { redirect: nextState.location.pathname },
       });
       callback();
     };
 
-    return Auth.getLoginState(store.dispatch, store.getState()).then((data) => {
-      // Get the login status, and redirect to callback
-      if (data.isLoggedIn) {
-        callback();
-      } else {
+    return Auth.getLoginState(store.dispatch, store.getState())
+      .then(data => {
+        // Get the login status, and redirect to callback
+        if (data.isLoggedIn) {
+          callback();
+        } else {
+          redirectToLogin();
+        }
+      })
+      .catch(() => {
         redirectToLogin();
-      }
-    }).catch(() => {
-      redirectToLogin();
-    });
+      });
   }
 
   render() {
     return (
       <Provider store={store}>
-        <Router history={browserHistory} render={applyRouterMiddleware(useScroll())}>
+        <Router
+          history={browserHistory}
+          render={applyRouterMiddleware(useScroll())}
+        >
           {routes(this.requireLoggedIn)}
         </Router>
       </Provider>
