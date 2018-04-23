@@ -5,7 +5,7 @@ import Auth, { type RegistrationData } from '../Auth';
 
 type AuthResponse = {
   success: boolean,
-  loggedIn: boolean,
+  isLoggedIn: boolean,
   username: ?string,
   email: ?string,
   activated: ?boolean,
@@ -56,7 +56,7 @@ export function Reducer(state: ?State, action: any) {
       loaded: false,
       response: {
         success: false,
-        loggedIn: false,
+        isLoggedIn: false,
         username: null,
         activated: null,
         email: null,

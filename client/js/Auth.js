@@ -23,7 +23,7 @@ function login(email, password) {
 
 /**
  * Check whether we are already logged in
- * @return Promise.{loggedIn, username}
+ * @return Promise.{isLoggedIn, username}
  */
 function isLoggedIn() {
   return axios({
