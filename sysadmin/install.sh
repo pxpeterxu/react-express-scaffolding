@@ -48,3 +48,6 @@ systemctl reload nginx
 # Others
 bash install-scripts/components/logrotate.sh
 bash install-scripts/components/redis.sh "$REDIS_PASSWORD"
+
+# Main app
+bash components/app.sh

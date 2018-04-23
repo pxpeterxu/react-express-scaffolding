@@ -28,7 +28,7 @@ done
 # Set up user and /home/web directory
 NODE_WEB_PASS=$(</dev/urandom tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' | head -c 32 ; echo)
 useradd --home /home/web --shell /bin/bash --create-home web
-echo "node-web:$NODE_WEB_PASS" | chpasswd
+echo "web:$NODE_WEB_PASS" | chpasswd
 
 # Clone the code
 apt-get install -y git
