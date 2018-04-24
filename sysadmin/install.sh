@@ -22,7 +22,7 @@ DOMAIN=''
 echo 'Please enter the domain to use (PHPMyAdmin will be at thisispma.DOMAIN)'
 read -e DOMAIN
 
-cd $DIR
+cd "$DIR"
 
 # Main server
 bash install-scripts/components/nodejs.sh
@@ -50,4 +50,5 @@ bash install-scripts/components/logrotate.sh
 bash install-scripts/components/redis.sh "$REDIS_PASSWORD"
 
 # Main app
-bash components/app.sh
+bash components/app-build.sh
+bash components/app-start.sh
