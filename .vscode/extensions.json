@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "flowtype.flow-for-vscode",
+    "dbaeumer.vscode-eslint",
+    "ionutvmi.path-autocomplete",
+    "Rubymaniac.vscode-paste-and-indent",
+    "Atishay-Jain.all-autocomplete",
+    "CoenraadS.bracket-pair-colorizer",
+    "esbenp.prettier-vscode"
+  ]
+}

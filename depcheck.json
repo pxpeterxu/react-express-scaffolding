@@ -3,7 +3,7 @@
     "{gulpfile.js,build/**/*.js}",
     "client/{assets,js,templates}/**/*.{scss,js,coffee}",
     "server/{{app,scripts}/**/*.js,app.js}",
-    "test/**/*.js"
+    "tests/**/*.js"
   ],
   "filesToCheck": ["package.json"],
   "ignorePackages": [

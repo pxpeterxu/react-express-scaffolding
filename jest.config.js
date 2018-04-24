@@ -1,5 +1,7 @@
 'use strict';
 
 module.exports = {
-  testMatch: ['<rootDir>/test/**/*.js'],
+  testMatch: ['<rootDir>/{server,app,common}/**/*.test.js'],
+  setupTestFrameworkScriptFile: './tests/Setup.js',
+  testEnvironment: 'node',
 };
