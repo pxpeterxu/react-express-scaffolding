@@ -12,7 +12,7 @@ module.exports = {
     jest: true,
   },
 
-  plugins: ['react', 'flowtype'],
+  plugins: ['react', 'flowtype', 'jest'],
 
   extends: [
     'plugin:react/recommended',
@@ -97,5 +97,10 @@ module.exports = {
     'no-confusing-arrow': 0,
     'space-before-function-paren': 0,
     'no-plus-plus': 0,
+    'jest/no-disabled-tests': 2,
+    'jest/no-focused-tests': 2,
+    'jest/no-identical-title': 2,
+    'jest/prefer-to-have-length': 2,
+    'jest/valid-expect': 2,
   },
 };
