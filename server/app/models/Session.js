@@ -20,6 +20,7 @@ const Session = db.define(
   {
     charset: 'ascii',
     collate: 'ascii_bin',
+    timestamps: false,
   }
 );
 
