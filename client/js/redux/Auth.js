@@ -36,9 +36,6 @@ export const Actions = {
   setError(error: Object) {
     return { type: 'SET_ERROR', error };
   },
-  setTutorialCompleted(tutorial: string, completed: boolean) {
-    return { type: 'SET_TUTORIAL_COMPLETED', tutorial, completed };
-  },
 };
 
 type State = {
@@ -245,7 +242,7 @@ function mapResponseToProps(response: AuthResponse): AuthResponseInjectedProps {
  * @param {Object} props     props of the component
  * @return {Promise.<Object>} object with all auth props
  */
-function getOrFetchLoginState(props: InjectedProps): Promise<InjectedProps> {
+function getOrFetchLoginState(props: any): Promise<InjectedProps> {
   const authStateLoaded = props.authStateLoaded;
   const getLoginState = props.getLoginState;
 
@@ -257,7 +254,7 @@ function getOrFetchLoginState(props: InjectedProps): Promise<InjectedProps> {
 }
 
 /**
- * Connect a dispatcher for updating the tutorial step both
+ * Connect a dispatcher for updating the authentication status
  * locally and with a server call
  * @param {Object} options   options for ReactRedux.connect
  * @return {Object} wrapped React component

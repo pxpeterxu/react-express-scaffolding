@@ -17,7 +17,7 @@ const serializedAttributes = ['id', 'username', 'email', 'activated'];
  * Get output based on a user's data, used for a response for logins
  * or isLoggedIn
  * @param {Object} user     (optional) sequelize User object
- * @param {Object} session  (optional) session variables for use in yukataTutorialCompleted
+ * @param {Object} session  (optional) session variables for use (for non-logged-in state)
  * @return {Object} response to send
  */
 function getUserOutput(user /* , session */) {

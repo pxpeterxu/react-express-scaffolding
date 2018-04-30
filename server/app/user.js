@@ -540,27 +540,6 @@ router.post(
   }
 );
 
-router.options('/tutorialStep', cors.allowCORSOptions);
-router.post('/tutorialStep', auth.loginCheck, (req, res) => {
-  const step = req.body.step;
-
-  const user = req.user;
-  user.tutorialStep = step;
-  user
-    .save()
-    .then(user => {
-      res.json(
-        _.assign(
-          {
-            messages: ['Updated the current tutorial step to step ' + step],
-          },
-          auth.getUserOutput(user, req.session)
-        )
-      );
-    })
-    .catch(misc.defaultCatch(res));
-});
-
 router.get('/isLoggedin', (req, res) => {
   res.json(auth.getUserOutput(req.user, req.session));
 });

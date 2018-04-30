@@ -11,8 +11,8 @@ import {
 } from 'react-updaters';
 
 import Tabs from './Tabs';
-import AuthRedux from '../js/redux/Auth';
-import Auth, { type InjectedProps } from '../js/Auth';
+import AuthRedux, { type InjectedProps } from '../js/redux/Auth';
+import Auth from '../js/Auth';
 import Validate from '../js/Validate';
 import type { Response } from '../../common/Types';
 
