@@ -294,7 +294,7 @@ function createBuildServerGulpTask(name, globs, destination) {
       .pipe(sourcemaps.init())
       .pipe(
         babel({
-          presets: ['react', 'flow', ['env', { targets: { node: 6 }}]],
+          presets: ['react', 'flow', ['env', { targets: { node: 8 }}]],
           plugins: ['transform-class-properties'],
         })
       )
