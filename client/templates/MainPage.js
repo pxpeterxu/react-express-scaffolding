@@ -13,7 +13,7 @@ class MainPage extends React.PureComponent<Prop> {
   render() {
     return (
       <div>
-        <Navbar fixedTop>
+        <Navbar fixedTop collapseOnSelect>
           <Navbar.Header>
             <Navbar.Brand>
               <Link to="/">YOUR_SITE_NAME</Link>

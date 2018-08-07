@@ -170,7 +170,7 @@ class LoginForm extends React.PureComponent<Props, State> {
               Email{activeTab === 'login' && ' or username'}
             </label>
             <input
-              type="text"
+              type="email"
               id="email"
               className="form-control"
               maxLength="128"
