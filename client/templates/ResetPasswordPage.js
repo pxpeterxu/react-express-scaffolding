@@ -13,6 +13,7 @@ import Auth from '../js/Auth';
 
 type Props = {
   params: {
+    username: string,
     token: string,
   },
 };
@@ -101,18 +102,21 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const password = this.state.password;
-    const password2 = this.state.password2;
-    const blurredPassword2 = this.state.blurredPassword2;
-    const loading = this.state.loading;
-    const response = this.state.response;
+    const {
+      password,
+      password2,
+      blurredPassword2,
+      loading,
+      response,
+      passwordChanged,
+    } = this.state;
 
     const enableSubmit =
       password === password2 &&
       password &&
       password2 &&
       !loading &&
-      !this.state.passwordChanged;
+      !passwordChanged;
     // Disable if missing inputs, loading, or already done
     const showPassword2Error =
       password !== password2 && (blurredPassword2 || password2 !== '');
@@ -137,12 +141,23 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
 
                 {this.state.isValid && (
                   <form onSubmit={this.resetPassword}>
+                    <input
+                      type="text"
+                      value={this.props.match.params.username}
+                      autoComplete="username"
+                      className="hidden"
+                    />
+                    {/* This is only used for populating Chrome autocomplete:
+                        see https://www.chromium.org/developers/design-documents/form-styles-that-chromium-understands */}
+
                     <div className="form-group">
                       <label htmlFor="password">New password</label>
                       <input
                         type="password"
                         id="password"
                         className="form-control"
+                        autoComplete="new-password"
+                        disabled={passwordChanged}
                         value={password}
                         onChange={update(this, 'password')}
                       />
@@ -162,6 +177,8 @@ class ResetPasswordPage extends React.PureComponent<Props, State> {
                         type="password"
                         id="password2"
                         className="form-control"
+                        autoComplete="new-password"
+                        disabled={passwordChanged}
                         value={password2}
                         onChange={update(this, 'password2')}
                         onBlur={setState(this, 'blurredPassword2', true)}

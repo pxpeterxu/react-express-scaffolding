@@ -174,6 +174,7 @@ class LoginForm extends React.PureComponent<Props, State> {
               id="email"
               className="form-control"
               maxLength="128"
+              autoComplete="email"
               value={form.email}
               onChange={update(this, 'form.email')}
               onBlur={setState(this, 'blurred.email', true)}
@@ -197,6 +198,7 @@ class LoginForm extends React.PureComponent<Props, State> {
                 type="text"
                 id="username"
                 className="form-control"
+                autoComplete="username"
                 value={form.username}
                 onChange={update(this, 'form.username')}
                 onBlur={setState(this, 'blurred.username', true)}
@@ -215,6 +217,9 @@ class LoginForm extends React.PureComponent<Props, State> {
                 type="password"
                 id="password"
                 className="form-control"
+                autoComplete={
+                  activeTab === 'register' ? 'new-password' : 'current-password'
+                }
                 value={form.password}
                 onChange={update(this, 'form.password')}
                 onBlur={setState(this, 'blurred.password', true)}
@@ -235,6 +240,7 @@ class LoginForm extends React.PureComponent<Props, State> {
                 type="text"
                 id="company"
                 className="form-control"
+                autoComplete="organization"
                 value={form.company}
                 onChange={update(this, 'form.company')}
                 onBlur={setState(this, 'blurred.company', true)}
